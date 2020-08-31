@@ -1,0 +1,11 @@
+th {
+  background-color: #fe8a96;
+  position: sticky;
+  top: 0;
+}
+
+.table-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
