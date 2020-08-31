@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "a2119daa00dafdb350587de77cc38ba2",
+    "revision": "dd4c366fc699ab1872104dc80ae5cada",
     "url": "/bangumi-ratings/index.html"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/bangumi-ratings/static/css/2.de424728.chunk.css"
   },
   {
-    "revision": "1e1c850d4a950e733199",
+    "revision": "08f1daee5faed7065657",
     "url": "/bangumi-ratings/static/css/main.fee145d6.chunk.css"
   },
   {
@@ -20,8 +20,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/bangumi-ratings/static/js/2.0126ccd4.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "1e1c850d4a950e733199",
-    "url": "/bangumi-ratings/static/js/main.8201d0ac.chunk.js"
+    "revision": "08f1daee5faed7065657",
+    "url": "/bangumi-ratings/static/js/main.de421fac.chunk.js"
   },
   {
     "revision": "b0b45692684939526f38",
