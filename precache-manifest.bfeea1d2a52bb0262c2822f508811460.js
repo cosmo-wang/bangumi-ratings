@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "dd4c366fc699ab1872104dc80ae5cada",
+    "revision": "59978a64e51b03ad3e8d281e61e27029",
     "url": "/bangumi-ratings/index.html"
   },
   {
