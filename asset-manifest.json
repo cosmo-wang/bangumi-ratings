@@ -1,26 +1,26 @@
 {
   "files": {
-    "main.css": "/bangumi-ratings/static/css/main.4f65403e.chunk.css",
-    "main.js": "/bangumi-ratings/static/js/main.9ee7f0e6.chunk.js",
-    "main.js.map": "/bangumi-ratings/static/js/main.9ee7f0e6.chunk.js.map",
+    "main.css": "/bangumi-ratings/static/css/main.05a03d49.chunk.css",
+    "main.js": "/bangumi-ratings/static/js/main.2314cbc5.chunk.js",
+    "main.js.map": "/bangumi-ratings/static/js/main.2314cbc5.chunk.js.map",
     "runtime-main.js": "/bangumi-ratings/static/js/runtime-main.bd71931c.js",
     "runtime-main.js.map": "/bangumi-ratings/static/js/runtime-main.bd71931c.js.map",
     "static/css/2.de424728.chunk.css": "/bangumi-ratings/static/css/2.de424728.chunk.css",
-    "static/js/2.0126ccd4.chunk.js": "/bangumi-ratings/static/js/2.0126ccd4.chunk.js",
-    "static/js/2.0126ccd4.chunk.js.map": "/bangumi-ratings/static/js/2.0126ccd4.chunk.js.map",
+    "static/js/2.bb49ec45.chunk.js": "/bangumi-ratings/static/js/2.bb49ec45.chunk.js",
+    "static/js/2.bb49ec45.chunk.js.map": "/bangumi-ratings/static/js/2.bb49ec45.chunk.js.map",
     "index.html": "/bangumi-ratings/index.html",
-    "precache-manifest.100509825891fe6ed937734c47b10326.js": "/bangumi-ratings/precache-manifest.100509825891fe6ed937734c47b10326.js",
+    "precache-manifest.baa87612b1ae735d5aafaa061c85499f.js": "/bangumi-ratings/precache-manifest.baa87612b1ae735d5aafaa061c85499f.js",
     "service-worker.js": "/bangumi-ratings/service-worker.js",
     "static/css/2.de424728.chunk.css.map": "/bangumi-ratings/static/css/2.de424728.chunk.css.map",
-    "static/css/main.4f65403e.chunk.css.map": "/bangumi-ratings/static/css/main.4f65403e.chunk.css.map",
-    "static/js/2.0126ccd4.chunk.js.LICENSE.txt": "/bangumi-ratings/static/js/2.0126ccd4.chunk.js.LICENSE.txt",
+    "static/css/main.05a03d49.chunk.css.map": "/bangumi-ratings/static/css/main.05a03d49.chunk.css.map",
+    "static/js/2.bb49ec45.chunk.js.LICENSE.txt": "/bangumi-ratings/static/js/2.bb49ec45.chunk.js.LICENSE.txt",
     "static/media/index.css": "/bangumi-ratings/static/media/拜年祭2020.bed605a9.jpg"
   },
   "entrypoints": [
     "static/js/runtime-main.bd71931c.js",
     "static/css/2.de424728.chunk.css",
-    "static/js/2.0126ccd4.chunk.js",
-    "static/css/main.4f65403e.chunk.css",
-    "static/js/main.9ee7f0e6.chunk.js"
+    "static/js/2.bb49ec45.chunk.js",
+    "static/css/main.05a03d49.chunk.css",
+    "static/js/main.2314cbc5.chunk.js"
   ]
 }
