@@ -6,11 +6,13 @@ import Table from 'react-bootstrap/Table';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
-import { BiEditAlt } from "react-icons/bi";
+import { BiEditAlt, BiTrash } from "react-icons/bi";
 import SortHeader from './SortHeader';
 import FilterHeader from './FilterHeader';
+import DropdownHeader from './DropdownHeader';
 import Description from './Description';
 import AnimeModal from './AnimeModal';
+import { sortList, formatEpisodes, formatDate, translateHeader } from "../utils";
 import '../App.css';
 import './AnimeList.css';
 
@@ -23,28 +25,23 @@ function AnimeList(props) {
   const [activeDescription, setActiveDescription] = useState(null);
   const [showDescription, setShowDescription] = useState(false);
   const [showAnimeModal, setShowAnimeModal] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [submitNewAnime, setSubmitNewAnime] = useState(false);
+  const [animeToDelete, setAnimeToDelete] = useState({});
   const [activeId, setActiveId] = useState();
-  const [displayList, setDisplayList] = useState([]);
+  const [displayList, setDisplayList] = useState(sortList(ratings, "start_date"));
   const [filterList, setFilterList] = useState({});
   const [sortedCol, setSortedCol] = useState();
   const [editAnimeOldValue, setEditAnimeOldValue] = useState(null);
   const tableHeaders = ['名称', '集数', '状态', '分类', '剧情', '作画', '音乐', '情怀', '评分', '首次观看日期', '观看次数', ''];
 
+  useEffect(() => {setSortedCol("start_date")}, []);
+
   useEffect(() => {setDisplayList(ratings)}, [props.isLoading, ratings]);
 
   useEffect(() => {
     if (sortedCol !== null) {
-      setDisplayList(ratings.slice().sort((a, b) => {
-        console.log(a[sortedCol]);
-        if (a[sortedCol] > b[sortedCol]) {
-          return -1;
-        } else if (a[sortedCol] < b[sortedCol]) {
-          return 1;
-        } else {
-          return 0;
-        }
-      }));
+      setDisplayList(sortList(ratings, sortedCol));
       setSortedCol(null);
     }
   }, [sortedCol, ratings]);
@@ -52,11 +49,13 @@ function AnimeList(props) {
   useEffect(() => {
     if (filterList.length !== 0) {
       for (const [key, value] of Object.entries(filterList)) {
-        setDisplayList(ratings.filter((item) => item[key].includes(value)));
+        setDisplayList(ratings.filter((item) => {
+          return item[key].includes(value);
+        }));
       }
       setFilterList([]);
     }
-  }, [filterList, ratings]);
+  }, [filterList]);
 
   if (props.isLoading) {
     return <div className="loading">
@@ -106,6 +105,25 @@ function AnimeList(props) {
           />
         </Modal.Body>
       </Modal>
+      <Modal centered size="sm" show={showDeleteConfirmation} onHide={() => setShowDeleteConfirmation(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>删除番剧</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>{`确定要删除番剧“${animeToDelete.name}”吗`}</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={() => {
+            setAnimeToDelete({});
+            setShowDeleteConfirmation(false);
+          }}>取消</Button>
+          <Button variant="danger" onClick={() => {
+            props.deleteAnime(animeToDelete.id);
+            setAnimeToDelete({});
+            setShowDeleteConfirmation(false);
+          }}>确定</Button>
+        </Modal.Footer>
+      </Modal>
       <div className="button-group">
         <Button className="pink-button" onClick={() => {
           setEditAnimeOldValue(null);
@@ -120,7 +138,7 @@ function AnimeList(props) {
           <thead>
             <tr className='table-headers'>
               {tableHeaders.map(header => {
-                if (header === '名称' || header === '分类' || header === '状态') {
+                if (header === '名称' || header === '分类') {
                   return <FilterHeader header={header}
                     filter={(e) => {
                       let newFilterList = {};
@@ -135,6 +153,10 @@ function AnimeList(props) {
                       setDisplayList(ratings);
                     }}
                   />;
+                } else if (header === '状态') {
+                  return <DropdownHeader header={header} filterStatus={(event) => {
+                    setFilterList({"status": event.target.value});
+                  }}/>
                 } else if (header !== ''){
                   return <SortHeader header={header} sort={() => setSortedCol(translateHeader(header))}/>;
                 } else {
@@ -147,7 +169,7 @@ function AnimeList(props) {
             {
               displayList.map(row =>
                 <tr key={row.name}>
-                  <td className='clickable' onClick={(e) => {
+                  <td className='anime-name clickable' onClick={(e) => {
                     setActiveDescription(
                       {
                         name: row.name,
@@ -171,7 +193,7 @@ function AnimeList(props) {
                   <td>{row.rating}</td>
                   <td>{formatDate(row.start_date, row.end_date)}</td>
                   <td>{row.times_watched}</td>
-                  <td className="clickable" onClick={() => {
+                  <td><BiEditAlt className="clickable" onClick={() => {
                     setActiveId(row.id);
                     setEditAnimeOldValue({
                       name: row.name,
@@ -192,7 +214,13 @@ function AnimeList(props) {
                     });
                     setSubmitNewAnime(false);
                     setShowAnimeModal(true);
-                  }}><BiEditAlt /></td>
+                  }}/><BiTrash className="icon clickable" onClick={() => {
+                    setAnimeToDelete({
+                      name: row.name,
+                      id: row.id,
+                    });
+                    setShowDeleteConfirmation(true);
+                  }}/></td>
                 </tr>)
             }
           </tbody>
@@ -202,55 +230,5 @@ function AnimeList(props) {
   }
 }
 
-function formatEpisodes(tv_episodes, movies) {
-  if (tv_episodes === undefined || movies === undefined) {
-    return "";
-  } else if (tv_episodes === 0) {
-    return `剧场版×${movies}`;
-  } else if (movies === 0) {
-    return `${tv_episodes}集`;
-  } else {
-    return `${tv_episodes}集+剧场版×${movies}`;
-  }
-}
-
-function formatDate(start_date, end_date) {
-  if (!start_date.isValid()) {
-    return ""
-  } else if (!end_date.isValid()) {
-    return `${start_date.format('YYYY-MM-DD')}至今`;
-  } else {
-    return `${start_date.format('YYYY-MM-DD')} 至 ${end_date.format('YYYY-MM-DD')}`;
-  }
-}
-
-function translateHeader(header) {
-  switch(header) {
-    case '名称':
-      return 'name';
-    case '集数':
-      return 'tv_episodes';
-    case '状态':
-      return 'status';
-    case '分类':
-      return 'genre';
-    case '剧情':
-      return 'story';
-    case '作画':
-      return 'illustration';
-    case '音乐':
-      return 'music';
-    case '情怀':
-      return 'passion';
-    case '评分':
-      return 'rating';
-    case '首次观看日期':
-      return 'start_date';
-    case '观看次数':
-      return 'times_watched';
-    default:
-      return 'unknown';
-  }
-}
 
 export default AnimeList;

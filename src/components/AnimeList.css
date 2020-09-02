@@ -10,6 +10,10 @@
   margin-bottom: 1rem;
 }
 
+.anime-name {
+  width: 15%;
+}
+
 .button-group {
   display: flex;
   flex-direction: row;

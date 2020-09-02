@@ -7,6 +7,7 @@ import AnimeList from './components/AnimeList';
 import * as Env from "./environments";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { sortList } from "./utils";
 import Parse from 'parse';
 import moment from 'moment';
 import './App.css';
@@ -33,7 +34,7 @@ function App() {
     query.find().then((results) => {
       console.log("calling server");
       if (typeof document !== 'undefined'){
-        setRatings(results.map((result) => {
+        const ratings = results.map((result) => {
           return {
             id: result.id,
             name: result.get("name"),
@@ -54,7 +55,8 @@ function App() {
             end_date: moment(result.get("end_date"), 'YYYY-MM-DD'),
             times_watched: result.get("times_watched"),
           }}
-        ));
+        );
+        setRatings(sortList(ratings, "start_date"));
         setIsLoading(false);
       }
     }, (error) => {
@@ -106,6 +108,22 @@ function App() {
       });
     });
   };
+  
+  const deleteAnime = async (id) => {
+    console.log(id);
+    const ratingsObj = Parse.Object.extend('Ratings');
+    const query = new Parse.Query(ratingsObj);
+    query.get(id).then((object) => {
+      object.destroy().then((response) => {
+        console.log(response);
+        alert("已删除番剧！");
+        fetchRatings();
+      }, (error) => {
+        console.log(error);
+        alert("删除失败，请稍后重试。");
+      });
+    });
+  };
 
   useEffect(() => {
     fetchRatings();
@@ -143,11 +161,11 @@ function App() {
     <div>
       <div className="App">
         <Navivation />
-        <Router>
+        <Router basename={process.env.PUBLIC_URL + "/bangumi-ratings"}>
           <Switch>
             <AnimeDataContext.Provider value={{ratings: ratings, descriptions: descriptions}}>
-              <Route path="/list">
-                <AnimeList isLoading={isLoading} loadError={loadError} refresh={fetchRatings} onAnimeSubmit={handleAnimeSubmit}/>
+              <Route path="/">
+                <AnimeList isLoading={isLoading} loadError={loadError} refresh={fetchRatings} onAnimeSubmit={handleAnimeSubmit} deleteAnime={deleteAnime}/>
               </Route>
               <Route path="/today">
 

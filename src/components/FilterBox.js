@@ -15,5 +15,5 @@ export default function FilterBox(props) {
         setDisplayBox(!displayBox)
       }}>&times;</div>
     </div> :
-    <AiOutlineSearch className="filter-box clickable" onClick={() => setDisplayBox(!displayBox)}/>);
+    <AiOutlineSearch className="filter-box icon clickable" onClick={() => setDisplayBox(!displayBox)}/>);
 }

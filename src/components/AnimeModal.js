@@ -7,8 +7,6 @@ import '../App.css';
 
 export default function AnimeModal(props) {
   const oldValue = props.oldValue === undefined || props.oldValue === null ? {} : props.oldValue;
-  console.log(oldValue);
-  console.log(props.id);
   return <Form onSubmit={(event) => {props.onSubmitOrEdit(event, props.id)}}>
     <Form.Group controlId="name">
       <Form.Label>名称</Form.Label>
@@ -49,5 +47,6 @@ export default function AnimeModal(props) {
     <Button className="pink-button" type="submit">
       提交
     </Button>
+
   </Form>
 }

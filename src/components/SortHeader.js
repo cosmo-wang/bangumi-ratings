@@ -7,7 +7,7 @@ export default function SortHeader(props) {
     <th key={props.header}>
       <div className='table-header'>
         <div>{props.header}</div>
-        <BiSort className='sort-icon clickable' onClick={props.sort}/>
+        <BiSort className='icon clickable' onClick={props.sort}/>
       </div>
     </th>
   );
