@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/bangumi-ratings/precache-manifest.b9895d080265a23622ed9f43464521ae.js"
+  "/bangumi-ratings/precache-manifest.1bdc25bdbae479d236341831faf88fe0.js"
 );
 
 self.addEventListener('message', (event) => {
