@@ -75,9 +75,6 @@ function AnimeList(props) {
           <Description description={activeDescription}/>
         </Modal.Body>
         <Modal.Footer>
-          <Button className="pink-button">
-            编辑
-          </Button>
           <Button className="pink-button" onClick={() => setShowDescription(false)}>
             关闭
           </Button>
@@ -204,6 +201,7 @@ function AnimeList(props) {
                       episode_length: row.episode_length,
                       status: row.status,
                       genre: row.genre,
+                      description: row.description,
                       story: row.story,
                       illustration: row.illustration,
                       music: row.music,
