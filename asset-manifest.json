@@ -1,26 +1,26 @@
 {
   "files": {
-    "main.css": "/bangumi-ratings/static/css/main.b35add7e.chunk.css",
-    "main.js": "/bangumi-ratings/static/js/main.04ff6ab0.chunk.js",
-    "main.js.map": "/bangumi-ratings/static/js/main.04ff6ab0.chunk.js.map",
+    "main.css": "/bangumi-ratings/static/css/main.f26f4f71.chunk.css",
+    "main.js": "/bangumi-ratings/static/js/main.6d0eed11.chunk.js",
+    "main.js.map": "/bangumi-ratings/static/js/main.6d0eed11.chunk.js.map",
     "runtime-main.js": "/bangumi-ratings/static/js/runtime-main.bd71931c.js",
     "runtime-main.js.map": "/bangumi-ratings/static/js/runtime-main.bd71931c.js.map",
     "static/css/2.de424728.chunk.css": "/bangumi-ratings/static/css/2.de424728.chunk.css",
-    "static/js/2.19a0cea5.chunk.js": "/bangumi-ratings/static/js/2.19a0cea5.chunk.js",
-    "static/js/2.19a0cea5.chunk.js.map": "/bangumi-ratings/static/js/2.19a0cea5.chunk.js.map",
+    "static/js/2.09466253.chunk.js": "/bangumi-ratings/static/js/2.09466253.chunk.js",
+    "static/js/2.09466253.chunk.js.map": "/bangumi-ratings/static/js/2.09466253.chunk.js.map",
     "index.html": "/bangumi-ratings/index.html",
-    "precache-manifest.2697489560eaf6e4d605619a1d6fc0ce.js": "/bangumi-ratings/precache-manifest.2697489560eaf6e4d605619a1d6fc0ce.js",
+    "precache-manifest.b9895d080265a23622ed9f43464521ae.js": "/bangumi-ratings/precache-manifest.b9895d080265a23622ed9f43464521ae.js",
     "service-worker.js": "/bangumi-ratings/service-worker.js",
     "static/css/2.de424728.chunk.css.map": "/bangumi-ratings/static/css/2.de424728.chunk.css.map",
-    "static/css/main.b35add7e.chunk.css.map": "/bangumi-ratings/static/css/main.b35add7e.chunk.css.map",
-    "static/js/2.19a0cea5.chunk.js.LICENSE.txt": "/bangumi-ratings/static/js/2.19a0cea5.chunk.js.LICENSE.txt",
+    "static/css/main.f26f4f71.chunk.css.map": "/bangumi-ratings/static/css/main.f26f4f71.chunk.css.map",
+    "static/js/2.09466253.chunk.js.LICENSE.txt": "/bangumi-ratings/static/js/2.09466253.chunk.js.LICENSE.txt",
     "static/media/index.css": "/bangumi-ratings/static/media/1.bed605a9.jpg"
   },
   "entrypoints": [
     "static/js/runtime-main.bd71931c.js",
     "static/css/2.de424728.chunk.css",
-    "static/js/2.19a0cea5.chunk.js",
-    "static/css/main.b35add7e.chunk.css",
-    "static/js/main.04ff6ab0.chunk.js"
+    "static/js/2.09466253.chunk.js",
+    "static/css/main.f26f4f71.chunk.css",
+    "static/js/main.6d0eed11.chunk.js"
   ]
 }
