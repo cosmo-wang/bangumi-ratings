@@ -22,6 +22,9 @@ Parse.serverURL = Env.SERVER_URL;
 function AnimeList(props) {
   const {ratings, descriptions} = React.useContext(AnimeDataContext);
 
+
+  const watchedHeaders = ['名称', '集数', '分类', '剧情', '作画', '音乐', '情怀', '评分', '首次观看日期', '观看次数', ''];
+  const wantToWatchHeaders = ['名称', '集数', '分类', '年份', '豆瓣评分', '简介', ''];
   const [activeDescription, setActiveDescription] = useState(null);
   const [showDescription, setShowDescription] = useState(false);
   const [showAnimeModal, setShowAnimeModal] = useState(false);
@@ -29,15 +32,18 @@ function AnimeList(props) {
   const [submitNewAnime, setSubmitNewAnime] = useState(false);
   const [animeToDelete, setAnimeToDelete] = useState({});
   const [activeId, setActiveId] = useState();
-  const [displayList, setDisplayList] = useState(sortList(ratings, "start_date"));
+  const [displayListStatus, setDisplayListStatus] = useState("已看");
+  const [displayList, setDisplayList] = useState(sortList(ratings, "end_date"));
+  const [tableHeaders, setTableHeaders] = useState(watchedHeaders);
   const [filterList, setFilterList] = useState({});
   const [sortedCol, setSortedCol] = useState();
   const [editAnimeOldValue, setEditAnimeOldValue] = useState(null);
-  const tableHeaders = ['名称', '集数', '状态', '分类', '剧情', '作画', '音乐', '情怀', '评分', '首次观看日期', '观看次数', ''];
 
   useEffect(() => {setSortedCol("start_date")}, []);
 
-  useEffect(() => {setDisplayList(ratings)}, [props.isLoading, ratings]);
+  useEffect(() => {
+    setDisplayList(ratings.filter((rating) => rating.status === displayListStatus));
+  }, [props.isLoading, ratings, displayListStatus]);
 
   useEffect(() => {
     if (sortedCol !== null) {
@@ -56,6 +62,22 @@ function AnimeList(props) {
       setFilterList([]);
     }
   }, [filterList]);
+
+  const changeStatus = (e) => {
+    const newStatus = e.target.innerHTML;
+    if (newStatus === '想看') {
+      setTableHeaders(wantToWatchHeaders);
+    } else {
+      setTableHeaders(watchedHeaders);
+    }
+    setDisplayListStatus(newStatus);
+  }
+
+  const formatDescription = (description) => {
+    if (description !== null && description !== undefined) {
+      return description.substring(0, 20) + '......';
+    }
+  }
 
   if (props.isLoading) {
     return <div className="loading">
@@ -122,13 +144,20 @@ function AnimeList(props) {
         </Modal.Footer>
       </Modal>
       <div className="button-group">
-        <Button className="pink-button" onClick={() => {
-          setEditAnimeOldValue(null);
-          setActiveId(null);
-          setShowAnimeModal(true);
-          setSubmitNewAnime(true);
-        }}>添加</Button>
-        <Button className="pink-button" onClick={props.refresh}>刷新</Button>
+        <div>
+          <Button className="pink-button" onClick={changeStatus}>已看</Button>
+          <Button className="pink-button" onClick={changeStatus}>在看</Button>
+          <Button className="pink-button" onClick={changeStatus}>想看</Button>
+        </div>
+        <div>
+          <Button className="pink-button" onClick={() => {
+            setEditAnimeOldValue(null);
+            setActiveId(null);
+            setShowAnimeModal(true);
+            setSubmitNewAnime(true);
+          }}>添加</Button>
+          <Button className="pink-button" onClick={props.refresh}>刷新</Button>
+        </div>
       </div>
       <div>
         <Table striped borderless hover size="sm" variant="light" id="table">
@@ -181,15 +210,14 @@ function AnimeList(props) {
                     setShowDescription(true);
                   }}>{row.name}</td>
                   <td>{formatEpisodes(row.tv_episodes, row.movies)}</td>
-                  <td>{row.status}</td>
                   <td>{row.genre}</td>
-                  <td>{row.story}</td>
-                  <td>{row.illustration}</td>
-                  <td>{row.music}</td>
-                  <td>{row.passion}</td>
-                  <td>{row.rating}</td>
-                  <td>{formatDate(row.start_date, row.end_date)}</td>
-                  <td>{row.times_watched}</td>
+                  <td>{displayListStatus === '想看' ? row.year : row.story}</td>
+                  <td>{displayListStatus === '想看' ? row.douban : row.illustration}</td>
+                  <td>{displayListStatus === '想看' ? formatDescription(row.description) : row.music}</td>
+                  {displayListStatus === '想看' ? "" : <td>{row.passion}</td>}
+                  {displayListStatus === '想看' ? "" : <td>{row.rating}</td>}
+                  {displayListStatus === '想看' ? "" : <td>{formatDate(row.start_date, row.end_date)}</td>}
+                  {displayListStatus === '想看' ? "" : <td>{row.times_watched}</td>}
                   <td><BiEditAlt className="clickable" onClick={() => {
                     setActiveId(row.id);
                     setEditAnimeOldValue({

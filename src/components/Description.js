@@ -1,4 +1,5 @@
 import React from 'react';
+import { AiOutlineSearch } from "react-icons/ai";
 import './Description.css';
 
 export default function Description(props) {
@@ -8,7 +9,7 @@ export default function Description(props) {
     <div className="description">
       <img className="cover" src={`${process.env.PUBLIC_URL}/covers/${description.name}.jpg`} alt={description.name} />
       <div>
-        <h1>{description.name}</h1>
+        <h1>{description.name}<a href="https://www.douban.com" target="_blank"><AiOutlineSearch className="icon clickable" /></a></h1>
         <p>豆瓣评分：{description.douban}</p>
         <p>年份：{description.year}</p>
         <p>分类：{description.genre}</p>

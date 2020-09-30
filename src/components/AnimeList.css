@@ -17,10 +17,16 @@
 .button-group {
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
+}
+
+.button-group-right {
+  display: flex;
+  flex-direction: row;
   justify-content: flex-end;
 }
 
 .button-group button {
   opacity: 1;
-  margin: 0 0 10px 20px;
+  margin: 0 10px 10px 10px;
 }
