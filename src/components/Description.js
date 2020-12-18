@@ -7,7 +7,6 @@ export default function Description(props) {
   return description === undefined || description === null ? 
     <p>暂无简介</p> :
     <div className="description">
-      <img className="cover" src={`${process.env.PUBLIC_URL}/covers/${description.name}.jpg`} alt={description.name} />
       <div>
         <h1>{description.name}<a href="https://www.douban.com" target="_blank"><AiOutlineSearch className="icon clickable" /></a></h1>
         <p>豆瓣评分：{description.douban}</p>
