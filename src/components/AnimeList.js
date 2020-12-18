@@ -23,8 +23,8 @@ function AnimeList(props) {
   const {ratings, descriptions} = React.useContext(AnimeDataContext);
 
 
-  const watchedHeaders = ['名称', '集数', '分类', '剧情', '作画', '音乐', '情怀', '评分', '首次观看日期', '观看次数', ''];
-  const wantToWatchHeaders = ['名称', '集数', '分类', '年份', '豆瓣评分', '简介', ''];
+  const watchedHeaders = ['序号', '名称', '集数', '分类', '剧情', '作画', '音乐', '情怀', '评分', '首次观看日期', '观看次数', ''];
+  const wantToWatchHeaders = ['序号', '名称', '集数', '分类', '年份', '豆瓣评分', '简介', ''];
   const [activeDescription, setActiveDescription] = useState(null);
   const [showDescription, setShowDescription] = useState(false);
   const [showAnimeModal, setShowAnimeModal] = useState(false);
@@ -193,8 +193,9 @@ function AnimeList(props) {
           </thead>
           <tbody>
             {
-              displayList.map(row =>
+              displayList.map((row, idx) =>
                 <tr key={row.name}>
+                  <td>{idx + 1}</td>
                   <td className='anime-name clickable' onClick={(e) => {
                     setActiveDescription(
                       {
