@@ -4,6 +4,7 @@ import AnimeDataContext from './Context/AnimeDataContext';
 import Home from './home/Home';
 import Register from './register/Register';
 import AnimeList from './components/AnimeList';
+import Login from "./components/Login";
 import * as Env from "./environments";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
@@ -13,6 +14,7 @@ import moment from 'moment';
 import './App.css';
 
 function App() {
+  const [authenticated, setAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [ratings, setRatings] = useState([]);
@@ -25,6 +27,7 @@ function App() {
       description: "This is a description the anime."
     }
   });
+
 
   const fetchRatings = async () => {
     setIsLoading(true);
@@ -164,7 +167,10 @@ function App() {
         <Router basename={process.env.PUBLIC_URL + "/bangumi-ratings"}>
           <Switch>
             <AnimeDataContext.Provider value={{ratings: ratings, descriptions: descriptions}}>
-              <Route path="/">
+              <Route path="/login">
+                <Login />
+              </Route>
+              <Route exact path="/">
                 <AnimeList isLoading={isLoading} loadError={loadError} refresh={fetchRatings} onAnimeSubmit={handleAnimeSubmit} deleteAnime={deleteAnime}/>
               </Route>
               <Route path="/today">

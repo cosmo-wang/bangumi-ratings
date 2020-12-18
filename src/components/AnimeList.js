@@ -16,12 +16,15 @@ import { sortList, formatEpisodes, formatDate, translateHeader } from "../utils"
 import '../App.css';
 import './AnimeList.css';
 
+
+
 Parse.initialize(Env.APPLICATION_ID, Env.JAVASCRIPT_KEY);
 Parse.serverURL = Env.SERVER_URL;
 
 function AnimeList(props) {
+  
   const {ratings, descriptions} = React.useContext(AnimeDataContext);
-
+  // console.log(JSON.parse(LOCAL_DATA));
 
   const watchedHeaders = ['序号', '名称', '集数', '分类', '剧情', '作画', '音乐', '情怀', '评分', '首次观看日期', '观看次数', ''];
   const wantToWatchHeaders = ['序号', '名称', '集数', '分类', '年份', '豆瓣评分', '简介', ''];
