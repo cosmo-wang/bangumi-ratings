@@ -2,3 +2,11 @@
   margin-bottom: 20px;
   background-color: #fe8a96;
 }
+
+
+
+#signout:hover {
+  color: blue;
+  text-decoration: underline;
+  text-decoration-color: blue;
+}

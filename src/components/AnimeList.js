@@ -12,7 +12,7 @@ import FilterHeader from './FilterHeader';
 import DropdownHeader from './DropdownHeader';
 import Description from './Description';
 import AnimeModal from './AnimeModal';
-import { sortList, formatEpisodes, formatDate, translateHeader } from "../utils";
+import { sortList, formatEpisodes, formatDate, translateHeader, calculateDailyTime, formatTime } from "../utils";
 import '../App.css';
 import './AnimeList.css';
 
@@ -24,9 +24,8 @@ Parse.serverURL = Env.SERVER_URL;
 function AnimeList(props) {
   
   const {ratings, descriptions} = React.useContext(AnimeDataContext);
-  // console.log(JSON.parse(LOCAL_DATA));
 
-  const watchedHeaders = ['序号', '名称', '集数', '分类', '剧情', '作画', '音乐', '情怀', '评分', '首次观看日期', '观看次数', ''];
+  const watchedHeaders = ['序号', '名称', '集数', '分类', '剧情', '作画', '音乐', '情怀', '评分', '首次观看日期', '日均时长', ''];
   const wantToWatchHeaders = ['序号', '名称', '集数', '分类', '年份', '豆瓣评分', '简介', ''];
   const [activeDescription, setActiveDescription] = useState(null);
   const [showDescription, setShowDescription] = useState(false);
@@ -36,21 +35,22 @@ function AnimeList(props) {
   const [animeToDelete, setAnimeToDelete] = useState({});
   const [activeId, setActiveId] = useState();
   const [displayListStatus, setDisplayListStatus] = useState("已看");
-  const [displayList, setDisplayList] = useState(sortList(ratings, "end_date"));
+  const [displayList, setDisplayList] = useState(ratings);
   const [tableHeaders, setTableHeaders] = useState(watchedHeaders);
   const [filterList, setFilterList] = useState({});
   const [sortedCol, setSortedCol] = useState();
   const [editAnimeOldValue, setEditAnimeOldValue] = useState(null);
 
-  useEffect(() => {setSortedCol("start_date")}, []);
+  useEffect(() => {setSortedCol("end_date")}, []);
 
   useEffect(() => {
-    setDisplayList(ratings.filter((rating) => rating.status === displayListStatus));
+    setFilterList([]);
+    resetDisplayList();
   }, [props.isLoading, ratings, displayListStatus]);
 
   useEffect(() => {
     if (sortedCol !== null) {
-      setDisplayList(sortList(ratings, sortedCol));
+      setDisplayList(sortList(ratings.filter((rating) => rating.status === displayListStatus), sortedCol));
       setSortedCol(null);
     }
   }, [sortedCol, ratings]);
@@ -59,12 +59,16 @@ function AnimeList(props) {
     if (filterList.length !== 0) {
       for (const [key, value] of Object.entries(filterList)) {
         setDisplayList(ratings.filter((item) => {
-          return item[key].includes(value);
+          return item[key].includes(value) && item.status === displayListStatus;
         }));
       }
       setFilterList([]);
     }
   }, [filterList]);
+
+  const resetDisplayList = () => {
+    setDisplayList(sortList(ratings.filter((rating) => rating.status === displayListStatus), "end_date"));
+  }
 
   const changeStatus = (e) => {
     const newStatus = e.target.innerHTML;
@@ -178,8 +182,8 @@ function AnimeList(props) {
                       setFilterList(newFilterList);
                     }}
                     clearFilter={() => {
-                      setFilterList({});
-                      setDisplayList(ratings);
+                      setFilterList([]);
+                      resetDisplayList();
                     }}
                   />;
                 } else if (header === '状态') {
@@ -221,7 +225,7 @@ function AnimeList(props) {
                   {displayListStatus === '想看' ? "" : <td>{row.passion}</td>}
                   {displayListStatus === '想看' ? "" : <td>{row.rating}</td>}
                   {displayListStatus === '想看' ? "" : <td>{formatDate(row.start_date, row.end_date)}</td>}
-                  {displayListStatus === '想看' ? "" : <td>{row.times_watched}</td>}
+                  {displayListStatus === '想看' ? "" : <td>{formatTime(calculateDailyTime(row))}</td>}
                   <td><BiEditAlt className="clickable" onClick={() => {
                     setActiveId(row.id);
                     setEditAnimeOldValue({

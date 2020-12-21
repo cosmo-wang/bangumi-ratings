@@ -1,3 +1,27 @@
+// return the user data from the session storage
+export const getUser = () => {
+  const userStr = sessionStorage.getItem('user');
+  if (userStr) return JSON.parse(userStr);
+  else return null;
+}
+ 
+// return the token from the session storage
+export const getToken = () => {
+  return sessionStorage.getItem('token') || null;
+}
+ 
+// remove the token and user from the session storage
+export const removeUserSession = () => {
+  sessionStorage.removeItem('token');
+  sessionStorage.removeItem('user');
+}
+ 
+// set the token and user from the session storage
+export const setUserSession = (token, user) => {
+  sessionStorage.setItem('token', token);
+  sessionStorage.setItem('user', JSON.stringify(user));
+}
+
 export function formatEpisodes(tv_episodes, movies) {
   if (tv_episodes === undefined || movies === undefined) {
     return "";
@@ -16,8 +40,23 @@ export function formatDate(start_date, end_date) {
   } else if (!end_date.isValid()) {
     return `${start_date.format('YYYY-MM-DD')}至今`;
   } else {
-    return `${start_date.format('YYYY-MM-DD')} 至 ${end_date.format('YYYY-MM-DD')}`;
+    return `${start_date.format('MM/DD/YY')} 至 ${end_date.format('MM/DD/YY')}`;
   }
+}
+
+export function formatTime(time) {
+  if (time >= 60) {
+    return Math.round(time / 60 * 10) / 10 + "小时";
+  } else {
+    return Math.round(time * 10) / 10 + "分钟";
+  }
+}
+
+export function calculateDailyTime(row) {
+  const days = row.end_date.diff(row.start_date, 'days') + 1;
+  const episode_length = row.episode_length === undefined || row.episode_length === 0 ? 24 : row.episode_length;
+  const totalTime = row.tv_episodes * episode_length + row.movies * 90;
+  return totalTime / days;
 }
 
 export function translateHeader(header) {
@@ -41,9 +80,15 @@ export function translateHeader(header) {
     case '评分':
       return 'rating';
     case '首次观看日期':
-      return 'start_date';
+      return 'end_date';
     case '观看次数':
       return 'times_watched';
+    case '年份':
+      return 'year';
+    case '豆瓣评分':
+      return 'douban';
+    case '日均时长':
+      return 'daily_time';
     default:
       return 'unknown';
   }
@@ -51,16 +96,18 @@ export function translateHeader(header) {
 
 export function sortList(rawList, sortedCol) {
   return rawList.slice().sort((a, b) => {
+    const aQuantity = sortedCol === "daily_time" ? calculateDailyTime(a) : a[sortedCol];
+    const bQuantity = sortedCol === "daily_time" ? calculateDailyTime(b) : b[sortedCol];
     if (sortedCol === "start_date") {
-      if (!a[sortedCol].isValid()) {
+      if (!aQuantity.isValid()) {
         return 1;
-      } else if (!b[sortedCol].isValid()) {
+      } else if (!bQuantity.isValid()) {
         return -1;
       } else {
-        return compare(a[sortedCol], b[sortedCol]);
+        return compare(aQuantity, bQuantity);
       }
     } else {
-      return compare(a[sortedCol], b[sortedCol]);
+      return compare(aQuantity, bQuantity);
     }
   });
 }
@@ -74,3 +121,4 @@ function compare(a, b) {
     return 0;
   }
 }
+

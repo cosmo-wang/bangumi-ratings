@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import Navivation from './components/Navigation';
 import AnimeDataContext from './Context/AnimeDataContext';
-import Home from './home/Home';
-import Register from './register/Register';
 import AnimeList from './components/AnimeList';
 import Login from "./components/Login";
-import * as Env from "./environments";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Redirect } from 'react-router'
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import { sortList } from "./utils";
+import { AppContext } from "./Utils/AppContext";
+import { sortList, getUser, getToken } from "./utils";
 import Parse from 'parse';
 import moment from 'moment';
 import './App.css';
 
 function App() {
-  const [authenticated, setAuthenticated] = useState(false);
+  const [user, setUser] = useState(getUser());
+  const [token, setToken] = useState(getToken());
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [ratings, setRatings] = useState([]);
@@ -27,7 +27,6 @@ function App() {
       description: "This is a description the anime."
     }
   });
-
 
   const fetchRatings = async () => {
     setIsLoading(true);
@@ -73,7 +72,6 @@ function App() {
   const submitNewRating = async (newRating) => {
     const RatingsObj = Parse.Object.extend('Ratings');
     const newRatingObj = new RatingsObj();
-    console.log(newRating);
     for (const [key, value] of Object.entries(newRating)) {
       newRatingObj.set(key, value)
     }
@@ -129,8 +127,10 @@ function App() {
   };
 
   useEffect(() => {
-    fetchRatings();
-  }, []);
+    if (user != null && token != null) {
+      fetchRatings();
+    }
+  }, [user, token])
 
   const handleAnimeSubmit = (event, id, isNew) => {
     event.preventDefault();
@@ -163,25 +163,30 @@ function App() {
   return (
     <div>
       <div className="App">
-        <Navivation />
-        <Router basename={process.env.PUBLIC_URL + "/bangumi-ratings"}>
-          <Switch>
-            <AnimeDataContext.Provider value={{ratings: ratings, descriptions: descriptions}}>
-              <Route path="/login">
-                <Login />
-              </Route>
-              <Route exact path="/">
-                <AnimeList isLoading={isLoading} loadError={loadError} refresh={fetchRatings} onAnimeSubmit={handleAnimeSubmit} deleteAnime={deleteAnime}/>
-              </Route>
-              <Route path="/today">
-
-              </Route>
-              <Route path="/calendar">
-
-              </Route>
-            </AnimeDataContext.Provider>
-          </Switch>
-        </Router>
+        <AppContext.Provider value={{ user, token, setUser, setToken }}>
+          <Router basename={process.env.PUBLIC_URL}>
+            <Navivation />
+            <Switch>
+              <AnimeDataContext.Provider value={{ratings: ratings, descriptions: descriptions}}>
+                <Route path="/login">
+                  <Login />
+                </Route>
+                <Route exact path="/">
+                  {
+                    (user == null && token == null) ? <Redirect to="/login" /> :
+                      <AnimeList isLoading={isLoading} loadError={loadError} refresh={fetchRatings} onAnimeSubmit={handleAnimeSubmit} deleteAnime={deleteAnime}/>
+                  }
+                </Route>
+                <Route path="/today">
+                  <div className="loading">开发中</div>
+                </Route>
+                <Route path="/calendar">
+                <div className="loading">开发中</div>
+                </Route>
+              </AnimeDataContext.Provider>
+            </Switch>
+          </Router>
+        </AppContext.Provider>
       </div>
     </div>
   );
