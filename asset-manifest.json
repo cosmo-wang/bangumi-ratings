@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/bangumi-ratings/static/css/main.1439e3cc.chunk.css",
-    "main.js": "/bangumi-ratings/static/js/main.62a74877.chunk.js",
-    "main.js.map": "/bangumi-ratings/static/js/main.62a74877.chunk.js.map",
+    "main.js": "/bangumi-ratings/static/js/main.573ffc7d.chunk.js",
+    "main.js.map": "/bangumi-ratings/static/js/main.573ffc7d.chunk.js.map",
     "runtime-main.js": "/bangumi-ratings/static/js/runtime-main.bd71931c.js",
     "runtime-main.js.map": "/bangumi-ratings/static/js/runtime-main.bd71931c.js.map",
     "static/css/2.de424728.chunk.css": "/bangumi-ratings/static/css/2.de424728.chunk.css",
     "static/js/2.09312fcb.chunk.js": "/bangumi-ratings/static/js/2.09312fcb.chunk.js",
     "static/js/2.09312fcb.chunk.js.map": "/bangumi-ratings/static/js/2.09312fcb.chunk.js.map",
     "index.html": "/bangumi-ratings/index.html",
-    "precache-manifest.3c371473e6bd41abf0448ae438b00062.js": "/bangumi-ratings/precache-manifest.3c371473e6bd41abf0448ae438b00062.js",
+    "precache-manifest.26b9447d0232685af8092557e5e590d8.js": "/bangumi-ratings/precache-manifest.26b9447d0232685af8092557e5e590d8.js",
     "service-worker.js": "/bangumi-ratings/service-worker.js",
     "static/css/2.de424728.chunk.css.map": "/bangumi-ratings/static/css/2.de424728.chunk.css.map",
     "static/css/main.1439e3cc.chunk.css.map": "/bangumi-ratings/static/css/main.1439e3cc.chunk.css.map",
@@ -21,6 +21,6 @@
     "static/css/2.de424728.chunk.css",
     "static/js/2.09312fcb.chunk.js",
     "static/css/main.1439e3cc.chunk.css",
-    "static/js/main.62a74877.chunk.js"
+    "static/js/main.573ffc7d.chunk.js"
   ]
 }
