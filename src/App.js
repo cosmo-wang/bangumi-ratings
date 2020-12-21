@@ -78,49 +78,39 @@ function App() {
 
     newRatingObj.save().then(
       (result) => {
-        console.log(result);
         alert("已提交更新！");
         fetchRatings();
       },
       (error) => {
-        console.log(error);
         alert("更新失败，请稍后重试。");
       }
     );
   };
 
   const updateRating = async (id, newRating) => {
-    console.log(newRating);
-    console.log(id);
     const ratingsObj = Parse.Object.extend('Ratings');
     const query = new Parse.Query(ratingsObj);
     query.get(id).then((object) => {
       for (const [key, value] of Object.entries(newRating)) {
-        console.log("here");
         object.set(key, value)
       }
       object.save().then((response) => {
-        console.log(response);
         alert("已提交更新！");
         fetchRatings();
       }, (error) => {
-        console.log(error);
         alert("更新失败，请稍后重试。");
       });
     });
   };
   
   const deleteAnime = async (id) => {
-    console.log(id);
     const ratingsObj = Parse.Object.extend('Ratings');
     const query = new Parse.Query(ratingsObj);
     query.get(id).then((object) => {
       object.destroy().then((response) => {
-        console.log(response);
         alert("已删除番剧！");
         fetchRatings();
       }, (error) => {
-        console.log(error);
         alert("删除失败，请稍后重试。");
       });
     });
