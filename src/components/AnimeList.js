@@ -7,6 +7,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import { BiEditAlt, BiTrash } from "react-icons/bi";
+import { useAppContext } from "../Utils/AppContext";
 import SortHeader from './SortHeader';
 import FilterHeader from './FilterHeader';
 import DropdownHeader from './DropdownHeader';
@@ -16,14 +17,14 @@ import { sortList, formatEpisodes, formatDate, translateHeader, calculateDailyTi
 import '../App.css';
 import './AnimeList.css';
 
-
-
 Parse.initialize(Env.APPLICATION_ID, Env.JAVASCRIPT_KEY);
 Parse.serverURL = Env.SERVER_URL;
 
 function AnimeList(props) {
+
+  const { authenticated } = useAppContext();
   
-  const {ratings, descriptions} = React.useContext(AnimeDataContext);
+  const { ratings } = React.useContext(AnimeDataContext);
 
   const watchedHeaders = ['序号', '名称', '集数', '分类', '剧情', '作画', '音乐', '情怀', '评分', '首次观看日期', '日均时长', ''];
   const wantToWatchHeaders = ['序号', '名称', '集数', '分类', '年份', '豆瓣评分', '简介', ''];
@@ -45,7 +46,7 @@ function AnimeList(props) {
 
   useEffect(() => {
     setFilterList([]);
-    resetDisplayList();
+    setDisplayList(sortList(ratings.filter((rating) => rating.status === displayListStatus), "end_date"));
   }, [props.isLoading, ratings, displayListStatus]);
 
   useEffect(() => {
@@ -53,7 +54,7 @@ function AnimeList(props) {
       setDisplayList(sortList(ratings.filter((rating) => rating.status === displayListStatus), sortedCol));
       setSortedCol(null);
     }
-  }, [sortedCol, ratings]);
+  }, [sortedCol, ratings, displayListStatus]);
 
   useEffect(() => {
     if (filterList.length !== 0) {
@@ -64,11 +65,7 @@ function AnimeList(props) {
       }
       setFilterList([]);
     }
-  }, [filterList]);
-
-  const resetDisplayList = () => {
-    setDisplayList(sortList(ratings.filter((rating) => rating.status === displayListStatus), "end_date"));
-  }
+  }, [ratings, filterList, displayListStatus]);
 
   const changeStatus = (e) => {
     const newStatus = e.target.innerHTML;
@@ -157,12 +154,12 @@ function AnimeList(props) {
           <Button className="pink-button" onClick={changeStatus}>想看</Button>
         </div>
         <div>
-          <Button className="pink-button" onClick={() => {
+          {authenticated ? <Button className="pink-button" onClick={() => {
             setEditAnimeOldValue(null);
             setActiveId(null);
             setShowAnimeModal(true);
             setSubmitNewAnime(true);
-          }}>添加</Button>
+          }}>添加</Button> : <></>}
           <Button className="pink-button" onClick={props.refresh}>刷新</Button>
         </div>
       </div>
@@ -172,7 +169,7 @@ function AnimeList(props) {
             <tr className='table-headers'>
               {tableHeaders.map(header => {
                 if (header === '名称' || header === '分类') {
-                  return <FilterHeader header={header}
+                  return <FilterHeader key={header} header={header}
                     filter={(e) => {
                       let newFilterList = {};
                       for (let item in filterList) {
@@ -183,17 +180,17 @@ function AnimeList(props) {
                     }}
                     clearFilter={() => {
                       setFilterList([]);
-                      resetDisplayList();
+                      setDisplayList(sortList(ratings.filter((rating) => rating.status === displayListStatus), "end_date"));
                     }}
                   />;
                 } else if (header === '状态') {
-                  return <DropdownHeader header={header} filterStatus={(event) => {
+                  return <DropdownHeader key={header} header={header} filterStatus={(event) => {
                     setFilterList({"status": event.target.value});
                   }}/>
                 } else if (header !== ''){
-                  return <SortHeader header={header} sort={() => setSortedCol(translateHeader(header))}/>;
+                  return <SortHeader key={header} header={header} sort={() => setSortedCol(translateHeader(header))}/>;
                 } else {
-                  return <th></th>
+                  return <th key={header} ></th>
                 }
               })}
             </tr>
@@ -226,35 +223,40 @@ function AnimeList(props) {
                   {displayListStatus === '想看' ? "" : <td>{row.rating}</td>}
                   {displayListStatus === '想看' ? "" : <td>{formatDate(row.start_date, row.end_date)}</td>}
                   {displayListStatus === '想看' ? "" : <td>{formatTime(calculateDailyTime(row))}</td>}
-                  <td><BiEditAlt className="clickable" onClick={() => {
-                    setActiveId(row.id);
-                    setEditAnimeOldValue({
-                      name: row.name,
-                      year: row.year,
-                      douban: row.douban,
-                      tv_episodes: row.tv_episodes,
-                      movies: row.movies,
-                      episode_length: row.episode_length,
-                      status: row.status,
-                      genre: row.genre,
-                      description: row.description,
-                      story: row.story,
-                      illustration: row.illustration,
-                      music: row.music,
-                      passion: row.passion,
-                      start_date: row.start_date.format('YYYY-MM-DD'),
-                      end_date: row.end_date.format('YYYY-MM-DD'),
-                      times_watched: row.times_watched,
-                    });
-                    setSubmitNewAnime(false);
-                    setShowAnimeModal(true);
-                  }}/><BiTrash className="icon clickable" onClick={() => {
-                    setAnimeToDelete({
-                      name: row.name,
-                      id: row.id,
-                    });
-                    setShowDeleteConfirmation(true);
-                  }}/></td>
+                  <td> {authenticated ?
+                      <>
+                        <BiEditAlt className="clickable" onClick={() => {
+                          setActiveId(row.id);
+                          setEditAnimeOldValue({
+                            name: row.name,
+                            year: row.year,
+                            douban: row.douban,
+                            tv_episodes: row.tv_episodes,
+                            movies: row.movies,
+                            episode_length: row.episode_length,
+                            status: row.status,
+                            genre: row.genre,
+                            description: row.description,
+                            story: row.story,
+                            illustration: row.illustration,
+                            music: row.music,
+                            passion: row.passion,
+                            start_date: row.start_date.format('YYYY-MM-DD'),
+                            end_date: row.end_date.format('YYYY-MM-DD'),
+                            times_watched: row.times_watched,
+                          });
+                          setSubmitNewAnime(false);
+                          setShowAnimeModal(true);
+                        }}/><BiTrash className="icon clickable" onClick={() => {
+                          setAnimeToDelete({
+                            name: row.name,
+                            id: row.id,
+                          });
+                          setShowDeleteConfirmation(true);
+                        }}/>
+                      </> : <></>
+                    }
+                    </td>
                 </tr>)
             }
           </tbody>

@@ -4,29 +4,28 @@ import AnimeDataContext from './Context/AnimeDataContext';
 import AnimeList from './components/AnimeList';
 import Login from "./components/Login";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Redirect } from 'react-router'
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { AppContext } from "./Utils/AppContext";
-import { sortList, getUser, getToken } from "./utils";
+import { sortList, getUser, getToken, setUserSession, removeUserSession } from "./utils";
 import Parse from 'parse';
 import moment from 'moment';
 import './App.css';
 
 function App() {
+  // authentication related states
+  const [authenticated, setAuthenticated] = useState(false);
+  const [authenticating, setAuthenticating] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [user, setUser] = useState(getUser());
   const [token, setToken] = useState(getToken());
+  // page status related states
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
+  const [activePage, setActivePage] = useState("AnimeList")
+
+  // data related states
   const [ratings, setRatings] = useState([]);
-  const [descriptions, setDescriptions] = useState({
-    "Anime 1": {
-      name: "Anime 1",
-      episodes: 42,
-      status: "已看",
-      genre: "恋爱",
-      description: "This is a description the anime."
-    }
-  });
 
   const fetchRatings = async () => {
     setIsLoading(true);
@@ -117,8 +116,12 @@ function App() {
   };
 
   useEffect(() => {
+    fetchRatings();
+  }, [])
+
+  useEffect(() => {
     if (user != null && token != null) {
-      fetchRatings();
+      setAuthenticated(true);
     }
   }, [user, token])
 
@@ -150,31 +153,50 @@ function App() {
     }
   };
 
+  const handleLogin = (event) => {
+    event.preventDefault();
+    // Create a new instance of the user class
+    Parse.User.logIn(username, password).then((user) => {
+        setUserSession(user, user.getSessionToken());
+        alert("欢迎，" + user.getUsername());
+        setAuthenticating(false);
+        setAuthenticated(true);
+    }).catch(function(error){
+        alert(error.message);
+    });
+  }
+
+  const handleSignOut = () => {
+    setUser(null);
+    setToken(null);
+    removeUserSession();
+    setAuthenticated(false);
+  }
+
   return (
     <div>
       <div className="App">
-        <AppContext.Provider value={{ user, token, setUser, setToken }}>
+        <AppContext.Provider value={{ username, password, authenticated, setAuthenticating, handleLogin, handleSignOut, setUsername, setPassword }}>
           <Router basename={process.env.PUBLIC_URL}>
             <Navivation />
-            <Switch>
-              <AnimeDataContext.Provider value={{ratings: ratings, descriptions: descriptions}}>
-                <Route path="/login">
-                  <Login />
-                </Route>
-                <Route exact path="/">
-                  {
-                    (user == null && token == null) ? <Redirect to="/login" /> :
+            {authenticating ? <Login /> :
+              <Switch>
+                <AnimeDataContext.Provider value={{ ratings: ratings }}>
+                  <Route path="/login">
+                    <Login />
+                  </Route>
+                  <Route exact path="/">
                       <AnimeList isLoading={isLoading} loadError={loadError} refresh={fetchRatings} onAnimeSubmit={handleAnimeSubmit} deleteAnime={deleteAnime}/>
-                  }
-                </Route>
-                <Route path="/today">
+                  </Route>
+                  <Route path="/today">
+                    <div className="loading">开发中</div>
+                  </Route>
+                  <Route path="/calendar">
                   <div className="loading">开发中</div>
-                </Route>
-                <Route path="/calendar">
-                <div className="loading">开发中</div>
-                </Route>
-              </AnimeDataContext.Provider>
-            </Switch>
+                  </Route>
+                </AnimeDataContext.Provider>
+              </Switch>
+            }
           </Router>
         </AppContext.Provider>
       </div>

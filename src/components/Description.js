@@ -8,7 +8,12 @@ export default function Description(props) {
     <p>暂无简介</p> :
     <div className="description">
       <div>
-        <h1>{description.name}<a href={"https://www.douban.com/search?q=" + description.name} target="_blank"><AiOutlineSearch className="icon clickable" /></a></h1>
+        <h1>
+          {description.name}
+          <a href={"https://www.douban.com/search?q=" + description.name} target="_blank" rel="noopener noreferrer">
+            <AiOutlineSearch className="icon clickable" />
+          </a>
+        </h1>
         <p>豆瓣评分：{description.douban}</p>
         <p>年份：{description.year}</p>
         <p>分类：{description.genre}</p>

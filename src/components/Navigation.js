@@ -1,23 +1,22 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { useAppContext } from "../Utils/AppContext";
-import { removeUserSession } from "../utils";
 import './Navigation.css';
 import '../App.css';
 
+function UserManagement() {
+  const { authenticated, setAuthenticating, handleSignOut } = useAppContext();
+  if (authenticated) {
+    return <div id="user-management">
+        <div className="text-button clickable" onClick={handleSignOut}>注销</div>
+      </div>
+  } else {
+    return <div className="text-button clickable" onClick={() => setAuthenticating(true)}>登陆</div>
+  }
+}
+
 function Navigation() {
-  const { setUser, setToken } = useAppContext();
-  const history = useHistory();
-
-  const handleSignOut = () => {
-    setUser(null);
-    setToken(null);
-    removeUserSession();
-    history.push("/login");
-  };
-
   return (
     <Navbar sticky="top" expand="lg" id="navbar">
       <Navbar.Brand href="/">追番补番</Navbar.Brand>
@@ -26,7 +25,7 @@ function Navigation() {
         <Nav.Item><Nav.Link href="/today">今日更新</Nav.Link></Nav.Item>
         <Nav.Item><Nav.Link href="/calendar">看番日历</Nav.Link></Nav.Item>
       </Nav>
-    <div id="signout" className="clickable" onClick={handleSignOut}>注销</div>
+      <UserManagement />
     </Navbar>
   );
 }

@@ -1,39 +1,20 @@
-import React, { useState } from "react";
-import { useHistory } from 'react-router-dom';
+import React from "react";
 import Form from "react-bootstrap/Form";
-import Parse from 'parse';
 import Button from "react-bootstrap/Button";
 import { useAppContext } from "../Utils/AppContext";
-import { setUserSession } from "../utils";
 import "./Login.css";
 import "../App.css";
 
 export default function Login() {
-  const { setUser, setToken } = useAppContext();
-  const history = useHistory();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const { username, password, setUsername, setPassword, handleLogin } = useAppContext();
 
-  function validateForm() {
+  const validateForm = () => {
     return username.length > 0 && password.length > 0;
-  }
-
-  function handleSubmit(event) {
-    event.preventDefault();
-    // Create a new instance of the user class
-    var user = Parse.User.logIn(username, password).then(function(user) {
-        setUserSession(user, user.getSessionToken());
-        setUser(JSON.stringify(user));
-        setToken(user.getSessionToken());
-        history.push("/");
-    }).catch(function(error){
-        alert(error.message);
-    });
   }
 
   return (
     <div className="Login">
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleLogin}>
         <Form.Group size="lg" controlId="username">
           <Form.Label>用户名</Form.Label>
           <Form.Control

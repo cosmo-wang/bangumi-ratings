@@ -17,7 +17,7 @@ export const removeUserSession = () => {
 }
  
 // set the token and user from the session storage
-export const setUserSession = (token, user) => {
+export const setUserSession = (user, token) => {
   sessionStorage.setItem('token', token);
   sessionStorage.setItem('user', JSON.stringify(user));
 }
@@ -38,17 +38,20 @@ export function formatDate(start_date, end_date) {
   if (!start_date.isValid()) {
     return ""
   } else if (!end_date.isValid()) {
-    return `${start_date.format('YYYY-MM-DD')}至今`;
+    return `${start_date.format('MM/DD/YY')}至今`;
   } else {
     return `${start_date.format('MM/DD/YY')} 至 ${end_date.format('MM/DD/YY')}`;
   }
 }
 
 export function formatTime(time) {
+  if (isNaN(time)) {
+    return "-";
+  }
   if (time >= 60) {
-    return Math.round(time / 60 * 10) / 10 + "小时";
+    return Math.round(time / 60 * 10) / 10 + " 小时";
   } else {
-    return Math.round(time * 10) / 10 + "分钟";
+    return Math.round(time * 10) / 10 + " 分钟";
   }
 }
 

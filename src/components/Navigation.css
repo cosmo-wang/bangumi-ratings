@@ -3,9 +3,12 @@
   background-color: #fe8a96;
 }
 
+#user-management {
+  display: flex;
+  justify-content: space-between;
+}
 
-
-#signout:hover {
+.text-button:hover {
   color: blue;
   text-decoration: underline;
   text-decoration-color: blue;
