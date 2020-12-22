@@ -1,12 +1,12 @@
 import React from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import { useAppContext } from "../Utils/AppContext";
+import { useAuthenticationContext } from "../context/AuthenticationContext";
 import "./Login.css";
 import "../App.css";
 
 export default function Login() {
-  const { username, password, setUsername, setPassword, handleLogin } = useAppContext();
+  const { username, password, setUsername, setPassword, handleLogin } = useAuthenticationContext();
 
   const validateForm = () => {
     return username.length > 0 && password.length > 0;

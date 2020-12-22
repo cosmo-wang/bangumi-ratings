@@ -1,12 +1,12 @@
 import React from 'react';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import { useAppContext } from "../Utils/AppContext";
+import { useAuthenticationContext } from "../context/AuthenticationContext";
 import './Navigation.css';
 import '../App.css';
 
 function UserManagement() {
-  const { authenticated, setAuthenticating, handleSignOut } = useAppContext();
+  const { authenticated, setAuthenticating, handleSignOut } = useAuthenticationContext();
   if (authenticated) {
     return <div id="user-management">
         <div className="text-button clickable" onClick={handleSignOut}>注销</div>
@@ -21,9 +21,8 @@ function Navigation() {
     <Navbar sticky="top" expand="lg" id="navbar">
       <Navbar.Brand href="/">追番补番</Navbar.Brand>
       <Nav className="mr-auto" activeKey={window.location.pathname}>
-        <Nav.Item><Nav.Link href={process.env.PUBLIC_URL + "/"}>我的列表</Nav.Link></Nav.Item>
-        <Nav.Item><Nav.Link href="/today">今日更新</Nav.Link></Nav.Item>
-        <Nav.Item><Nav.Link href="/calendar">看番日历</Nav.Link></Nav.Item>
+        <Nav.Item><Nav.Link onClick={() => alert('hello')}>我的列表</Nav.Link></Nav.Item>
+        <Nav.Item><Nav.Link>每月总结</Nav.Link></Nav.Item>
       </Nav>
       <UserManagement />
     </Navbar>

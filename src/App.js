@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Navivation from './components/Navigation';
-import AnimeDataContext from './Context/AnimeDataContext';
+import AnimeDataContext from './context/AnimeDataContext';
 import AnimeList from './components/AnimeList';
 import Login from "./components/Login";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import { AppContext } from "./Utils/AppContext";
-import { sortList, getUser, getToken, setUserSession, removeUserSession } from "./utils";
+import { AuthenticationContext } from "./context/AuthenticationContext";
+import { sortList, getUser, getToken, setUserSession, removeUserSession } from "./utils/utils";
 import Parse from 'parse';
 import moment from 'moment';
 import './App.css';
@@ -176,7 +176,7 @@ function App() {
   return (
     <div>
       <div className="App">
-        <AppContext.Provider value={{ username, password, authenticated, setAuthenticating, handleLogin, handleSignOut, setUsername, setPassword }}>
+        <AuthenticationContext.Provider value={{ username, password, authenticated, setAuthenticating, handleLogin, handleSignOut, setUsername, setPassword }}>
           <Router basename={process.env.PUBLIC_URL}>
             <Navivation />
             {authenticating ? <Login /> :
@@ -198,7 +198,7 @@ function App() {
               </Switch>
             }
           </Router>
-        </AppContext.Provider>
+        </AuthenticationContext.Provider>
       </div>
     </div>
   );

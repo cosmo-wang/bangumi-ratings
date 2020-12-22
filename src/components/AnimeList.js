@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import Parse from 'parse';
 import * as Env from "../environments";
-import AnimeDataContext from '../Context/AnimeDataContext';
+import AnimeDataContext from '../context/AnimeDataContext';
 import Table from 'react-bootstrap/Table';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import { BiEditAlt, BiTrash } from "react-icons/bi";
-import { useAppContext } from "../Utils/AppContext";
+import { useAuthenticationContext } from "../context/AuthenticationContext";
 import SortHeader from './SortHeader';
 import FilterHeader from './FilterHeader';
 import DropdownHeader from './DropdownHeader';
 import Description from './Description';
 import AnimeModal from './AnimeModal';
-import { sortList, formatEpisodes, formatDate, translateHeader, calculateDailyTime, formatTime } from "../utils";
+import { sortList, formatEpisodes, formatDate, translateHeader, calculateDailyTime, formatTime } from "../utils/utils";
 import '../App.css';
 import './AnimeList.css';
 
@@ -22,7 +22,7 @@ Parse.serverURL = Env.SERVER_URL;
 
 function AnimeList(props) {
 
-  const { authenticated } = useAppContext();
+  const { authenticated } = useAuthenticationContext();
   
   const { ratings } = React.useContext(AnimeDataContext);
 
