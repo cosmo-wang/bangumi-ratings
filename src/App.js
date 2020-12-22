@@ -2,14 +2,16 @@ import React, { useState, useEffect } from 'react';
 import Navivation from './components/Navigation';
 import AnimeDataContext from './context/AnimeDataContext';
 import AnimeList from './components/AnimeList';
+import MonthlySummary from './components/MonthlySummary';
 import Login from "./components/Login";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { AuthenticationContext } from "./context/AuthenticationContext";
 import { sortList, getUser, getToken, setUserSession, removeUserSession } from "./utils/utils";
 import Parse from 'parse';
 import moment from 'moment';
 import './App.css';
+
+const MONTHS_SUMMARY = 12;
 
 function App() {
   // authentication related states
@@ -26,6 +28,7 @@ function App() {
 
   // data related states
   const [ratings, setRatings] = useState([]);
+  const [summaries, setSummaries] = useState({});
 
   const fetchRatings = async () => {
     setIsLoading(true);
@@ -120,6 +123,35 @@ function App() {
   }, [])
 
   useEffect(() => {
+    const tempSummaries = {};
+    for (let i = 0; i < MONTHS_SUMMARY; i++) {
+      const month = moment().subtract(i, 'months').startOf('month');
+      tempSummaries[month] = {
+        bangumi_num: 0,
+        tv_episode_num: 0,
+        movie_num: 0,
+        total_time: 0,
+        daily_time: 0,
+        bangumis: []
+      };
+    }
+    ratings.filter((rating) => rating.status === "已看").forEach((bangumi) => {
+      let endMonth = moment(bangumi.end_date);
+      for (const [month, summary] of Object.entries(tempSummaries)) {
+        if (endMonth.isSame(month, "month") && endMonth.isSameOrAfter(month)) {
+          summary.bangumi_num += 1;
+          summary.bangumis.push(bangumi.name);
+          summary.tv_episode_num += bangumi.tv_episodes;
+          summary.movie_num += bangumi.movies;
+          summary.total_time += bangumi.tv_episodes * bangumi.episode_length + bangumi.movies * 90;
+        }
+      }
+    });
+    console.log(tempSummaries);
+    setSummaries(tempSummaries);
+  }, [ratings])
+
+  useEffect(() => {
     if (user != null && token != null) {
       setAuthenticated(true);
     }
@@ -173,31 +205,27 @@ function App() {
     setAuthenticated(false);
   }
 
+  const mainElement = (activePage) => {
+    switch (activePage) {
+      case 'AnimeList':
+        return <AnimeList isLoading={isLoading} loadError={loadError} refresh={fetchRatings} onAnimeSubmit={handleAnimeSubmit} deleteAnime={deleteAnime}/>;
+      case 'MonthlySummary':
+        return <MonthlySummary />;
+      default:
+        return <AnimeList isLoading={isLoading} loadError={loadError} refresh={fetchRatings} onAnimeSubmit={handleAnimeSubmit} deleteAnime={deleteAnime}/>;
+    }
+  }
+
   return (
     <div>
       <div className="App">
         <AuthenticationContext.Provider value={{ username, password, authenticated, setAuthenticating, handleLogin, handleSignOut, setUsername, setPassword }}>
-          <Router basename={process.env.PUBLIC_URL}>
-            <Navivation />
-            {authenticating ? <Login /> :
-              <Switch>
-                <AnimeDataContext.Provider value={{ ratings: ratings }}>
-                  <Route path="/login">
-                    <Login />
-                  </Route>
-                  <Route exact path="/">
-                      <AnimeList isLoading={isLoading} loadError={loadError} refresh={fetchRatings} onAnimeSubmit={handleAnimeSubmit} deleteAnime={deleteAnime}/>
-                  </Route>
-                  <Route path="/today">
-                    <div className="loading">开发中</div>
-                  </Route>
-                  <Route path="/calendar">
-                  <div className="loading">开发中</div>
-                  </Route>
-                </AnimeDataContext.Provider>
-              </Switch>
-            }
-          </Router>
+          <Navivation switchPage={setActivePage}/>
+          {authenticating ? <Login /> :
+            <AnimeDataContext.Provider value={{ ratings: ratings, summaries: summaries }}>
+              {mainElement(activePage)}
+            </AnimeDataContext.Provider>
+          }
         </AuthenticationContext.Provider>
       </div>
     </div>

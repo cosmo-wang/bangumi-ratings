@@ -1,3 +1,15 @@
+.main-element {
+  position: fixed;
+  left: 5%;
+  right: 5%;
+  width: 90%;
+  height: 90%;
+  overflow: scroll;
+  opacity: 0.8;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
 .pink-button {
   color: #000000 !important;
   background-color: #fe8a96 !important;

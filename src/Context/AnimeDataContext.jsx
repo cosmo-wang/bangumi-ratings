@@ -2,7 +2,7 @@ import React from 'react';
 
 const animeData = {
   ratings: [],
-  descriptions: {}
+  summaries: {}
 }
 
 const AnimeDataContext = React.createContext(animeData);

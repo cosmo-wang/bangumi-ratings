@@ -16,13 +16,13 @@ function UserManagement() {
   }
 }
 
-function Navigation() {
+function Navigation(props) {
   return (
     <Navbar sticky="top" expand="lg" id="navbar">
       <Navbar.Brand href="/">追番补番</Navbar.Brand>
       <Nav className="mr-auto" activeKey={window.location.pathname}>
-        <Nav.Item><Nav.Link onClick={() => alert('hello')}>我的列表</Nav.Link></Nav.Item>
-        <Nav.Item><Nav.Link>每月总结</Nav.Link></Nav.Item>
+        <Nav.Item><Nav.Link onClick={() => props.switchPage("AnimeList")}>我的列表</Nav.Link></Nav.Item>
+        <Nav.Item><Nav.Link onClick={() => props.switchPage("MonthlySummary")}>每月总结</Nav.Link></Nav.Item>
       </Nav>
       <UserManagement />
     </Navbar>

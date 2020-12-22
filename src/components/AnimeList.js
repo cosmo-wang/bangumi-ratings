@@ -92,7 +92,7 @@ function AnimeList(props) {
       番剧评分加载失败！
     </Alert>;
   } else {
-    return (<div id="table-wrapper">
+    return (<div className="main-element">
       <Modal centered size='lg' show={showDescription} onHide={() => setShowDescription(false)}>
         <Modal.Header>
           <Modal.Title>简介</Modal.Title>
@@ -265,6 +265,5 @@ function AnimeList(props) {
     </div>);
   }
 }
-
 
 export default AnimeList;
