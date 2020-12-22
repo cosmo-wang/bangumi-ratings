@@ -1,3 +1,85 @@
 .monthly-summary {
+  position: fixed;
+  left: 25%;
+  right: 25%;
+  width: 50%;
+  height: 90%;
+  overflow: scroll;
+  opacity: 0.8;
+  text-align: center;
+}
+
+.summary {
   background-color: #fbfcfc;
+  margin-bottom: 1rem;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-title {
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid black;
+}
+
+.summary-info {
+  width: 30%;
+  text-align: left;
+  border-right: 1px solid black;
+}
+
+.year-month {
+  display: grid;
+  grid-template-columns: 80% auto;
+  grid-template-rows: 25% auto;
+  padding-right: 1rem;
+  border-bottom: 1px solid black;
+}
+
+.month {
+  font-size: 7vw;
+  justify-self: end;
+  align-self: end;
+  grid-column-start: 1;
+  grid-column-end: 2;
+  grid-row-start: 1;
+  grid-row-end: span 2;
+}
+
+.year {
+  justify-self: start;
+  align-self: end;
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 1;
+  grid-row-end: 2;
+}
+
+.yue {
+  align-self: center;
+  font-size: 3vw;
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 2;
+  grid-row-end: 3;
+}
+
+.summary-cover {
+  width: 70%;
+}
+
+.summary-info-pieces {
+  padding: 1rem;
+}
+
+.summary-names {
+  padding-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.bangumi-name {
+  margin-right: 2rem;
 }
