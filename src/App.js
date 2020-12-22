@@ -147,7 +147,6 @@ function App() {
         }
       }
     });
-    console.log(tempSummaries);
     setSummaries(tempSummaries);
   }, [ratings])
 
