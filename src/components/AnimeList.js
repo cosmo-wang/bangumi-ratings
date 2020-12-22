@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Parse from 'parse';
-import * as Env from "../environments";
 import AnimeDataContext from '../context/AnimeDataContext';
 import Table from 'react-bootstrap/Table';
 import Modal from 'react-bootstrap/Modal';
@@ -16,9 +14,6 @@ import AnimeModal from './AnimeModal';
 import { sortList, formatEpisodes, formatDate, translateHeader, calculateDailyTime, formatTime } from "../utils/utils";
 import '../App.css';
 import './AnimeList.css';
-
-Parse.initialize(Env.APPLICATION_ID, Env.JAVASCRIPT_KEY);
-Parse.serverURL = Env.SERVER_URL;
 
 function AnimeList(props) {
 

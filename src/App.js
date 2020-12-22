@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import * as Env from "./environments";
 import Navivation from './components/Navigation';
 import AnimeDataContext from './context/AnimeDataContext';
 import AnimeList from './components/AnimeList';
@@ -11,7 +12,10 @@ import Parse from 'parse';
 import moment from 'moment';
 import './App.css';
 
-const MONTHS_SUMMARY = 12;
+Parse.initialize(Env.APPLICATION_ID, Env.JAVASCRIPT_KEY);
+Parse.serverURL = Env.SERVER_URL;
+
+console.log(Parse.serverURL);
 
 function App() {
   // authentication related states
@@ -66,7 +70,6 @@ function App() {
     }, (error) => {
       setIsLoading(false);
       setLoadError(true);
-      if (typeof document !== 'undefined') document.write(`Error while fetching ParseObjects: ${JSON.stringify(error)}`);
       console.error('Error while fetching ParseObjects', error);
     });
   };
@@ -124,28 +127,23 @@ function App() {
 
   useEffect(() => {
     const tempSummaries = {};
-    for (let i = 0; i < MONTHS_SUMMARY; i++) {
-      const month = moment().subtract(i, 'months').startOf('month');
-      tempSummaries[month] = {
-        bangumi_num: 0,
-        tv_episode_num: 0,
-        movie_num: 0,
-        total_time: 0,
-        daily_time: 0,
-        bangumis: []
-      };
-    }
     ratings.filter((rating) => rating.status === "已看").forEach((bangumi) => {
-      let endMonth = moment(bangumi.end_date);
-      for (const [month, summary] of Object.entries(tempSummaries)) {
-        if (endMonth.isSame(month, "month") && endMonth.isSameOrAfter(month)) {
-          summary.bangumi_num += 1;
-          summary.bangumis.push(bangumi.name);
-          summary.tv_episode_num += bangumi.tv_episodes;
-          summary.movie_num += bangumi.movies;
-          summary.total_time += bangumi.tv_episodes * bangumi.episode_length + bangumi.movies * 90;
-        }
+      let endMonth = moment(bangumi.end_date).format('YYYY-MM');
+      if (!(endMonth in tempSummaries)) {
+        tempSummaries[endMonth] = {
+          bangumi_num: 0,
+          tv_episode_num: 0,
+          movie_num: 0,
+          total_time: 0,
+          daily_time: 0,
+          bangumis: []
+        };
       }
+      tempSummaries[endMonth].bangumi_num += 1;
+      tempSummaries[endMonth].bangumis.push(bangumi.name);
+      tempSummaries[endMonth].tv_episode_num += bangumi.tv_episodes;
+      tempSummaries[endMonth].movie_num += bangumi.movies;
+      tempSummaries[endMonth].total_time += bangumi.tv_episodes * bangumi.episode_length + bangumi.movies * 90;
     });
     setSummaries(tempSummaries);
   }, [ratings])

@@ -18,6 +18,7 @@ function Summary(props) {
 
 function MonthlySummary() {
   const { summaries } = React.useContext(AnimeDataContext);
+  console.log(summaries);
   return <div className="main-element monthly-summary">
     {Object.keys(summaries).map((month) => <Summary month={month} summary={summaries[month]} />)}
   </div>;
