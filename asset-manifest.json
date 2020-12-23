@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/bangumi-ratings/static/css/main.d5b1ea62.chunk.css",
+    "main.css": "/bangumi-ratings/static/css/main.3ee97843.chunk.css",
     "main.js": "/bangumi-ratings/static/js/main.4b7df714.chunk.js",
     "main.js.map": "/bangumi-ratings/static/js/main.4b7df714.chunk.js.map",
     "runtime-main.js": "/bangumi-ratings/static/js/runtime-main.d4fb8b70.js",
@@ -10,7 +10,7 @@
     "static/js/2.b990b27d.chunk.js.map": "/bangumi-ratings/static/js/2.b990b27d.chunk.js.map",
     "index.html": "/bangumi-ratings/index.html",
     "static/css/2.8213182e.chunk.css.map": "/bangumi-ratings/static/css/2.8213182e.chunk.css.map",
-    "static/css/main.d5b1ea62.chunk.css.map": "/bangumi-ratings/static/css/main.d5b1ea62.chunk.css.map",
+    "static/css/main.3ee97843.chunk.css.map": "/bangumi-ratings/static/css/main.3ee97843.chunk.css.map",
     "static/js/2.b990b27d.chunk.js.LICENSE.txt": "/bangumi-ratings/static/js/2.b990b27d.chunk.js.LICENSE.txt",
     "static/media/index.css": "/bangumi-ratings/static/media/2.6c26624d.jpg"
   },
@@ -18,7 +18,7 @@
     "static/js/runtime-main.d4fb8b70.js",
     "static/css/2.8213182e.chunk.css",
     "static/js/2.b990b27d.chunk.js",
-    "static/css/main.d5b1ea62.chunk.css",
+    "static/css/main.3ee97843.chunk.css",
     "static/js/main.4b7df714.chunk.js"
   ]
 }
