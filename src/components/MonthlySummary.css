@@ -95,7 +95,7 @@
 
 .add-more-quote-button {
   align-self: flex-end;
-  margin-top: 0.5em;
+  margin: 0.5em 0;
 }
 
 blockquote {
