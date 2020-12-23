@@ -6,7 +6,7 @@ import "./Login.css";
 import "../App.css";
 
 export default function Login() {
-  const { username, password, setUsername, setPassword, handleLogin } = useAuthenticationContext();
+  const { username, password, setAuthenticating, setUsername, setPassword, handleLogin } = useAuthenticationContext();
 
   const validateForm = () => {
     return username.length > 0 && password.length > 0;
@@ -32,9 +32,14 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </Form.Group>
-        <Button className="pink-button" block size="lg" type="submit" disabled={!validateForm()}>
-          登陆
-        </Button>
+        <div className="button-group">
+          <Button className="pink-button" size="lg" type="submit" disabled={!validateForm()}>
+            登陆
+          </Button>
+          <Button className="pink-button" size="lg" type="submit" onClick={() => setAuthenticating(false)}>
+            取消
+          </Button>
+        </div>
       </Form>
     </div>
   );

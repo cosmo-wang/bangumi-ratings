@@ -1,8 +1,8 @@
 .monthly-summary {
   position: fixed;
-  left: 25%;
-  right: 25%;
-  width: 50%;
+  left: 20%;
+  right: 20%;
+  width: 60%;
   height: 90%;
   overflow: scroll;
   opacity: 0.8;
@@ -27,7 +27,7 @@
 }
 
 .summary-info {
-  width: 200px;
+  width: 40%;
   text-align: left;
   border-right: 1px solid black;
 }
