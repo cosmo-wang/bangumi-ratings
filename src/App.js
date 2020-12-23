@@ -82,6 +82,7 @@ function App() {
       if (typeof document !== 'undefined'){
         const quotes = results.map((result) => {
           return {
+            id: result.id,
             month: result.get("month"),
             content: result.get("content"),
             translation: result.get("translation"),
@@ -147,6 +148,23 @@ function App() {
       });
     });
   };
+
+  const updateQuote = async (id, newQuote) => {
+    console.log(newQuote);
+    const QuotesObj = Parse.Object.extend('Quotes');
+    const query = new Parse.Query(QuotesObj);
+    query.get(id).then((object) => {
+      for (const [key, value] of Object.entries(newQuote)) {
+        object.set(key, value)
+      }
+      object.save().then((response) => {
+        alert("已提交更新！");
+        fetchQuotes();
+      }, (error) => {
+        alert("更新失败，请稍后重试。");
+      });
+    });
+  };
   
   const deleteAnime = async (id) => {
     const ratingsObj = Parse.Object.extend('Ratings');
@@ -155,6 +173,19 @@ function App() {
       object.destroy().then((response) => {
         alert("已删除番剧！");
         fetchRatings();
+      }, (error) => {
+        alert("删除失败，请稍后重试。");
+      });
+    });
+  };
+
+  const deleteQuote = async (id) => {
+    const quotesObj = Parse.Object.extend('Quotes');
+    const query = new Parse.Query(quotesObj);
+    query.get(id).then((object) => {
+      object.destroy().then((response) => {
+        alert("已删除语录！");
+        fetchQuotes();
       }, (error) => {
         alert("删除失败，请稍后重试。");
       });
@@ -232,7 +263,7 @@ function App() {
     }
   };
 
-  const handleQuoteSubmit = (event, month) => {
+  const handleQuoteSubmit = (event, month, id, isNew) => {
     event.preventDefault();
     const formElements = event.target.elements;
     const newQuote = {
@@ -242,8 +273,12 @@ function App() {
       "person": formElements.person.value,
       "bangumi": formElements.bangumi.value,
     };
-    console.log(newQuote);
-    submitNewQuote(newQuote);
+    if (isNew) {
+      submitNewQuote(newQuote);
+    } else {
+      console.log("here");
+      updateQuote(id, newQuote);
+    }
   }
 
   const handleLogin = (event) => {
@@ -271,7 +306,7 @@ function App() {
       case 'AnimeList':
         return <AnimeList isLoading={isLoading} loadError={loadError} refresh={fetchRatings} onAnimeSubmit={handleAnimeSubmit} deleteAnime={deleteAnime}/>;
       case 'MonthlySummary':
-        return <MonthlySummary onQuoteSubmit={handleQuoteSubmit}/>;
+        return <MonthlySummary onQuoteSubmit={handleQuoteSubmit} deleteQuote={deleteQuote}/>;
       default:
         return <AnimeList isLoading={isLoading} loadError={loadError} refresh={fetchRatings} onAnimeSubmit={handleAnimeSubmit} deleteAnime={deleteAnime}/>;
     }
