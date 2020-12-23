@@ -21,18 +21,20 @@
 .summary-title {
   display: flex;
   flex-direction: row;
+  align-items: center;
+  justify-items: center;
   border-bottom: 1px solid black;
 }
 
 .summary-info {
-  width: 30%;
+  width: 200px;
   text-align: left;
   border-right: 1px solid black;
 }
 
 .year-month {
   display: grid;
-  grid-template-columns: 80% auto;
+  grid-template-columns: 75% auto;
   grid-template-rows: 25% auto;
   padding-right: 1rem;
   border-bottom: 1px solid black;
@@ -66,10 +68,6 @@
   grid-row-end: 3;
 }
 
-.summary-cover {
-  width: 70%;
-}
-
 .summary-info-pieces {
   padding: 1rem;
 }
@@ -83,3 +81,47 @@
 .bangumi-name {
   margin-right: 2rem;
 }
+
+.summary-quotes {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.add-quote-button {
+  align-self: center;
+}
+
+.add-more-quote-button {
+  align-self: flex-end;
+  margin-top: 0.5em;
+}
+
+blockquote {
+  font-family: Georgia, serif;
+  font-size: 18px;
+  font-style: italic;
+  text-align: center;
+  width: 100%;
+  padding: 0.35em 0.5em 0.35em 2.5em;
+  margin: 1px;
+  line-height: 1.45;
+  position: relative;
+  color: #383838;
+}
+
+.quote-translation {
+  font-size: 10px;
+}
+  
+blockquote cite {
+  color: #999999;
+  font-size: 14px;
+  display: block;
+  margin-top: 5px;
+}
+   
+blockquote cite:before {
+  content: "\2014 \2009";
+}
+

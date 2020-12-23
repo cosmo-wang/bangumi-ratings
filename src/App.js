@@ -15,8 +15,6 @@ import './App.css';
 Parse.initialize(Env.APPLICATION_ID, Env.JAVASCRIPT_KEY);
 Parse.serverURL = Env.SERVER_URL;
 
-console.log(Parse.serverURL);
-
 function App() {
   // authentication related states
   const [authenticated, setAuthenticated] = useState(false);
@@ -33,6 +31,7 @@ function App() {
   // data related states
   const [ratings, setRatings] = useState([]);
   const [summaries, setSummaries] = useState({});
+  const [quotes, setQuotes] = useState([]);
 
   const fetchRatings = async () => {
     setIsLoading(true);
@@ -40,7 +39,7 @@ function App() {
     const query = new Parse.Query(ratingsObj);
     query.limit(1000);
     query.find().then((results) => {
-      console.log("calling server");
+      console.log("calling server for ratings");
       if (typeof document !== 'undefined'){
         const ratings = results.map((result) => {
           return {
@@ -70,9 +69,33 @@ function App() {
     }, (error) => {
       setIsLoading(false);
       setLoadError(true);
-      console.error('Error while fetching ParseObjects', error);
+      console.error('Error while fetching ratings', error);
     });
   };
+
+  const fetchQuotes = async () => {
+    const quotesObj = Parse.Object.extend('Quotes');
+    const query = new Parse.Query(quotesObj);
+    query.limit(1000);
+    query.find().then((results) => {
+      console.log("calling server for quotes");
+      if (typeof document !== 'undefined'){
+        const quotes = results.map((result) => {
+          return {
+            month: result.get("month"),
+            content: result.get("content"),
+            translation: result.get("translation"),
+            person: result.get("person"),
+            bangumi: result.get("bangumi"),
+          }}
+        );
+        setQuotes(quotes);
+      }
+    }, (error) => {
+      setLoadError(true);
+      console.error('Error while fetching quotes', error);
+    });
+  }
 
   const submitNewRating = async (newRating) => {
     const RatingsObj = Parse.Object.extend('Ratings');
@@ -88,6 +111,23 @@ function App() {
       },
       (error) => {
         alert("更新失败，请稍后重试。");
+      }
+    );
+  };
+
+  const submitNewQuote = async (newQuote) => {
+    const QuotesObj = Parse.Object.extend('Quotes');
+    const newQuotesObj = new QuotesObj();
+    for (const [key, value] of Object.entries(newQuote)) {
+      newQuotesObj.set(key, value)
+    }
+    newQuotesObj.save().then(
+      (result) => {
+        alert("已添加语录！");
+        fetchQuotes();
+      },
+      (error) => {
+        alert("添加失败，请稍后重试。");
       }
     );
   };
@@ -123,7 +163,10 @@ function App() {
 
   useEffect(() => {
     fetchRatings();
+    fetchQuotes();
   }, [])
+
+  console.log(quotes);
 
   useEffect(() => {
     const tempSummaries = {};
@@ -136,7 +179,8 @@ function App() {
           movie_num: 0,
           total_time: 0,
           daily_time: 0,
-          bangumis: []
+          bangumis: [],
+          quotes: [],
         };
       }
       tempSummaries[endMonth].bangumi_num += 1;
@@ -145,8 +189,14 @@ function App() {
       tempSummaries[endMonth].movie_num += bangumi.movies;
       tempSummaries[endMonth].total_time += bangumi.tv_episodes * bangumi.episode_length + bangumi.movies * 90;
     });
+    quotes.forEach((quote) => {
+      let month = moment(quote.month).format('YYYY-MM');
+      if (month in tempSummaries) {
+        tempSummaries[month].quotes.push(quote);
+      }
+    });
     setSummaries(tempSummaries);
-  }, [ratings])
+  }, [ratings, quotes])
 
   useEffect(() => {
     if (user != null && token != null) {
@@ -182,6 +232,20 @@ function App() {
     }
   };
 
+  const handleQuoteSubmit = (event, month) => {
+    event.preventDefault();
+    const formElements = event.target.elements;
+    const newQuote = {
+      "month": month,
+      "content": formElements.content.value,
+      "translation": formElements.translation.value,
+      "person": formElements.person.value,
+      "bangumi": formElements.bangumi.value,
+    };
+    console.log(newQuote);
+    submitNewQuote(newQuote);
+  }
+
   const handleLogin = (event) => {
     event.preventDefault();
     // Create a new instance of the user class
@@ -207,7 +271,7 @@ function App() {
       case 'AnimeList':
         return <AnimeList isLoading={isLoading} loadError={loadError} refresh={fetchRatings} onAnimeSubmit={handleAnimeSubmit} deleteAnime={deleteAnime}/>;
       case 'MonthlySummary':
-        return <MonthlySummary />;
+        return <MonthlySummary onQuoteSubmit={handleQuoteSubmit}/>;
       default:
         return <AnimeList isLoading={isLoading} loadError={loadError} refresh={fetchRatings} onAnimeSubmit={handleAnimeSubmit} deleteAnime={deleteAnime}/>;
     }
