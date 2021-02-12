@@ -5,13 +5,12 @@ body, html {
 }
 
 body {
-  background-image: url("img/backgrounds/2.jpg");
+  background-image: url("img/backgrounds/1.png"); 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;;
   /* Full height */
   height: 100%;
   width: 100%;
-
-  /* Center and scale the image nicely */
-  background-attachment: fixed;
-  background-position: center center;
-  background-size: cover; 
 }

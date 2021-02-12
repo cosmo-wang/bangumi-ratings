@@ -197,8 +197,6 @@ function App() {
     fetchQuotes();
   }, [])
 
-  console.log(quotes);
-
   useEffect(() => {
     const tempSummaries = {};
     ratings.filter((rating) => rating.status === "已看").forEach((bangumi) => {
@@ -311,6 +309,7 @@ function App() {
         return <AnimeList isLoading={isLoading} loadError={loadError} refresh={fetchRatings} onAnimeSubmit={handleAnimeSubmit} deleteAnime={deleteAnime}/>;
     }
   }
+
 
   return (
     <div>

@@ -3,6 +3,7 @@ import AnimeDataContext from '../context/AnimeDataContext';
 import Table from 'react-bootstrap/Table';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
 import Alert from 'react-bootstrap/Alert';
 import { BiEditAlt, BiTrash } from "react-icons/bi";
 import { useAuthenticationContext } from "../context/AuthenticationContext";
@@ -11,7 +12,7 @@ import FilterHeader from './FilterHeader';
 import DropdownHeader from './DropdownHeader';
 import Description from './Description';
 import AnimeModal from './AnimeModal';
-import { sortList, formatEpisodes, formatDate, translateHeader, calculateDailyTime, formatTime } from "../utils/utils";
+import { sortList, formatEpisodes, formatDate, translateHeader, calculateDailyTime, formatTime, parseDoubanPage } from "../utils/utils";
 import '../App.css';
 import './AnimeList.css';
 
@@ -26,8 +27,10 @@ function AnimeList(props) {
   const [activeDescription, setActiveDescription] = useState(null);
   const [showDescription, setShowDescription] = useState(false);
   const [showAnimeModal, setShowAnimeModal] = useState(false);
+  const [showAnimeModalAuto, setShowAnimeModalAuto] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [submitNewAnime, setSubmitNewAnime] = useState(false);
+  const [submitNewAnimeAuto, setSubmitNewAnimeAuto] = useState(false);
   const [animeToDelete, setAnimeToDelete] = useState({});
   const [activeId, setActiveId] = useState();
   const [displayListStatus, setDisplayListStatus] = useState("已看");
@@ -108,19 +111,60 @@ function AnimeList(props) {
         <Modal.Body>
           <AnimeModal
             onSubmitOrEdit={(event, id) => {
+              event.preventDefault();
               if (submitNewAnime) {
-                event.preventDefault();
                 props.onAnimeSubmit(event, null, true);
-                setShowAnimeModal(false);
+              } else if (submitNewAnimeAuto) {
+                props.onAnimeSubmit(event, null, true);
               } else {
-                event.preventDefault();
                 props.onAnimeSubmit(event, id, false);
-                setShowAnimeModal(false);
               }
+              setShowAnimeModal(false);
             }}
             oldValue={editAnimeOldValue}
             id={activeId}
           />
+        </Modal.Body>
+      </Modal>
+      <Modal centered size='lg' show={showAnimeModalAuto} onHide={() => setShowAnimeModalAuto(false)}>
+        <Modal.Header closeButton>
+        <Modal.Title>添加新番剧</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={(event) => {
+            event.preventDefault();
+            const info = parseDoubanPage(event.target.elements.html.value);
+            setEditAnimeOldValue({
+              name: info.name,
+              year: info.year,
+              douban: info.douban,
+              tv_episodes: info.tv_episodes,
+              movies: 0,
+              episode_length: info.episode_length,
+              status: "想看",
+              genre: "",
+              description: info.description,
+              story: 0,
+              illustration: 0,
+              music: 0,
+              passion: 0,
+              start_date: null,
+              end_date: null,
+              times_watched: 0,
+            });
+            setSubmitNewAnimeAuto(true);
+            setShowAnimeModalAuto(false);
+            setActiveId(null);
+            setShowAnimeModal(true);
+          }}>
+            <Form.Group>
+              <Form.Label>豆瓣页面源</Form.Label>
+              <Form.Control id="html" as="textarea" rows="10" />
+            </Form.Group>
+            <Button className="pink-button" type="submit">
+              提交
+            </Button>
+          </Form>
         </Modal.Body>
       </Modal>
       <Modal centered size="sm" show={showDeleteConfirmation} onHide={() => setShowDeleteConfirmation(false)}>
@@ -154,7 +198,13 @@ function AnimeList(props) {
             setActiveId(null);
             setShowAnimeModal(true);
             setSubmitNewAnime(true);
-          }}>添加</Button> : <></>}
+          }}>手动添加</Button> : <></>}
+          {authenticated ? <Button className="pink-button" onClick={() => {
+            setEditAnimeOldValue(null);
+            setActiveId(null);
+            setShowAnimeModalAuto(true);
+            setSubmitNewAnime(true);
+          }}>自动添加</Button> : <></>}
           <Button className="pink-button" onClick={props.refresh}>刷新</Button>
         </div>
       </div>

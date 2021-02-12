@@ -125,3 +125,29 @@ function compare(a, b) {
   }
 }
 
+export function parseDoubanPage(pageSrc) {
+  const name = pageSrc.split("\n")[5].split(" ")[0];
+  const year = pageSrc.split("首播: ")[1].split("-")[0];
+  const douban = pageSrc.split("豆瓣评分")[1].split("\n")[1];
+  let tv_episodes = 12;
+  try {
+    tv_episodes = parseInt(pageSrc.split("集数: ")[1].split("-")[0]);
+  } catch (error) {
+    console.error(error);
+  }
+  let episode_length = 24;
+  try {
+    episode_length = parseInt(pageSrc.split("单集片长: ")[1].split("-")[0]);
+  } catch (error) {
+    console.error(error);
+  }
+  const description = pageSrc.split("的剧情简介 · · · · · ·")[1].split("\n\n")[1].trim();
+  return {
+    name: name,
+    year: year,
+    douban: douban,
+    tv_episodes: isNaN(tv_episodes) ? 0 : tv_episodes,
+    episode_length: isNaN(episode_length) ? 12: episode_length,
+    description: description,
+  }
+}
