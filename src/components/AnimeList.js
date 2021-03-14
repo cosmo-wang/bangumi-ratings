@@ -180,7 +180,7 @@ function AnimeList(props) {
             setShowDeleteConfirmation(false);
           }}>取消</Button>
           <Button variant="danger" onClick={() => {
-            props.deleteAnime(animeToDelete.id);
+            props.deleteAnime(animeToDelete.id, "Ratings");
             setAnimeToDelete({});
             setShowDeleteConfirmation(false);
           }}>确定</Button>

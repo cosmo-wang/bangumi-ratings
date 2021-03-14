@@ -2,7 +2,8 @@ import React from 'react';
 
 const animeData = {
   ratings: [],
-  summaries: {}
+  newAnimes: [],
+  monthlySummaries: {}
 }
 
 const AnimeDataContext = React.createContext(animeData);

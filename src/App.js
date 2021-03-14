@@ -3,6 +3,7 @@ import * as Env from "./environments";
 import Navivation from './components/Navigation';
 import AnimeDataContext from './context/AnimeDataContext';
 import AnimeList from './components/AnimeList';
+import NewAnimeList from './components/NewAnimeList';
 import MonthlySummary from './components/MonthlySummary';
 import Login from "./components/Login";
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -30,6 +31,7 @@ function App() {
 
   // data related states
   const [ratings, setRatings] = useState([]);
+  const [newAnimes, setNewAnimes] = useState([]);
   const [summaries, setSummaries] = useState({});
   const [quotes, setQuotes] = useState([]);
 
@@ -98,22 +100,69 @@ function App() {
     });
   }
 
-  const submitNewRating = async (newRating) => {
-    const RatingsObj = Parse.Object.extend('Ratings');
-    const newRatingObj = new RatingsObj();
-    for (const [key, value] of Object.entries(newRating)) {
-      newRatingObj.set(key, value)
-    }
-
-    newRatingObj.save().then(
-      (result) => {
-        alert("已提交更新！");
-        fetchRatings();
-      },
-      (error) => {
-        alert("更新失败，请稍后重试。");
+  const fetchNewAnimes = async () => {
+    setIsLoading(true);
+    const quotesObj = Parse.Object.extend('NewAnimes');
+    const query = new Parse.Query(quotesObj);
+    query.limit(1000);
+    query.find().then((results) => {
+      console.log("calling server for new animes");
+      if (typeof document !== 'undefined'){
+        const newAnimes = results.map((result) => {
+          return {
+            id: result.id,
+            name: result.get("name"),
+            genre: result.get("genre"),
+            season_rank: result.get("season_rank"),
+            start_date: result.get("start_date"),
+            next_episode_day: result.get("next_episode_day"),
+            tv_episodes: result.get("tv_episodes"),
+            description: result.get("description"),
+            season: result.get("season"),
+            status: result.get("status"),
+          }}
+        );
+        newAnimes.sort((a, b) => {
+          if (a.season_rank > b.season_rank) return 1;
+          if (a.season_rank < b.season_rank) return -1;
+          return 0;
+        })
+        setNewAnimes(newAnimes);
+        setIsLoading(false);
       }
-    );
+    }, (error) => {
+      setIsLoading(false);
+      setLoadError(true);
+      console.error('Error while fetching new animes', error);
+    });
+  }
+
+  const submitNewEntry = async (newEntry, databaseName) => {
+    const DataObject = Parse.Object.extend(databaseName);
+    const query = new Parse.Query(DataObject);
+    query.equalTo("name", newEntry.name);
+    const results = await query.find();
+    if (results.length > 0) {
+      alert("番剧《" + newEntry.name + "》已存在！请勿重复添加番剧！")
+    } else {
+      const newObj = new DataObject();
+      for (const [key, value] of Object.entries(newEntry)) {
+        newObj.set(key, value)
+      }
+      newObj.save().then(
+        (result) => {
+          alert("已提交番剧信息！");
+          if (databaseName == "Ratings") {
+            fetchRatings();
+          } else if (databaseName == "NewAnimes") {
+            fetchNewAnimes();
+          }
+        },
+        (error) => {
+          alert("更新失败，请稍后重试。");
+        }
+      );
+    }
   };
 
   const submitNewQuote = async (newQuote) => {
@@ -133,16 +182,20 @@ function App() {
     );
   };
 
-  const updateRating = async (id, newRating) => {
-    const ratingsObj = Parse.Object.extend('Ratings');
-    const query = new Parse.Query(ratingsObj);
+  const updateEntry = async (id, newEntry, databaseName) => {
+    const obj = Parse.Object.extend(databaseName);
+    const query = new Parse.Query(obj);
     query.get(id).then((object) => {
-      for (const [key, value] of Object.entries(newRating)) {
+      for (const [key, value] of Object.entries(newEntry)) {
         object.set(key, value)
       }
       object.save().then((response) => {
-        alert("已提交更新！");
-        fetchRatings();
+        alert("已更新番剧信息！");
+        if (databaseName == "Ratings") {
+          fetchRatings();
+        } else if (databaseName == "NewAnimes") {
+          fetchNewAnimes();
+        }
       }, (error) => {
         alert("更新失败，请稍后重试。");
       });
@@ -150,7 +203,6 @@ function App() {
   };
 
   const updateQuote = async (id, newQuote) => {
-    console.log(newQuote);
     const QuotesObj = Parse.Object.extend('Quotes');
     const query = new Parse.Query(QuotesObj);
     query.get(id).then((object) => {
@@ -158,7 +210,7 @@ function App() {
         object.set(key, value)
       }
       object.save().then((response) => {
-        alert("已提交更新！");
+        alert("已更新语录！");
         fetchQuotes();
       }, (error) => {
         alert("更新失败，请稍后重试。");
@@ -166,13 +218,17 @@ function App() {
     });
   };
   
-  const deleteAnime = async (id) => {
-    const ratingsObj = Parse.Object.extend('Ratings');
-    const query = new Parse.Query(ratingsObj);
+  const deleteEntry = async (id, databaseName) => {
+    const obj = Parse.Object.extend(databaseName);
+    const query = new Parse.Query(obj);
     query.get(id).then((object) => {
       object.destroy().then((response) => {
         alert("已删除番剧！");
-        fetchRatings();
+        if (databaseName == "Ratings") {
+          fetchRatings();
+        } else if (databaseName == "NewAnimes") {
+          fetchNewAnimes();
+        }
       }, (error) => {
         alert("删除失败，请稍后重试。");
       });
@@ -194,6 +250,7 @@ function App() {
 
   useEffect(() => {
     fetchRatings();
+    fetchNewAnimes();
     fetchQuotes();
   }, [])
 
@@ -255,9 +312,30 @@ function App() {
       "times_watched": Number(formElements.times_watched.value),
     };
     if (isNew) {
-      submitNewRating(newRating);
+      submitNewEntry(newRating, 'Ratings');
     } else {
-      updateRating(id, newRating);
+      updateEntry(id, newRating, 'Ratings');
+    }
+  };
+
+  const handleNewAnimeSubmit = (event, id, isNew) => {
+    event.preventDefault();
+    const formElements = event.target.elements;
+    const newAnime = {
+      "name": formElements.name.value,
+      "season_rank": Number(formElements.season_rank.value),
+      "tv_episodes": Number(formElements.tv_episodes.value),
+      "genre": formElements.genre.value,
+      "description": formElements.description.value,
+      "start_date": formElements.start_date.value,
+      "next_episode_day": formElements.next_episode_day.value,
+      "season": formElements.season.value,
+      "status": formElements.status.value,
+    };
+    if (isNew) {
+      submitNewEntry(newAnime, 'NewAnimes');
+    } else {
+      updateEntry(id, newAnime, 'NewAnimes');
     }
   };
 
@@ -274,7 +352,6 @@ function App() {
     if (isNew) {
       submitNewQuote(newQuote);
     } else {
-      console.log("here");
       updateQuote(id, newQuote);
     }
   }
@@ -302,11 +379,36 @@ function App() {
   const mainElement = (activePage) => {
     switch (activePage) {
       case 'AnimeList':
-        return <AnimeList isLoading={isLoading} loadError={loadError} refresh={fetchRatings} onAnimeSubmit={handleAnimeSubmit} deleteAnime={deleteAnime}/>;
+        return <AnimeList
+          isLoading={isLoading}
+          loadError={loadError}
+          refresh={fetchRatings}
+          onAnimeSubmit={handleAnimeSubmit}
+          deleteAnime={deleteEntry}
+        />;
+      case 'NewAnimeList':
+        return <NewAnimeList
+          isLoading={isLoading}
+          loadError={loadError}
+          refresh={fetchNewAnimes}
+          onAnimeSubmit={handleAnimeSubmit}
+          onNewAnimeSubmit={handleNewAnimeSubmit}
+          updateEntry={updateEntry}
+          deleteNewAnime={deleteEntry}
+        />
       case 'MonthlySummary':
-        return <MonthlySummary onQuoteSubmit={handleQuoteSubmit} deleteQuote={deleteQuote}/>;
+        return <MonthlySummary
+          onQuoteSubmit={handleQuoteSubmit}
+          deleteQuote={deleteQuote}
+        />;
       default:
-        return <AnimeList isLoading={isLoading} loadError={loadError} refresh={fetchRatings} onAnimeSubmit={handleAnimeSubmit} deleteAnime={deleteAnime}/>;
+        return <AnimeList
+          isLoading={isLoading}
+          loadError={loadError}
+          refresh={fetchRatings}
+          onAnimeSubmit={handleAnimeSubmit}
+          deleteAnime={deleteEntry}
+        />;
     }
   }
 
@@ -317,7 +419,7 @@ function App() {
         <AuthenticationContext.Provider value={{ username, password, authenticated, setAuthenticating, handleLogin, handleSignOut, setUsername, setPassword }}>
           <Navivation switchPage={setActivePage}/>
           {authenticating ? <Login /> :
-            <AnimeDataContext.Provider value={{ ratings: ratings, summaries: summaries }}>
+            <AnimeDataContext.Provider value={{ ratings: ratings, monthlySummaries: summaries, newAnimes: newAnimes }}>
               {mainElement(activePage)}
             </AnimeDataContext.Provider>
           }

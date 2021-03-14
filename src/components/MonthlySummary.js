@@ -93,7 +93,7 @@ function Summary(props) {
 }
 
 function MonthlySummary(props) {
-  const { summaries } = useContext(AnimeDataContext);
+  const { monthlySummaries } = useContext(AnimeDataContext);
 
   const [isNewQuote, setIsNewQuote] = useState(true);
   const [showQuoteModal, setShowQuoteModal] = useState(false);
@@ -161,9 +161,9 @@ function MonthlySummary(props) {
         </Modal.Footer>
       </Modal>
     {
-      Object.keys(summaries).map((month) => 
+      Object.keys(monthlySummaries).map((month) => 
       <QuoteModificationContext.Provider value={{ setIsNewQuote, setShowQuoteModal, addNewQuote, setQuoteToEdit, setActiveQuoteId, setShowDeleteConfirmation }}>
-        <Summary month={month} summary={summaries[month]} />
+        <Summary month={month} summary={monthlySummaries[month]} />
       </QuoteModificationContext.Provider>)
     }
   </div>;
