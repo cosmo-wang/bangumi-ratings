@@ -152,9 +152,9 @@ function App() {
       newObj.save().then(
         (result) => {
           alert("已提交番剧信息！");
-          if (databaseName == "Ratings") {
+          if (databaseName === "Ratings") {
             fetchRatings();
-          } else if (databaseName == "NewAnimes") {
+          } else if (databaseName === "NewAnimes") {
             fetchNewAnimes();
           }
         },
@@ -191,9 +191,9 @@ function App() {
       }
       object.save().then((response) => {
         alert("已更新番剧信息！");
-        if (databaseName == "Ratings") {
+        if (databaseName === "Ratings") {
           fetchRatings();
-        } else if (databaseName == "NewAnimes") {
+        } else if (databaseName === "NewAnimes") {
           fetchNewAnimes();
         }
       }, (error) => {
@@ -224,9 +224,9 @@ function App() {
     query.get(id).then((object) => {
       object.destroy().then((response) => {
         alert("已删除番剧！");
-        if (databaseName == "Ratings") {
+        if (databaseName === "Ratings") {
           fetchRatings();
-        } else if (databaseName == "NewAnimes") {
+        } else if (databaseName === "NewAnimes") {
           fetchNewAnimes();
         }
       }, (error) => {

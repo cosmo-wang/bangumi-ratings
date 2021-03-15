@@ -8,9 +8,9 @@ import Col from 'react-bootstrap/Col';
 import Alert from 'react-bootstrap/Alert';
 import { BiEditAlt, BiTrash } from "react-icons/bi";
 import { useAuthenticationContext } from "../context/AuthenticationContext";
-import Description from './Description';
+import SortHeader from './SortHeader';
 import AnimeModal from './AnimeModal';
-import { sortList, formatEpisodes, formatDate, translateHeader, calculateDailyTime, formatTime, parseDoubanPage } from "../utils/utils";
+import { getSeason, formatEpisodes, translateHeader, sortList } from "../utils/utils";
 import '../App.css';
 import './NewAnimeList.css';
 
@@ -37,7 +37,6 @@ function NewAnimeModal(props) {
       <Form.Label>简介</Form.Label>
         <Form.Control defaultValue={oldValue.description} id="description" as="textarea" rows="3" />
       </Form.Group>
-      
     </Form.Group>
     <div>
       <Button className="pink-button" type="submit">
@@ -76,7 +75,10 @@ function NewAnimeList(props) {
   const [displayList, setDisplayList] = useState(newAnimes);
   const [displayListSeason, setDisplayListSeason] = useState(null);
   const [editAnimeOldValue, setEditAnimeOldValue] = useState(null);
+  const [sortedCol, setSortedCol] = useState(null);
   const [rateAnimePartialInfo, setRateAnimePartialInfo] = useState(null);
+
+  useEffect(() => {setSortedCol("ranking")}, []);
 
   const handleRateNewAnime = (partialInfo) => {
     partialInfo.status = "已看";
@@ -90,20 +92,16 @@ function NewAnimeList(props) {
   }
 
   useEffect(() => {
-    const d = new Date();
-    const year = d.getFullYear();
-    const month = Math.floor(d.getMonth()/3) + 1;
-    const curSeason = year + "年" + month + "月";
-    let preSeason = year + "年" + (month - 3) + "月";
-    let nextSeason = year + "年" + (month + 3) + "月";
-    if (month === 1) {
-      preSeason = (year - 1) + "年10月";
+    if (sortedCol !== null) {
+      setDisplayList(sortList(newAnimes.filter((newAnime) => newAnime.season.includes(displayListSeason)), sortedCol));
+      setSortedCol(null);
     }
-    if (month === 10) {
-      nextSeason = (year + 1) + "年1月";
-    }
-    setSeasons([preSeason, curSeason, nextSeason]);
-    setDisplayListSeason(curSeason);
+  }, [sortedCol, newAnimes, displayListSeason]);
+
+  useEffect(() => {
+    const seasons = getSeason();
+    setSeasons(seasons);
+    setDisplayListSeason(seasons[1]);
   }, [])
 
   useEffect(() => {
@@ -179,7 +177,7 @@ function NewAnimeList(props) {
       </Modal>
       <div className="button-group">
         <div>
-          {seasons.map(season => <Button className="pink-button" onClick={changeSeason}>
+          {seasons.map(season => <Button key={season} className="pink-button" onClick={changeSeason}>
             {season}
           </Button>)}
         </div>
@@ -197,7 +195,13 @@ function NewAnimeList(props) {
         <Table striped borderless hover size="sm" variant="light" id="table">
           <thead>
             <tr className='table-headers'>
-              {tableHeaders.map(header => <th key={header}>{header}</th>)}
+              {tableHeaders.map(header => {
+                if (header === '更新日' || header === '排名'){
+                  return <SortHeader key={header} header={header} sort={() => setSortedCol(translateHeader(header))}/>;
+                } else {
+                  return <th key={header} >{header}</th>
+                }
+              })}
             </tr>
           </thead>
           <tbody>

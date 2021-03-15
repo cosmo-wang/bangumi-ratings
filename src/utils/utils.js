@@ -67,6 +67,7 @@ export function translateHeader(header) {
     case '名称':
       return 'name';
     case '集数':
+    case '预计集数':
       return 'tv_episodes';
     case '状态':
       return 'status';
@@ -92,6 +93,14 @@ export function translateHeader(header) {
       return 'douban';
     case '日均时长':
       return 'daily_time';
+    case '排名':
+      return 'ranking';
+    case '季度':
+      return 'season';
+    case '开始放送日期':
+      return 'start_date';
+    case '更新日':
+      return 'next_episode_day';
     default:
       return 'unknown';
   }
@@ -150,4 +159,20 @@ export function parseDoubanPage(pageSrc) {
     episode_length: isNaN(episode_length) ? 12: episode_length,
     description: description,
   }
+}
+
+export function getSeason() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = Math.floor(d.getMonth()/3) + 1;
+  const curSeason = year + "年" + month + "月";
+  let preSeason = year + "年" + (month - 3) + "月";
+  let nextSeason = year + "年" + (month + 3) + "月";
+  if (month === 1) {
+    preSeason = (year - 1) + "年10月";
+  }
+  if (month === 10) {
+    nextSeason = (year + 1) + "年1月";
+  }
+  return [preSeason, curSeason, nextSeason];
 }
