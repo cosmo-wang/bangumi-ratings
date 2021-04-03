@@ -164,7 +164,7 @@ export function parseDoubanPage(pageSrc) {
 export function getSeason() {
   const d = new Date();
   const year = d.getFullYear();
-  const month = Math.floor(d.getMonth()/3) + 1;
+  const month = Math.floor(d.getMonth()/3) * 3 + 1;
   const curSeason = year + "年" + month + "月";
   let preSeason = year + "年" + (month - 3) + "月";
   let nextSeason = year + "年" + (month + 3) + "月";
