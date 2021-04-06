@@ -113,7 +113,7 @@ function App() {
             id: result.id,
             name: result.get("name"),
             genre: result.get("genre"),
-            season_rank: result.get("season_rank"),
+            seasons_ranking: result.get("seasons_ranking"),
             start_date: result.get("start_date"),
             next_episode_day: result.get("next_episode_day"),
             tv_episodes: result.get("tv_episodes"),
@@ -122,11 +122,6 @@ function App() {
             status: result.get("status"),
           }}
         );
-        newAnimes.sort((a, b) => {
-          if (a.season_rank > b.season_rank) return 1;
-          if (a.season_rank < b.season_rank) return -1;
-          return 0;
-        })
         setNewAnimes(newAnimes);
         setIsLoading(false);
       }
@@ -323,7 +318,6 @@ function App() {
     const formElements = event.target.elements;
     const newAnime = {
       "name": formElements.name.value,
-      "season_rank": Number(formElements.season_rank.value),
       "tv_episodes": Number(formElements.tv_episodes.value),
       "genre": formElements.genre.value,
       "description": formElements.description.value,

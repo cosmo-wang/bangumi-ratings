@@ -176,3 +176,14 @@ export function getSeason() {
   }
   return [preSeason, curSeason, nextSeason];
 }
+
+export function getLatestRankings(newAnimes, currentSeason) {
+  let rankings = {};
+  newAnimes.forEach(newAnime => {
+    const currentSeasonRankings = newAnime.seasons_ranking[currentSeason];
+    const dates = Object.keys(currentSeasonRankings);
+    const latestRank = currentSeasonRankings[dates.sort()[0]];
+    rankings[newAnime.name] = latestRank;
+  });
+  return rankings;
+}

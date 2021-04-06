@@ -10,7 +10,8 @@ import { BiEditAlt, BiTrash } from "react-icons/bi";
 import { useAuthenticationContext } from "../context/AuthenticationContext";
 import SortHeader from './SortHeader';
 import AnimeModal from './AnimeModal';
-import { getSeason, formatEpisodes, translateHeader, sortList } from "../utils/utils";
+import Rankings from './Rankings';
+import { getSeason, formatEpisodes, translateHeader, sortList, getLatestRankings } from "../utils/utils";
 import '../App.css';
 import './NewAnimeList.css';
 
@@ -29,7 +30,6 @@ function NewAnimeModal(props) {
     <Form.Group>
       <Form.Row className="input-row">
         <Col><Form.Label>状态</Form.Label><Form.Control defaultValue={oldValue.status} id="status" type="input"/></Col>
-        <Col><Form.Label>排名</Form.Label><Form.Control defaultValue={oldValue.season_rank} id="season_rank" type="input"/></Col>
         <Col><Form.Label>分类</Form.Label><Form.Control defaultValue={oldValue.genre} id="genre" type="input"/></Col>
         <Col><Form.Label>预计集数</Form.Label><Form.Control defaultValue={oldValue.tv_episodes} id="tv_episodes" type="input"/></Col>
       </Form.Row>
@@ -69,6 +69,8 @@ function NewAnimeList(props) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showRateModal, setShowRateModal] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [showRankings, setShowRankings] = useState(false);
+  const [rankings, setRankings] = useState([]);
   const [submitNewAnime, setSubmitNewAnime] = useState(false);
   const [animeToDelete, setAnimeToDelete] = useState({});
   const [activeId, setActiveId] = useState();
@@ -105,7 +107,16 @@ function NewAnimeList(props) {
   }, [])
 
   useEffect(() => {
-    setDisplayList(newAnimes.filter((newAnime) => newAnime.season.includes(displayListSeason)));
+    const filtereddNewAnimes = newAnimes.filter((newAnime) => newAnime.season.includes(displayListSeason));
+    const rankings = getLatestRankings(filtereddNewAnimes, displayListSeason);
+    console.log(rankings);
+    filtereddNewAnimes.sort((a, b) => {
+      if (rankings[a.name] > rankings[b.name]) return 1;
+      if (rankings[a.name] < rankings[b.name]) return -1;
+      return 0;
+    })
+    setDisplayList(filtereddNewAnimes);
+    setRankings(rankings);
   }, [props.isLoading, newAnimes, displayListSeason])
 
   if (props.isLoading) {
@@ -175,6 +186,17 @@ function NewAnimeList(props) {
           }}>确定</Button>
         </Modal.Footer>
       </Modal>
+      <Modal centered size='lg' show={showRankings} onHide={() => setShowRankings(false)}>
+        <Modal.Header closeButton>
+        <Modal.Title>番剧排名</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Rankings rankings={rankings}/>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={() => {}}>提交</Button>
+        </Modal.Footer>
+      </Modal>
       <div className="button-group">
         <div>
           {seasons.map(season => <Button key={season} className="pink-button" onClick={changeSeason}>
@@ -188,6 +210,7 @@ function NewAnimeList(props) {
             setActiveId(null);
             setShowAddModal(true);
           }}>添加追番</Button> : <></>}
+          {authenticated ? <Button className="pink-button" onClick={() => {setShowRankings(true);}}>排名</Button> : <></>}
           <Button className="pink-button" onClick={props.refresh}>刷新</Button>
         </div>
       </div>
@@ -208,7 +231,7 @@ function NewAnimeList(props) {
             {
               displayList.map(row => 
                 <tr key={row.name}>
-                  <td>{row.season_rank}</td>
+                  <td>{rankings[row.name]}</td>
                   <td className='anime-name'>{row.name}</td>
                   <td>{row.genre}</td>
                   <td>{row.season}</td>
@@ -228,7 +251,6 @@ function NewAnimeList(props) {
                           start_date: row.start_date,
                           next_episode_day: row.next_episode_day,
                           season: row.season,
-                          season_rank: row.season_rank,
                           status: row.status
                         });
                         setSubmitNewAnime(false);
