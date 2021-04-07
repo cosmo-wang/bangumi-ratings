@@ -107,6 +107,15 @@ function MonthlySummary(props) {
     setActiveMonth(month);
   };
 
+  const sortMonthlySummaries = (monthlySummaries) => {
+    const res = [];
+    for (const [month, summary] of Object.entries(monthlySummaries)) {
+      res.push([month, summary]);
+    }
+    res.sort((a, b) => a[0].localeCompare(b[0]) * -1);
+    return res;
+  }
+
   return <div className="monthly-summary">
       <Modal centered size='lg' show={showQuoteModal} onHide={() => setShowQuoteModal(false)}>
         <Modal.Header closeButton>
@@ -161,9 +170,9 @@ function MonthlySummary(props) {
         </Modal.Footer>
       </Modal>
     {
-      Object.keys(monthlySummaries).map((month) => 
+      sortMonthlySummaries(monthlySummaries).map((entry) => 
       <QuoteModificationContext.Provider value={{ setIsNewQuote, setShowQuoteModal, addNewQuote, setQuoteToEdit, setActiveQuoteId, setShowDeleteConfirmation }}>
-        <Summary month={month} summary={monthlySummaries[month]} />
+        <Summary month={entry[0]} summary={entry[1]} />
       </QuoteModificationContext.Provider>)
     }
   </div>;
