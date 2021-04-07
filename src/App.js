@@ -212,6 +212,26 @@ function App() {
       });
     });
   };
+
+
+  const updateNewAnimesRankings = async (ids, newRankings, season) => {
+    const obj = Parse.Object.extend("NewAnimes");
+    const query = new Parse.Query(obj);
+    query.containedIn("objectId", ids);
+    query.find().then((results) => {
+      results.forEach((result) => {
+        result.set("seasons_ranking", newRankings[result.id]);
+      })
+      Parse.Object.saveAll(results).then((response) => {
+        alert("已更新排名！");
+        fetchNewAnimes();
+      }, (err) => {
+        alert("更新排名失败。");
+      })
+    }, (error) => {
+      alert("更新排名失败。");
+    });
+  }
   
   const deleteEntry = async (id, databaseName) => {
     const obj = Parse.Object.extend(databaseName);
@@ -389,6 +409,7 @@ function App() {
           onNewAnimeSubmit={handleNewAnimeSubmit}
           updateEntry={updateEntry}
           deleteNewAnime={deleteEntry}
+          updateNewAnimesRankings={updateNewAnimesRankings}
         />
       case 'MonthlySummary':
         return <MonthlySummary
@@ -405,7 +426,6 @@ function App() {
         />;
     }
   }
-
 
   return (
     <div>

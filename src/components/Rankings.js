@@ -1,26 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import { BsFileArrowUp, BsFileArrowDown } from "react-icons/bs";
-import { useAuthenticationContext } from "../context/AuthenticationContext";
 import './Rankings.css'
 import '../App.css';
 
 export default function Rankings(props) {
-  const { authenticated } = useAuthenticationContext();
-
-  const [rankings, setRankings] = useState([]);
-
-  useEffect(() => {
-    let tempRankings = [];
-    for (let animeName in props.rankings) {
-      tempRankings.push([animeName, props.rankings[animeName]]);
+  const rankingsDictToArray = (rankings) => {
+    let res = [];
+    for (const [anime, ranking] of Object.entries(rankings)) {
+      res.push([anime, ranking]);
     }
-    tempRankings.sort(function(a, b) {
+    res.sort(function(a, b) {
         return a[1] - b[1];
     });
-    setRankings(tempRankings);
-  }, [props.rankings])
+    return res;
+  }
 
   return <div>
     <Table striped borderless hover size="sm" variant="light" id="table">
@@ -33,15 +28,15 @@ export default function Rankings(props) {
       </thead>
       <tbody>
       {
-        rankings.map(row => 
+        rankingsDictToArray(props.rankings).map(row => 
           <tr key={row[0]}>
             <td>{row[1]}</td>
-            <td>{row[0]}</td>
+            <td className='new-anime-name'>{row[0]}</td>
             <td className="update-ranking-buttons">
-              {authenticated ? <>
-                <Button className="pink-button" onClick={() => {}}><BsFileArrowUp/></Button>
-                <Button className="pink-button" onClick={() => {}}><BsFileArrowDown/></Button>
-              </> : <></>}
+              <>
+                <Button className="pink-button" onClick={(e) => props.changeRanking(e, -1)}><BsFileArrowUp/></Button>
+                <Button className="pink-button" onClick={(e) => props.changeRanking(e, 1)}><BsFileArrowDown/></Button>
+              </>
             </td>
           </tr>
         )

@@ -31,3 +31,8 @@
 .icon {
   margin-left: 0.4rem;
 }
+
+.table td {
+  vertical-align: center;
+  text-align: center;
+}

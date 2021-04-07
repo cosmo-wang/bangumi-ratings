@@ -12,7 +12,7 @@ import FilterHeader from './FilterHeader';
 import DropdownHeader from './DropdownHeader';
 import Description from './Description';
 import AnimeModal from './AnimeModal';
-import { sortList, formatEpisodes, formatDate, translateHeader, calculateDailyTime, formatTime, parseDoubanPage } from "../utils/utils";
+import { sortList, formatEpisodes, formatDate, translate, calculateDailyTime, formatTime, parseDoubanPage } from "../utils/utils";
 import '../App.css';
 import './AnimeList.css';
 
@@ -220,7 +220,7 @@ function AnimeList(props) {
                       for (let item in filterList) {
                         newFilterList[item] = filterList[item];
                       }
-                      newFilterList[translateHeader(header)] = e.target.value;
+                      newFilterList[translate(header)] = e.target.value;
                       setFilterList(newFilterList);
                     }}
                     clearFilter={() => {
@@ -233,7 +233,7 @@ function AnimeList(props) {
                     setFilterList({"status": event.target.value});
                   }}/>
                 } else if (header !== ''){
-                  return <SortHeader key={header} header={header} sort={() => setSortedCol(translateHeader(header))}/>;
+                  return <SortHeader key={header} header={header} sort={() => setSortedCol(translate(header))}/>;
                 } else {
                   return <th key={header} ></th>
                 }

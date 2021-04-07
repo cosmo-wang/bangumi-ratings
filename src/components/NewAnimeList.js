@@ -6,12 +6,14 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Alert from 'react-bootstrap/Alert';
+import ListGroup from 'react-bootstrap/ListGroup';
+import moment from 'moment';
 import { BiEditAlt, BiTrash } from "react-icons/bi";
 import { useAuthenticationContext } from "../context/AuthenticationContext";
 import SortHeader from './SortHeader';
 import AnimeModal from './AnimeModal';
 import Rankings from './Rankings';
-import { getSeason, formatEpisodes, translateHeader, sortList, getLatestRankings } from "../utils/utils";
+import { getSeason, formatEpisodes, translate, sortList, getLatestRankings } from "../utils/utils";
 import '../App.css';
 import './NewAnimeList.css';
 
@@ -70,7 +72,9 @@ function NewAnimeList(props) {
   const [showRateModal, setShowRateModal] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showRankings, setShowRankings] = useState(false);
-  const [rankings, setRankings] = useState([]);
+  const [showToday, setShowToday] = useState(false);
+  const [rankings, setRankings] = useState({});
+  const [localRankings, setLocalRankings] = useState({});
   const [submitNewAnime, setSubmitNewAnime] = useState(false);
   const [animeToDelete, setAnimeToDelete] = useState({});
   const [activeId, setActiveId] = useState();
@@ -93,12 +97,60 @@ function NewAnimeList(props) {
     setDisplayListSeason(e.target.innerHTML);
   }
 
+  const sortAnimesByRankings = (animes, rankings) => {
+    animes.sort((a, b) => {
+      if (rankings[a.name] > rankings[b.name]) return 1;
+      if (rankings[a.name] < rankings[b.name]) return -1;
+      return 0;
+    })
+  }
+
+  const getMaxRanking = (rankings) => {
+    let max = -1;
+    for (const anime of Object.keys(rankings)) {
+      if (rankings[anime] > max) {
+        max = rankings[anime];
+      }
+    }
+    return max;
+  }
+
+  const changeRanking = (e, offset) => {
+    const newAnimeName = e.currentTarget.parentElement.parentElement.getElementsByClassName('new-anime-name')[0].innerText;
+    const originRanking = localRankings[newAnimeName];
+    const newRankings = {};
+    let possibleToChange = false;
+    if (offset === 1) {
+      possibleToChange = originRanking !== getMaxRanking(localRankings);
+    } else if (offset === -1) {
+      possibleToChange = originRanking !== 1;
+    }
+    if (possibleToChange) {
+      for (const [anime, ranking] of Object.entries(localRankings)) {
+        if (anime === newAnimeName) {
+          newRankings[anime] = originRanking + offset;
+        } else if (ranking === originRanking + offset) {
+          newRankings[anime] = originRanking;
+        } else {
+          newRankings[anime] = ranking;
+        }
+      }
+      setLocalRankings(newRankings);
+    }
+  }
+
   useEffect(() => {
     if (sortedCol !== null) {
-      setDisplayList(sortList(newAnimes.filter((newAnime) => newAnime.season.includes(displayListSeason)), sortedCol));
+      const filteredNewAnimes = newAnimes.filter((newAnime) => newAnime.season.includes(displayListSeason));
+      if (sortedCol === 'ranking') {
+        sortAnimesByRankings(filteredNewAnimes, rankings);
+        setDisplayList(filteredNewAnimes);
+      } else {
+        setDisplayList(sortList(filteredNewAnimes, sortedCol));
+      }
       setSortedCol(null);
     }
-  }, [sortedCol, newAnimes, displayListSeason]);
+  }, [sortedCol, newAnimes, displayListSeason, rankings]);
 
   useEffect(() => {
     const seasons = getSeason();
@@ -107,16 +159,12 @@ function NewAnimeList(props) {
   }, [])
 
   useEffect(() => {
-    const filtereddNewAnimes = newAnimes.filter((newAnime) => newAnime.season.includes(displayListSeason));
-    const rankings = getLatestRankings(filtereddNewAnimes, displayListSeason);
-    console.log(rankings);
-    filtereddNewAnimes.sort((a, b) => {
-      if (rankings[a.name] > rankings[b.name]) return 1;
-      if (rankings[a.name] < rankings[b.name]) return -1;
-      return 0;
-    })
-    setDisplayList(filtereddNewAnimes);
+    const filteredNewAnimes = newAnimes.filter((newAnime) => newAnime.season.includes(displayListSeason));
+    const rankings = getLatestRankings(filteredNewAnimes, displayListSeason);
+    sortAnimesByRankings(filteredNewAnimes, rankings);
+    setDisplayList(filteredNewAnimes);
     setRankings(rankings);
+    setLocalRankings(rankings);
   }, [props.isLoading, newAnimes, displayListSeason])
 
   if (props.isLoading) {
@@ -191,11 +239,37 @@ function NewAnimeList(props) {
         <Modal.Title>番剧排名</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Rankings rankings={rankings}/>
+          <Rankings rankings={localRankings} changeRanking={changeRanking}/>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={() => {}}>提交</Button>
+          <Button variant="primary" onClick={() => {
+            const updatedIds = [];
+            const newRankings = {};
+            const dateString = moment().format("YYYY-MM-DD");
+            displayList.forEach(row => {
+              updatedIds.push(row.id);
+              const newRanking = Object.assign({}, row.seasons_ranking);
+              newRanking[displayListSeason][dateString] = localRankings[row.name];
+              newRankings[row.id] = newRanking;
+            })
+            props.updateNewAnimesRankings(updatedIds, newRankings, displayListSeason);
+            setShowRankings(false)
+          }}>提交</Button>
         </Modal.Footer>
+      </Modal>
+      <Modal centered size='lg' show={showToday} onHide={() => setShowToday(false)}>
+        <Modal.Header closeButton>
+        <Modal.Title>今日更新</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <ListGroup>
+            {displayList.filter(newAnime => {
+              const startDate = moment(newAnime.start_date);
+              const todayDate = moment();
+              return todayDate.isAfter(startDate) && todayDate.diff(startDate, 'days') % 7 === 0;
+            }).map(todayAnime => <ListGroup.Item key={todayAnime.name}>{todayAnime.name}</ListGroup.Item>)}
+          </ListGroup>
+        </Modal.Body>
       </Modal>
       <div className="button-group">
         <div>
@@ -210,7 +284,8 @@ function NewAnimeList(props) {
             setActiveId(null);
             setShowAddModal(true);
           }}>添加追番</Button> : <></>}
-          {authenticated ? <Button className="pink-button" onClick={() => {setShowRankings(true);}}>排名</Button> : <></>}
+          {authenticated ? <Button className="pink-button" onClick={() => setShowRankings(true)}>排名</Button> : <></>}
+          <Button className="pink-button" onClick={() => setShowToday(true)}>今日更新</Button>
           <Button className="pink-button" onClick={props.refresh}>刷新</Button>
         </div>
       </div>
@@ -219,8 +294,8 @@ function NewAnimeList(props) {
           <thead>
             <tr className='table-headers'>
               {tableHeaders.map(header => {
-                if (header === '更新日' || header === '排名'){
-                  return <SortHeader key={header} header={header} sort={() => setSortedCol(translateHeader(header))}/>;
+                if (header === '更新日' || header === '排名' || header === '开始放送日期'){
+                  return <SortHeader key={header} header={header} sort={() => setSortedCol(translate(header))}/>;
                 } else {
                   return <th key={header} >{header}</th>
                 }

@@ -62,8 +62,8 @@ export function calculateDailyTime(row) {
   return totalTime / days;
 }
 
-export function translateHeader(header) {
-  switch(header) {
+export function translate(word) {
+  switch(word) {
     case '名称':
       return 'name';
     case '集数':
@@ -110,7 +110,7 @@ export function sortList(rawList, sortedCol) {
   return rawList.slice().sort((a, b) => {
     const aQuantity = sortedCol === "daily_time" ? calculateDailyTime(a) : a[sortedCol];
     const bQuantity = sortedCol === "daily_time" ? calculateDailyTime(b) : b[sortedCol];
-    if (sortedCol === "start_date") {
+    if (sortedCol === "start_date" && typeof sortedCol !== "string") {
       if (!aQuantity.isValid()) {
         return 1;
       } else if (!bQuantity.isValid()) {
@@ -182,7 +182,7 @@ export function getLatestRankings(newAnimes, currentSeason) {
   newAnimes.forEach(newAnime => {
     const currentSeasonRankings = newAnime.seasons_ranking[currentSeason];
     const dates = Object.keys(currentSeasonRankings);
-    const latestRank = currentSeasonRankings[dates.sort()[0]];
+    const latestRank = currentSeasonRankings[dates.sort()[dates.length - 1]];
     rankings[newAnime.name] = latestRank;
   });
   return rankings;
