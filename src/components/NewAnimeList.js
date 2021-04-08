@@ -6,13 +6,13 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Alert from 'react-bootstrap/Alert';
-import ListGroup from 'react-bootstrap/ListGroup';
 import moment from 'moment';
 import { BiEditAlt, BiTrash } from "react-icons/bi";
 import { useAuthenticationContext } from "../context/AuthenticationContext";
 import SortHeader from './SortHeader';
 import AnimeModal from './AnimeModal';
 import Rankings from './Rankings';
+import DailyNewAnimes from './DailyNewAnimes';
 import { getSeason, formatEpisodes, translate, sortList, getLatestRankings } from "../utils/utils";
 import '../App.css';
 import './NewAnimeList.css';
@@ -259,16 +259,10 @@ function NewAnimeList(props) {
       </Modal>
       <Modal centered size='lg' show={showToday} onHide={() => setShowToday(false)}>
         <Modal.Header closeButton>
-        <Modal.Title>今日更新</Modal.Title>
+        <Modal.Title>近期更新</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <ListGroup>
-            {displayList.filter(newAnime => {
-              const startDate = moment(newAnime.start_date);
-              const todayDate = moment();
-              return todayDate.isAfter(startDate) && todayDate.diff(startDate, 'days') % 7 === 0;
-            }).map(todayAnime => <ListGroup.Item key={todayAnime.name}>{todayAnime.name}</ListGroup.Item>)}
-          </ListGroup>
+          <DailyNewAnimes displayList={displayList}/>
         </Modal.Body>
       </Modal>
       <div className="button-group">
@@ -285,7 +279,7 @@ function NewAnimeList(props) {
             setShowAddModal(true);
           }}>添加追番</Button> : <></>}
           {authenticated ? <Button className="pink-button" onClick={() => setShowRankings(true)}>排名</Button> : <></>}
-          <Button className="pink-button" onClick={() => setShowToday(true)}>今日更新</Button>
+          <Button className="pink-button" onClick={() => setShowToday(true)}>近期更新</Button>
           <Button className="pink-button" onClick={props.refresh}>刷新</Button>
         </div>
       </div>
