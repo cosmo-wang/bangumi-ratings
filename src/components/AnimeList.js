@@ -9,7 +9,6 @@ import { BiEditAlt, BiTrash } from "react-icons/bi";
 import { useAuthenticationContext } from "../context/AuthenticationContext";
 import SortHeader from './SortHeader';
 import FilterHeader from './FilterHeader';
-import DropdownHeader from './DropdownHeader';
 import Description from './Description';
 import AnimeModal from './AnimeModal';
 import { sortList, formatEpisodes, formatDate, translate, calculateDailyTime, formatTime, parseDoubanPage } from "../utils/utils";
@@ -49,8 +48,16 @@ function AnimeList(props) {
 
   useEffect(() => {
     if (sortedCol !== null) {
-      setDisplayList(sortList(ratings.filter((rating) => rating.status === displayListStatus), sortedCol));
+      if (displayListStatus === '在看' && sortedCol === "end_date") {
+        setDisplayList(sortList(ratings.filter((rating) => rating.status === displayListStatus), "start_date"));
+      } else {
+        setDisplayList(sortList(ratings.filter((rating) => rating.status === displayListStatus), sortedCol));
+      }
       setSortedCol(null);
+    } else {
+      if (displayListStatus === '在看' ) {
+        setDisplayList(sortList(ratings.filter((rating) => rating.status === displayListStatus), "start_date"));
+      }
     }
   }, [sortedCol, ratings, displayListStatus]);
 
@@ -228,10 +235,8 @@ function AnimeList(props) {
                       setDisplayList(sortList(ratings.filter((rating) => rating.status === displayListStatus), "end_date"));
                     }}
                   />;
-                } else if (header === '状态') {
-                  return <DropdownHeader key={header} header={header} filterStatus={(event) => {
-                    setFilterList({"status": event.target.value});
-                  }}/>
+                } else if (header === '序号') {
+                  return <th key={header} >序号</th>
                 } else if (header !== ''){
                   return <SortHeader key={header} header={header} sort={() => setSortedCol(translate(header))}/>;
                 } else {
