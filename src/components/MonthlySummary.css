@@ -1,14 +1,3 @@
-.monthly-summary {
-  position: fixed;
-  left: 20%;
-  right: 20%;
-  width: 60%;
-  height: 90%;
-  overflow: scroll;
-  opacity: 0.8;
-  text-align: center;
-}
-
 .summary {
   background-color: #fbfcfc;
   margin-bottom: 1rem;

@@ -116,7 +116,7 @@ function MonthlySummary(props) {
     return res;
   }
 
-  return <div className="monthly-summary">
+  return <div className="summaries">
       <Modal centered size='lg' show={showQuoteModal} onHide={() => setShowQuoteModal(false)}>
         <Modal.Header closeButton>
         <Modal.Title>{isNewQuote ? "添加新语录" : "编辑语录"}</Modal.Title>

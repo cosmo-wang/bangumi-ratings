@@ -5,6 +5,7 @@ import AnimeDataContext from './context/AnimeDataContext';
 import AnimeList from './components/AnimeList';
 import NewAnimeList from './components/NewAnimeList';
 import MonthlySummary from './components/MonthlySummary';
+import SeasonalSummary from './components/SeasonalSummary';
 import Login from "./components/Login";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { AuthenticationContext } from "./context/AuthenticationContext";
@@ -232,7 +233,7 @@ function App() {
       alert("更新排名失败。");
     });
   }
-  
+
   const deleteEntry = async (id, databaseName) => {
     const obj = Parse.Object.extend(databaseName);
     const query = new Parse.Query(obj);
@@ -416,6 +417,8 @@ function App() {
           onQuoteSubmit={handleQuoteSubmit}
           deleteQuote={deleteQuote}
         />;
+      case 'SeasonalSummary':
+        return <SeasonalSummary />
       default:
         return <AnimeList
           isLoading={isLoading}
