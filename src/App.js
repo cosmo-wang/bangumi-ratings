@@ -35,184 +35,136 @@ function App() {
   const [summaries, setSummaries] = useState({});
   const [quotes, setQuotes] = useState([]);
 
-  const fetchRatings = async () => {
+  const fetchRatingsPostgres = async () => {
+    console.log("calling postgres server for ratings");
     setIsLoading(true);
-    const ratingsObj = Parse.Object.extend('Ratings');
-    const query = new Parse.Query(ratingsObj);
-    query.limit(1000);
-    query.find().then((results) => {
-      console.log("calling server for ratings");
-      if (typeof document !== 'undefined'){
-        const ratings = results.map((result) => {
-          return {
-            id: result.id,
-            name: result.get("name"),
-            year: result.get("year"),
-            douban: result.get("douban"),
-            tv_episodes: result.get("tv_episodes"),
-            movies: result.get("movies"),
-            episode_length: result.get("episode_length"),
-            status: result.get("status"),
-            genre: result.get("genre"),
-            description: result.get("description"),
-            story: result.get("story"),
-            illustration: result.get("illustration"),
-            music: result.get("music"),
-            passion: result.get("passion"),
-            rating: Number((result.get("story") + result.get("illustration") + result.get("music") + result.get("passion")).toFixed(1)),
-            start_date: moment(result.get("start_date"), 'YYYY-MM-DD'),
-            end_date: moment(result.get("end_date"), 'YYYY-MM-DD'),
-            times_watched: result.get("times_watched"),
-          }}
-        );
-        setRatings(sortList(ratings, "start_date"));
-        setIsLoading(false);
-      }
-    }, (error) => {
-      setIsLoading(false);
-      setLoadError(true);
-      console.error('Error while fetching ratings', error);
-    });
-  };
-
-  const fetchQuotes = async () => {
-    const quotesObj = Parse.Object.extend('Quotes');
-    const query = new Parse.Query(quotesObj);
-    query.limit(1000);
-    query.find().then((results) => {
-      console.log("calling server for quotes");
-      if (typeof document !== 'undefined'){
-        const quotes = results.map((result) => {
-          return {
-            id: result.id,
-            month: result.get("month"),
-            content: result.get("content"),
-            translation: result.get("translation"),
-            person: result.get("person"),
-            bangumi: result.get("bangumi"),
-          }}
-        );
-        setQuotes(quotes);
-      }
-    }, (error) => {
-      setLoadError(true);
-      console.error('Error while fetching quotes', error);
-    });
+    fetch("http://localhost:3001/ratings")
+        .then(res => res.json())
+        .then(
+            (result) => {
+                result.forEach(rating => {
+                    rating.start_date = moment(rating.start_date, 'YYYY-MM-DD')
+                    rating.end_date = moment(rating.end_date, 'YYYY-MM-DD')
+                })
+                setRatings(sortList(result, "start_date"));
+                setIsLoading(false);
+            },
+            (error) => {
+                setIsLoading(false);
+                setLoadError(true);
+                console.error('Error while fetching ratings', error);
+            })
   }
 
-  const fetchNewAnimes = async () => {
-    setIsLoading(true);
-    const quotesObj = Parse.Object.extend('NewAnimes');
-    const query = new Parse.Query(quotesObj);
-    query.limit(1000);
-    query.find().then((results) => {
-      console.log("calling server for new animes");
-      if (typeof document !== 'undefined'){
-        const newAnimes = results.map((result) => {
-          return {
-            id: result.id,
-            name: result.get("name"),
-            genre: result.get("genre"),
-            seasons_ranking: result.get("seasons_ranking"),
-            start_date: result.get("start_date"),
-            next_episode_day: result.get("next_episode_day"),
-            tv_episodes: result.get("tv_episodes"),
-            description: result.get("description"),
-            season: result.get("season"),
-            status: result.get("status"),
-          }}
-        );
-        setNewAnimes(newAnimes);
-        setIsLoading(false);
-      }
-    }, (error) => {
-      setIsLoading(false);
-      setLoadError(true);
-      console.error('Error while fetching new animes', error);
-    });
+  const fetchQuotesPostgres = async () => {
+    console.log("calling postgres server for quotes");
+    fetch("http://localhost:3001/quotes")
+        .then(res => res.json())
+        .then(
+            (result) => {
+                console.log(result);
+                setQuotes(result);
+            },
+            (error) => {
+                setLoadError(true);
+                console.error('Error while fetching quotes', error);
+            })
   }
 
-  const submitNewEntry = async (newEntry, databaseName) => {
-    const DataObject = Parse.Object.extend(databaseName);
-    const query = new Parse.Query(DataObject);
-    query.equalTo("name", newEntry.name);
-    const results = await query.find();
-    if (results.length > 0) {
-      alert("番剧《" + newEntry.name + "》已存在！请勿重复添加番剧！")
-    } else {
-      const newObj = new DataObject();
-      for (const [key, value] of Object.entries(newEntry)) {
-        newObj.set(key, value)
-      }
-      newObj.save().then(
-        (result) => {
-          alert("已提交番剧信息！");
-          if (databaseName === "Ratings") {
-            fetchRatings();
-          } else if (databaseName === "NewAnimes") {
-            fetchNewAnimes();
-          }
-        },
-        (error) => {
-          alert("更新失败，请稍后重试。");
-        }
-      );
-    }
-  };
+  const fetchNewAnimesPostgres = async () => {
+    console.log("calling postgres server for new animes");
+    setIsLoading(true);
+    fetch("http://localhost:3001/new_animes")
+        .then(res => res.json())
+        .then(
+            (result) => {
+                setNewAnimes(result);
+                setIsLoading(false);
+            },
+            (error) => {
+                setIsLoading(false);
+                setLoadError(true);
+                console.error('Error while fetching new animes', error);
+            })
+  }
 
-  const submitNewQuote = async (newQuote) => {
-    const QuotesObj = Parse.Object.extend('Quotes');
-    const newQuotesObj = new QuotesObj();
-    for (const [key, value] of Object.entries(newQuote)) {
-      newQuotesObj.set(key, value)
-    }
-    newQuotesObj.save().then(
-      (result) => {
-        alert("已添加语录！");
-        fetchQuotes();
-      },
-      (error) => {
-        alert("添加失败，请稍后重试。");
-      }
-    );
-  };
+  const submitAnimePostgres = async (animeData, isOldAnime) => {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(animeData)
+    };
+    fetch(`http://localhost:3001/add_anime?type=${isOldAnime ? 'old' : 'new'}`, requestOptions)
+        .then(res => {
+            if (res.status === 400) {
+                alert("番剧《" + animeData.name + "》已存在！请勿重复添加番剧！")
+            } else if (!res.ok) {
+                alert("更新失败，请稍后重试。");
+            } else {
+                alert("已提交番剧信息！");
+                if (isOldAnime) {
+                    fetchRatingsPostgres();
+                } else {
+                    fetchNewAnimesPostgres();
+                }
+            }
+        })
+  }
 
-  const updateEntry = async (id, newEntry, databaseName) => {
-    const obj = Parse.Object.extend(databaseName);
-    const query = new Parse.Query(obj);
-    query.get(id).then((object) => {
-      for (const [key, value] of Object.entries(newEntry)) {
-        object.set(key, value)
-      }
-      object.save().then((response) => {
-        alert("已更新番剧信息！");
-        if (databaseName === "Ratings") {
-          fetchRatings();
-        } else if (databaseName === "NewAnimes") {
-          fetchNewAnimes();
-        }
-      }, (error) => {
-        alert("更新失败，请稍后重试。");
-      });
-    });
-  };
+  const submitQuotePostgres = async (newQuote) => {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newQuote)
+    };
+    fetch('http://localhost:3001/add_quote', requestOptions)
+        .then(res => {
+            if (res.ok) {
+                alert("已添加语录！");
+                fetchQuotesPostgres();
+            } else {
+                alert("添加失败，请稍后重试。");
+            }
+        })
+  }
 
-  const updateQuote = async (id, newQuote) => {
-    const QuotesObj = Parse.Object.extend('Quotes');
-    const query = new Parse.Query(QuotesObj);
-    query.get(id).then((object) => {
-      for (const [key, value] of Object.entries(newQuote)) {
-        object.set(key, value)
-      }
-      object.save().then((response) => {
-        alert("已更新语录！");
-        fetchQuotes();
-      }, (error) => {
-        alert("更新失败，请稍后重试。");
-      });
-    });
-  };
+  const updateAnimePostgres = async (id, animeData, isOldAnime) => {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(animeData)
+    };
+    fetch(`http://localhost:3001/update_anime?id=${id}&type=${isOldAnime ? 'old' : 'new'}`, requestOptions)
+        .then(res => {
+            if (res.ok) {
+                alert("已更新番剧信息！");
+                if (isOldAnime) {
+                    fetchRatingsPostgres();
+                } else {
+                    fetchNewAnimesPostgres();
+                }
+            } else {
+                alert("更新失败，请稍后重试。");
+            }
+        })
+  }
 
+  const updateQuotePostgres = async (id, quoteData) => {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(quoteData)
+    };
+    fetch(`http://localhost:3001/update_quote?id=${id}`, requestOptions)
+        .then(res => {
+            if (res.ok) {
+                alert("已更新语录！");
+                fetchQuotesPostgres();
+            } else {
+                alert("更新失败，请稍后重试。");
+            }
+        })
+  }
 
   const updateNewAnimesRankings = async (ids, newRankings, season) => {
     const obj = Parse.Object.extend("NewAnimes");
@@ -224,7 +176,7 @@ function App() {
       })
       Parse.Object.saveAll(results).then((response) => {
         alert("已更新排名！");
-        fetchNewAnimes();
+        fetchNewAnimesPostgres();
       }, (err) => {
         alert("更新排名失败。");
       })
@@ -232,41 +184,43 @@ function App() {
       alert("更新排名失败。");
     });
   }
-  
-  const deleteEntry = async (id, databaseName) => {
-    const obj = Parse.Object.extend(databaseName);
-    const query = new Parse.Query(obj);
-    query.get(id).then((object) => {
-      object.destroy().then((response) => {
-        alert("已删除番剧！");
-        if (databaseName === "Ratings") {
-          fetchRatings();
-        } else if (databaseName === "NewAnimes") {
-          fetchNewAnimes();
-        }
-      }, (error) => {
-        alert("删除失败，请稍后重试。");
-      });
-    });
-  };
 
-  const deleteQuote = async (id) => {
-    const quotesObj = Parse.Object.extend('Quotes');
-    const query = new Parse.Query(quotesObj);
-    query.get(id).then((object) => {
-      object.destroy().then((response) => {
-        alert("已删除语录！");
-        fetchQuotes();
-      }, (error) => {
-        alert("删除失败，请稍后重试。");
-      });
-    });
-  };
+  const deleteAnimePostgres = async (id, isOldAnime) => {
+    fetch(`http://localhost:3001/anime?id=${id}&type=${isOldAnime ? 'old' : 'new'}`, {
+        method: 'DELETE',
+        mode: 'cors'
+    }).then(res => {
+        if (res.ok) {
+            alert("已删除番剧！");
+            if (isOldAnime) {
+                fetchRatingsPostgres();
+            } else {
+                fetchNewAnimesPostgres();
+            }
+        } else {
+            alert("删除失败，请稍后重试。");
+        }
+    })
+  }
+
+  const deleteQuotePostgres = async (id) => {
+    fetch(`http://localhost:3001/quote?id=${id}`, {
+        method: 'DELETE',
+        mode: 'cors'
+    }).then(res => {
+        if (res.ok) {
+            alert("已删除语录！");
+            fetchQuotesPostgres();
+        } else {
+            alert("删除失败，请稍后重试。");
+        }
+    })
+  }
 
   useEffect(() => {
-    fetchRatings();
-    fetchNewAnimes();
-    fetchQuotes();
+    fetchRatingsPostgres();
+    fetchNewAnimesPostgres();
+    fetchQuotesPostgres();
   }, [])
 
   useEffect(() => {
@@ -290,12 +244,14 @@ function App() {
       tempSummaries[endMonth].movie_num += bangumi.movies;
       tempSummaries[endMonth].total_time += bangumi.tv_episodes * bangumi.episode_length + bangumi.movies * 90;
     });
+    console.log(tempSummaries);
     quotes.forEach((quote) => {
       let month = moment(quote.month).format('YYYY-MM');
       if (month in tempSummaries) {
         tempSummaries[month].quotes.push(quote);
       }
     });
+    console.log(tempSummaries);
     setSummaries(tempSummaries);
   }, [ratings, quotes])
 
@@ -311,7 +267,7 @@ function App() {
     const newRating = {
       "name": formElements.name.value,
       "year": formElements.year.value,
-      "douban": Number(formElements.douban.value),
+      "douban_ratings": Number(formElements.douban_ratings.value),
       "tv_episodes": Number(formElements.tv_episodes.value),
       "movies": Number(formElements.movies.value),
       "episode_length": Number(formElements.episode_length.value),
@@ -327,9 +283,9 @@ function App() {
       "times_watched": Number(formElements.times_watched.value),
     };
     if (isNew) {
-      submitNewEntry(newRating, 'Ratings');
+      submitAnimePostgres(newRating, true);
     } else {
-      updateEntry(id, newRating, 'Ratings');
+      updateAnimePostgres(id, newRating, true);
     }
   };
 
@@ -341,15 +297,15 @@ function App() {
       "tv_episodes": Number(formElements.tv_episodes.value),
       "genre": formElements.genre.value,
       "description": formElements.description.value,
-      "start_date": formElements.start_date.value,
-      "next_episode_day": formElements.next_episode_day.value,
-      "season": formElements.season.value,
+      "release_date": formElements.release_date.value,
+      "broadcast_day": formElements.broadcast_day.value,
+      "seasons": formElements.seasons.value,
       "status": formElements.status.value,
     };
     if (isNew) {
-      submitNewEntry(newAnime, 'NewAnimes');
+      submitAnimePostgres(newAnime, false);
     } else {
-      updateEntry(id, newAnime, 'NewAnimes');
+      updateAnimePostgres(id, newAnime, false);
     }
   };
 
@@ -359,14 +315,14 @@ function App() {
     const newQuote = {
       "month": month,
       "content": formElements.content.value,
-      "translation": formElements.translation.value,
+      "zh_translations": formElements.zh_translations.value,
       "person": formElements.person.value,
-      "bangumi": formElements.bangumi.value,
+      "anime_name": formElements.anime_name.value,
     };
     if (isNew) {
-      submitNewQuote(newQuote);
+        submitQuotePostgres(newQuote);
     } else {
-      updateQuote(id, newQuote);
+        updateQuotePostgres(id, newQuote);
     }
   }
 
@@ -396,33 +352,33 @@ function App() {
         return <AnimeList
           isLoading={isLoading}
           loadError={loadError}
-          refresh={fetchRatings}
+          refresh={fetchRatingsPostgres}
           onAnimeSubmit={handleAnimeSubmit}
-          deleteAnime={deleteEntry}
+          deleteAnime={deleteAnimePostgres}
         />;
       case 'NewAnimeList':
         return <NewAnimeList
           isLoading={isLoading}
           loadError={loadError}
-          refresh={fetchNewAnimes}
+          refresh={fetchNewAnimesPostgres}
           onAnimeSubmit={handleAnimeSubmit}
           onNewAnimeSubmit={handleNewAnimeSubmit}
-          updateEntry={updateEntry}
-          deleteNewAnime={deleteEntry}
+          updateEntry={updateAnimePostgres}
+          deleteNewAnime={deleteAnimePostgres}
           updateNewAnimesRankings={updateNewAnimesRankings}
         />
       case 'MonthlySummary':
         return <MonthlySummary
           onQuoteSubmit={handleQuoteSubmit}
-          deleteQuote={deleteQuote}
+          deleteQuote={deleteQuotePostgres}
         />;
       default:
         return <AnimeList
           isLoading={isLoading}
           loadError={loadError}
-          refresh={fetchRatings}
+          refresh={fetchRatingsPostgres}
           onAnimeSubmit={handleAnimeSubmit}
-          deleteAnime={deleteEntry}
+          deleteAnime={deleteAnimePostgres}
         />;
     }
   }

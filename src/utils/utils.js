@@ -180,10 +180,12 @@ export function getSeason() {
 export function getLatestRankings(newAnimes, currentSeason) {
   let rankings = {};
   newAnimes.forEach(newAnime => {
-    const currentSeasonRankings = newAnime.seasons_ranking[currentSeason];
-    const dates = Object.keys(currentSeasonRankings);
-    const latestRank = currentSeasonRankings[dates.sort()[dates.length - 1]];
-    rankings[newAnime.name] = latestRank;
+    const currentSeasonRankings = newAnime.season_rankings[currentSeason];
+    if (currentSeasonRankings !== undefined) {
+        const dates = Object.keys(currentSeasonRankings);
+        const latestRank = currentSeasonRankings[dates.sort()[dates.length - 1]];
+        rankings[newAnime.name] = latestRank;
+    }
   });
   return rankings;
 }

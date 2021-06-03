@@ -15,7 +15,7 @@ export default function AnimeModal(props) {
     </Form.Group>
     <Form.Group>
       <Form.Row className="input-row">
-        <Col><Form.Label>豆瓣评分<a href={"https://www.douban.com"} target="_blank" rel="noopener noreferrer"><AiOutlineSearch className="icon clickable" /></a></Form.Label><Form.Control defaultValue={oldValue.douban} id="douban" type="input"/></Col>
+        <Col><Form.Label>豆瓣评分<a href={"https://www.douban.com"} target="_blank" rel="noopener noreferrer"><AiOutlineSearch className="icon clickable" /></a></Form.Label><Form.Control defaultValue={oldValue.douban_ratings} id="douban_ratings" type="input"/></Col>
         <Col><Form.Label>年份</Form.Label><Form.Control defaultValue={oldValue.year} id="year" type="input"/></Col>
         <Col><Form.Label>状态</Form.Label><Form.Control defaultValue={oldValue.status} id="status" type="input"/></Col>
       </Form.Row>

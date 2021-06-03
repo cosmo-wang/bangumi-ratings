@@ -23,9 +23,9 @@ function Quote(props) {
   const { setQuoteToEdit, setShowQuoteModal, setIsNewQuote, setActiveQuoteId, setShowDeleteConfirmation } = useQuoteModificationContext();
   return <blockquote>
     <div className="quote-content">{props.quote.content}</div>
-    <div className="quote-translation">{props.quote.translation}</div>
+    <div className="quote-translation">{props.quote.zh_translations}</div>
     <cite>
-      {props.quote.person + "《" + props.quote.bangumi + "》"}
+      {props.quote.person + "《" + props.quote.anime_name + "》"}
       {authenticated ? <BiEditAlt className="icon clickable"
         onClick={() => {
           setIsNewQuote(false);
@@ -63,7 +63,7 @@ function Summary(props) {
         {
           props.summary.quotes.length !== 0 ?
           <>
-            {props.summary.quotes.map((quote) => <Quote quote={quote} setActiveQuoteId={props.setActiveQuoteId}/>)}
+            {props.summary.quotes.map((quote, index) => <Quote key={index} quote={quote} setActiveQuoteId={props.setActiveQuoteId}/>)}
             {authenticated ? <FiPlusCircle 
               className="clickable add-more-quote-button"
               onClick={() => {
@@ -87,7 +87,7 @@ function Summary(props) {
     </div>
     <div className="summary-names">
       {props.summary.bangumis.map((bangumi_name) => 
-        <div className="bangumi-name">{"• " + bangumi_name}</div>)}
+        <div key={bangumi_name} className="bangumi-name">{"• " + bangumi_name}</div>)}
     </div>
   </div>
 }
@@ -136,13 +136,13 @@ function MonthlySummary(props) {
             <Form.Label>语录原文</Form.Label>
             <Form.Control defaultValue={quoteToEdit.content} type="input" as="textarea" rows="3"/>
           </Form.Group>
-          <Form.Group controlId="translation">
+          <Form.Group controlId="zh_translations">
             <Form.Label>中文翻译</Form.Label>
-            <Form.Control defaultValue={quoteToEdit.translation} type="input" as="textarea" rows="3"/>
+            <Form.Control defaultValue={quoteToEdit.zh_translations} type="input" as="textarea" rows="3"/>
           </Form.Group>
           <Form.Row className="input-row">
             <Col><Form.Label>人物</Form.Label><Form.Control defaultValue={quoteToEdit.person} id="person" type="input"/></Col>
-            <Col><Form.Label>作品</Form.Label><Form.Control defaultValue={quoteToEdit.bangumi} id="bangumi" type="input"/></Col>
+            <Col><Form.Label>作品</Form.Label><Form.Control defaultValue={quoteToEdit.anime_name} id="anime_name" type="input"/></Col>
           </Form.Row>
           <Button className="pink-button" type="submit">
             提交
@@ -170,8 +170,8 @@ function MonthlySummary(props) {
         </Modal.Footer>
       </Modal>
     {
-      sortMonthlySummaries(monthlySummaries).map((entry) => 
-      <QuoteModificationContext.Provider value={{ setIsNewQuote, setShowQuoteModal, addNewQuote, setQuoteToEdit, setActiveQuoteId, setShowDeleteConfirmation }}>
+      sortMonthlySummaries(monthlySummaries).map((entry, index) => 
+      <QuoteModificationContext.Provider key={index} value={{ setIsNewQuote, setShowQuoteModal, addNewQuote, setQuoteToEdit, setActiveQuoteId, setShowDeleteConfirmation }}>
         <Summary month={entry[0]} summary={entry[1]} />
       </QuoteModificationContext.Provider>)
     }

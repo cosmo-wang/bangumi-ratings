@@ -144,7 +144,7 @@ function AnimeList(props) {
             setEditAnimeOldValue({
               name: info.name,
               year: info.year,
-              douban: info.douban,
+              douban_ratings: info.douban_ratings,
               tv_episodes: info.tv_episodes,
               movies: 0,
               episode_length: info.episode_length,
@@ -187,7 +187,7 @@ function AnimeList(props) {
             setShowDeleteConfirmation(false);
           }}>取消</Button>
           <Button variant="danger" onClick={() => {
-            props.deleteAnime(animeToDelete.id, "Ratings");
+            props.deleteAnime(animeToDelete.id, true);
             setAnimeToDelete({});
             setShowDeleteConfirmation(false);
           }}>确定</Button>
@@ -254,7 +254,7 @@ function AnimeList(props) {
                     setActiveDescription(
                       {
                         name: row.name,
-                        douban: row.douban,
+                        douban_ratings: row.douban_ratings,
                         year: row.year,
                         genre: row.genre,
                         episodes: row.tv_episodes,
@@ -267,7 +267,7 @@ function AnimeList(props) {
                   <td>{formatEpisodes(row.tv_episodes, row.movies)}</td>
                   <td>{row.genre}</td>
                   <td>{displayListStatus === '想看' ? row.year : row.story}</td>
-                  <td>{displayListStatus === '想看' ? row.douban : row.illustration}</td>
+                  <td>{displayListStatus === '想看' ? row.douban_ratings : row.illustration}</td>
                   <td>{displayListStatus === '想看' ? formatDescription(row.description) : row.music}</td>
                   {displayListStatus === '想看' ? "" : <td>{row.passion}</td>}
                   {displayListStatus === '想看' ? "" : <td>{row.rating}</td>}
@@ -280,7 +280,7 @@ function AnimeList(props) {
                           setEditAnimeOldValue({
                             name: row.name,
                             year: row.year,
-                            douban: row.douban,
+                            douban_ratings: row.douban_ratings,
                             tv_episodes: row.tv_episodes,
                             movies: row.movies,
                             episode_length: row.episode_length,

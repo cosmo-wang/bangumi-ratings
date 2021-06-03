@@ -25,9 +25,9 @@ function NewAnimeModal(props) {
       <Form.Control defaultValue={oldValue.name} type="input" />
     </Form.Group>
     <Form.Row className="input-row">
-        <Col><Form.Label>季度</Form.Label><Form.Control defaultValue={oldValue.season} id="season" type="input"/></Col>
-        <Col><Form.Label>开始放送日期</Form.Label><Form.Control defaultValue={oldValue.start_date} id="start_date" type="input"/></Col>
-        <Col><Form.Label>更新日</Form.Label><Form.Control defaultValue={oldValue.next_episode_day} id="next_episode_day" type="input"/></Col>
+        <Col><Form.Label>季度</Form.Label><Form.Control defaultValue={oldValue.seasons} id="seasons" type="input"/></Col>
+        <Col><Form.Label>开始放送日期</Form.Label><Form.Control defaultValue={oldValue.release_date} id="release_date" type="input"/></Col>
+        <Col><Form.Label>更新日</Form.Label><Form.Control defaultValue={oldValue.broadcast_day} id="broadcast_day" type="input"/></Col>
       </Form.Row>
     <Form.Group>
       <Form.Row className="input-row">
@@ -51,7 +51,7 @@ function NewAnimeModal(props) {
           "tv_episodes": Number(formElements.tv_episodes.value),
           "genre": formElements.genre.value,
           "description": formElements.description.value,
-          "start_date": formElements.start_date.value,
+          "release_date": formElements.release_date.value,
           "status": formElements.status.value
         });
       }}>已追完</Button>}
@@ -141,7 +141,7 @@ function NewAnimeList(props) {
 
   useEffect(() => {
     if (sortedCol !== null) {
-      const filteredNewAnimes = newAnimes.filter((newAnime) => newAnime.season.includes(displayListSeason));
+      const filteredNewAnimes = newAnimes.filter((newAnime) => newAnime.seasons.includes(displayListSeason));
       if (sortedCol === 'ranking') {
         sortAnimesByRankings(filteredNewAnimes, rankings);
         setDisplayList(filteredNewAnimes);
@@ -159,12 +159,14 @@ function NewAnimeList(props) {
   }, [])
 
   useEffect(() => {
-    const filteredNewAnimes = newAnimes.filter((newAnime) => newAnime.season.includes(displayListSeason));
-    const rankings = getLatestRankings(filteredNewAnimes, displayListSeason);
-    sortAnimesByRankings(filteredNewAnimes, rankings);
-    setDisplayList(filteredNewAnimes);
-    setRankings(rankings);
-    setLocalRankings(rankings);
+    const filteredNewAnimes = newAnimes.filter((newAnime) => newAnime.seasons.includes(displayListSeason));
+    if (filteredNewAnimes.length > 0) {
+        const rankings = getLatestRankings(filteredNewAnimes, displayListSeason);
+        sortAnimesByRankings(filteredNewAnimes, rankings);
+        setDisplayList(filteredNewAnimes);
+        setRankings(rankings);
+        setLocalRankings(rankings);
+    }
   }, [props.isLoading, newAnimes, displayListSeason])
 
   if (props.isLoading) {
@@ -228,7 +230,7 @@ function NewAnimeList(props) {
             setShowDeleteConfirmation(false);
           }}>取消</Button>
           <Button variant="danger" onClick={() => {
-            props.deleteNewAnime(animeToDelete.id, "NewAnimes");
+            props.deleteNewAnime(animeToDelete.id, false);
             setAnimeToDelete({});
             setShowDeleteConfirmation(false);
           }}>确定</Button>
@@ -248,7 +250,7 @@ function NewAnimeList(props) {
             const dateString = moment().format("YYYY-MM-DD");
             displayList.forEach(row => {
               updatedIds.push(row.id);
-              const newRanking = Object.assign({}, row.seasons_ranking);
+              const newRanking = Object.assign({}, row.season_rankings);
               newRanking[displayListSeason][dateString] = localRankings[row.name];
               newRankings[row.id] = newRanking;
             })
@@ -303,9 +305,9 @@ function NewAnimeList(props) {
                   <td>{rankings[row.name]}</td>
                   <td className='anime-name'>{row.name}</td>
                   <td>{row.genre}</td>
-                  <td>{row.season}</td>
-                  <td>{row.start_date}</td>
-                  <td>{row.next_episode_day}</td>
+                  <td>{row.seasons}</td>
+                  <td>{row.release_date}</td>
+                  <td>{row.broadcast_day}</td>
                   <td>{formatEpisodes(row.tv_episodes, 0)}</td>
                   <td>{row.status}</td>
                   <td> {authenticated ?
@@ -317,9 +319,9 @@ function NewAnimeList(props) {
                           tv_episodes: row.tv_episodes,
                           genre: row.genre,
                           description: row.description,
-                          start_date: row.start_date,
-                          next_episode_day: row.next_episode_day,
-                          season: row.season,
+                          release_date: row.release_date,
+                          broadcast_day: row.broadcast_day,
+                          seasons: row.seasons,
                           status: row.status
                         });
                         setSubmitNewAnime(false);
