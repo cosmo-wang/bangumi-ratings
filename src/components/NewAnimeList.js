@@ -245,16 +245,14 @@ function NewAnimeList(props) {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={() => {
-            const updatedIds = [];
             const newRankings = {};
             const dateString = moment().format("YYYY-MM-DD");
             displayList.forEach(row => {
-              updatedIds.push(row.id);
               const newRanking = Object.assign({}, row.season_rankings);
               newRanking[displayListSeason][dateString] = localRankings[row.name];
               newRankings[row.id] = newRanking;
             })
-            props.updateNewAnimesRankings(updatedIds, newRankings, displayListSeason);
+            props.updateNewAnimesRankings(newRankings, displayListSeason);
             setShowRankings(false)
           }}>提交</Button>
         </Modal.Footer>

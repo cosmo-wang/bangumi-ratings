@@ -62,7 +62,6 @@ function App() {
         .then(res => res.json())
         .then(
             (result) => {
-                console.log(result);
                 setQuotes(result);
             },
             (error) => {
@@ -166,23 +165,21 @@ function App() {
         })
   }
 
-  const updateNewAnimesRankings = async (ids, newRankings, season) => {
-    const obj = Parse.Object.extend("NewAnimes");
-    const query = new Parse.Query(obj);
-    query.containedIn("objectId", ids);
-    query.find().then((results) => {
-      results.forEach((result) => {
-        result.set("seasons_ranking", newRankings[result.id]);
-      })
-      Parse.Object.saveAll(results).then((response) => {
-        alert("已更新排名！");
-        fetchNewAnimesPostgres();
-      }, (err) => {
-        alert("更新排名失败。");
-      })
-    }, (error) => {
-      alert("更新排名失败。");
-    });
+  const updateNewAnimesRankingsPostgres = async (newRankings) => {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newRankings)
+    };
+    fetch(`http://localhost:3001/update_rankings`, requestOptions)
+        .then(res => {
+            if (res.ok) {
+                alert("已更新排名！");
+                fetchNewAnimesPostgres();
+            } else {
+                alert("更新排名失败。");
+            }
+        })
   }
 
   const deleteAnimePostgres = async (id, isOldAnime) => {
@@ -244,14 +241,12 @@ function App() {
       tempSummaries[endMonth].movie_num += bangumi.movies;
       tempSummaries[endMonth].total_time += bangumi.tv_episodes * bangumi.episode_length + bangumi.movies * 90;
     });
-    console.log(tempSummaries);
     quotes.forEach((quote) => {
       let month = moment(quote.month).format('YYYY-MM');
       if (month in tempSummaries) {
         tempSummaries[month].quotes.push(quote);
       }
     });
-    console.log(tempSummaries);
     setSummaries(tempSummaries);
   }, [ratings, quotes])
 
@@ -365,7 +360,7 @@ function App() {
           onNewAnimeSubmit={handleNewAnimeSubmit}
           updateEntry={updateAnimePostgres}
           deleteNewAnime={deleteAnimePostgres}
-          updateNewAnimesRankings={updateNewAnimesRankings}
+          updateNewAnimesRankings={updateNewAnimesRankingsPostgres}
         />
       case 'MonthlySummary':
         return <MonthlySummary
