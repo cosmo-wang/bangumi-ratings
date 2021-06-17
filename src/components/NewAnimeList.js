@@ -187,7 +187,8 @@ function NewAnimeList(props) {
             onSubmitOrEdit={(event, id) => {
               event.preventDefault();
               if (submitNewAnime) {
-                props.onNewAnimeSubmit(event, null, true);
+                const newRanking = Math.max(...Object.values(getLatestRankings(displayList, displayListSeason))) + 1;
+                props.onNewAnimeSubmit(event, null, true, newRanking);
               } else {
                 props.onNewAnimeSubmit(event, id, false);
               }

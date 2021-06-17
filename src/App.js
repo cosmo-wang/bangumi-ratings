@@ -334,7 +334,7 @@ function App() {
     }
   };
 
-  const handleNewAnimeSubmit = (event, id, isNew) => {
+  const handleNewAnimeSubmit = (event, id, isNew, newRanking) => {
     event.preventDefault();
     const formElements = event.target.elements;
     const newAnime = {
@@ -348,6 +348,12 @@ function App() {
       "status": formElements.status.value,
     };
     if (isNew) {
+      let latestSeason = formElements.season.value.split("，");
+      latestSeason = latestSeason[latestSeason.length - 1];
+      let newSeasonsRanking = {}
+      newSeasonsRanking[latestSeason] = {}
+      newSeasonsRanking[latestSeason][moment().format("YYYY-MM-DD")] = newRanking;
+      newAnime["seasons_ranking"] = newSeasonsRanking;
       submitNewEntry(newAnime, 'NewAnimes');
     } else {
       updateEntry(id, newAnime, 'NewAnimes');
