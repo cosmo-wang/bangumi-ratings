@@ -187,3 +187,15 @@ export function getLatestRankings(newAnimes, currentSeason) {
   });
   return rankings;
 }
+
+export function compareSeason(season1, season2) {
+  const year1 = parseInt(season1.split("年")[0]);
+  const month1 = parseInt(season1.split("年")[1].replace("日", ""));
+  const year2 = parseInt(season2.split("年")[0]);
+  const month2 = parseInt(season2.split("年")[1].replace("日", ""));
+  if (year1 === year2) {
+    return month1 - month2;
+  } else {
+    return year1 - year2;
+  }
+}

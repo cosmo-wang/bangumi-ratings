@@ -1,8 +1,10 @@
+.seasonal-summaries {
+  left: 5%;
+  right: 5%;
+  width: 90%;
+  opacity: 0.9;
+}
+
 .summary-chart {
-  background-color: #fbfcfc;
   margin: 1rem;
-  padding: 2rem;
-  border-radius: 0.5rem;
-  /* display: flex;
-  flex-direction: column; */
 }
