@@ -13,7 +13,7 @@ import SortHeader from './SortHeader';
 import AnimeModal from './AnimeModal';
 import Rankings from './Rankings';
 import DailyNewAnimes from './DailyNewAnimes';
-import { getSeason, formatEpisodes, translate, sortList, getLatestRankings } from "../utils/utils";
+import { getSeason, formatEpisodes, translate, sortList, getLatestRankings, reorder } from "../utils/utils";
 import '../App.css';
 import './NewAnimeList.css';
 
@@ -115,29 +115,29 @@ function NewAnimeList(props) {
     return max;
   }
 
-  const changeRanking = (e, offset) => {
-    const newAnimeName = e.currentTarget.parentElement.parentElement.getElementsByClassName('new-anime-name')[0].innerText;
-    const originRanking = localRankings[newAnimeName];
-    const newRankings = {};
-    let possibleToChange = false;
-    if (offset === 1) {
-      possibleToChange = originRanking !== getMaxRanking(localRankings);
-    } else if (offset === -1) {
-      possibleToChange = originRanking !== 1;
+  const rankingsDictToArray = (rankings) => {
+    const rankingsArray = new Array(Object.entries(rankings).length);
+    for (const [anime, ranking] of Object.entries(rankings)) {
+      rankingsArray[ranking - 1] = anime;
     }
-    if (possibleToChange) {
-      for (const [anime, ranking] of Object.entries(localRankings)) {
-        if (anime === newAnimeName) {
-          newRankings[anime] = originRanking + offset;
-        } else if (ranking === originRanking + offset) {
-          newRankings[anime] = originRanking;
-        } else {
-          newRankings[anime] = ranking;
-        }
-      }
-      setLocalRankings(newRankings);
-    }
+    return rankingsArray;
   }
+
+  const onDragEnd = (result) => {
+    // dropped outside the list
+    if (!result.destination) {
+      return;
+    }
+    const localRankingsArray = rankingsDictToArray(localRankings);
+    const newRankingsArray = reorder(
+      localRankingsArray,
+      result.source.index,
+      result.destination.index
+    );
+    const newRankings = {};
+    newRankingsArray.forEach((anime, ranking) => newRankings[anime] = ranking + 1);
+    setLocalRankings(newRankings);
+  };
 
   useEffect(() => {
     if (sortedCol !== null) {
@@ -240,7 +240,7 @@ function NewAnimeList(props) {
         <Modal.Title>番剧排名</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Rankings rankings={localRankings} changeRanking={changeRanking}/>
+          <Rankings rankings={rankingsDictToArray(localRankings)} onDragEnd={onDragEnd}/>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={() => {

@@ -1,14 +1,22 @@
-.update-ranking-buttons {
+#rankings {
   display: flex;
   justify-content: center;
 }
 
-.update-ranking-buttons button {
-  margin: 0 5px 0 5px;
-  padding-top: 0;
-  padding-bottom: 0;
+.ranking-entry, .ranking-entry-red {
+  border-bottom: 1.5px solid rgb(206, 206, 206);
+  padding: 0.5em;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
 }
 
-.table-headers {
-  text-align: center;
+.ranking-entry-red {
+  color: red;
 }
+
+.ranking-entry-num {
+  margin-right: 1em;
+  font-size: 1.3em;
+}
+

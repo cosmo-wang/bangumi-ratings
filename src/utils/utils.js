@@ -199,3 +199,12 @@ export function compareSeason(season1, season2) {
     return year1 - year2;
   }
 }
+
+// place an item in list at startIndex to endIndex
+export const reorder = (list, startIndex, endIndex) => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+
+  return result;
+};
