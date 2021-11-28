@@ -36,10 +36,8 @@ function AnimeList(props) {
   const [displayList, setDisplayList] = useState(ratings);
   const [tableHeaders, setTableHeaders] = useState(watchedHeaders);
   const [filterList, setFilterList] = useState({});
-  const [sortedCol, setSortedCol] = useState();
+  const [sortedCol, setSortedCol] = useState("end_date");
   const [editAnimeOldValue, setEditAnimeOldValue] = useState(null);
-
-  useEffect(() => {setSortedCol("end_date")}, []);
 
   useEffect(() => {
     setFilterList([]);
