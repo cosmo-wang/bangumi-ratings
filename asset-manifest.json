@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/bangumi-ratings/static/css/main.d7af3ce3.chunk.css",
-    "main.js": "/bangumi-ratings/static/js/main.0c7dc3f8.chunk.js",
-    "main.js.map": "/bangumi-ratings/static/js/main.0c7dc3f8.chunk.js.map",
+    "main.js": "/bangumi-ratings/static/js/main.6df46eca.chunk.js",
+    "main.js.map": "/bangumi-ratings/static/js/main.6df46eca.chunk.js.map",
     "runtime-main.js": "/bangumi-ratings/static/js/runtime-main.4fc86bb7.js",
     "runtime-main.js.map": "/bangumi-ratings/static/js/runtime-main.4fc86bb7.js.map",
     "static/css/2.bd932d36.chunk.css": "/bangumi-ratings/static/css/2.bd932d36.chunk.css",
@@ -19,6 +19,6 @@
     "static/css/2.bd932d36.chunk.css",
     "static/js/2.b8450a90.chunk.js",
     "static/css/main.d7af3ce3.chunk.css",
-    "static/js/main.0c7dc3f8.chunk.js"
+    "static/js/main.6df46eca.chunk.js"
   ]
 }
