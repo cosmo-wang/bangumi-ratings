@@ -15,8 +15,7 @@ export default function SeasonalSummary(props) {
   const formatRankingData = (data) => {
     const res = [];
     for (const [date, ranking] of Object.entries(data)) {
-      const splitted = date.split("-");
-      res.push([Date.UTC(splitted[0], splitted[1], splitted[2]), ranking]);
+      res.push([new Date(date).valueOf(), ranking]);
     }
     return res;
   }
@@ -68,13 +67,13 @@ export default function SeasonalSummary(props) {
   }, [newAnimes]);
 
   return <div className="summaries seasonal-summaries">
-    {summaryData.map((data) =>
-      <div className="summary-chart">
-      <HighchartsReact
-        highcharts={Highcharts}
-        options={data}
-      />
-    </div>
+    {summaryData.map((data, index) =>
+      <div className="summary-chart" key={index}>
+        <HighchartsReact
+          highcharts={Highcharts}
+          options={data}
+        />
+      </div>
     )}
   </div>
 }

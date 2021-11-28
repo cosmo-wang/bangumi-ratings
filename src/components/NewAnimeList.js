@@ -105,16 +105,6 @@ function NewAnimeList(props) {
     })
   }
 
-  const getMaxRanking = (rankings) => {
-    let max = -1;
-    for (const anime of Object.keys(rankings)) {
-      if (rankings[anime] > max) {
-        max = rankings[anime];
-      }
-    }
-    return max;
-  }
-
   const rankingsDictToArray = (rankings) => {
     const rankingsArray = new Array(Object.entries(rankings).length);
     for (const [anime, ranking] of Object.entries(rankings)) {

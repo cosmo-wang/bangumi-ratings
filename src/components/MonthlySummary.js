@@ -63,7 +63,7 @@ function Summary(props) {
         {
           props.summary.quotes.length !== 0 ?
           <>
-            {props.summary.quotes.map((quote) => <Quote quote={quote} setActiveQuoteId={props.setActiveQuoteId}/>)}
+            {props.summary.quotes.map((quote, index) => <Quote key={index} quote={quote} setActiveQuoteId={props.setActiveQuoteId}/>)}
             {authenticated ? <FiPlusCircle 
               className="clickable add-more-quote-button"
               onClick={() => {
@@ -86,8 +86,8 @@ function Summary(props) {
       </div>
     </div>
     <div className="summary-names">
-      {props.summary.bangumis.map((bangumi_name) => 
-        <div className="bangumi-name">{"• " + bangumi_name}</div>)}
+      {props.summary.bangumis.map((bangumi_name, index) => 
+        <div key={index} className="bangumi-name">{"• " + bangumi_name}</div>)}
     </div>
   </div>
 }
@@ -170,8 +170,8 @@ function MonthlySummary(props) {
         </Modal.Footer>
       </Modal>
     {
-      sortMonthlySummaries(monthlySummaries).map((entry) => 
-      <QuoteModificationContext.Provider value={{ setIsNewQuote, setShowQuoteModal, addNewQuote, setQuoteToEdit, setActiveQuoteId, setShowDeleteConfirmation }}>
+      sortMonthlySummaries(monthlySummaries).map((entry, index) => 
+      <QuoteModificationContext.Provider value={{ setIsNewQuote, setShowQuoteModal, addNewQuote, setQuoteToEdit, setActiveQuoteId, setShowDeleteConfirmation }} key={index} >
         <Summary month={entry[0]} summary={entry[1]} />
       </QuoteModificationContext.Provider>)
     }
