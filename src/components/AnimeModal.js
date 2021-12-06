@@ -13,10 +13,14 @@ export default function AnimeModal(props) {
 
   useEffect(() => { setOldValue(props.oldValue == null || props.oldValue === undefined ? {} : props.oldValue) }, [props.oldValue])
 
-  const handleFillTodayDate = () => {
+  const handleFillTodayDate = (startDate, endDate) => {
     const todayDate = moment(new Date()).format("YYYY-MM-DD");
     const newOldValue = JSON.parse(JSON.stringify(oldValue));
-    newOldValue.end_date = todayDate;
+    if (startDate) {
+      newOldValue.start_date = todayDate;
+    } else if (endDate) {
+      newOldValue.end_date = todayDate;
+    }
     setOldValue(newOldValue);
   }
 
@@ -52,8 +56,8 @@ export default function AnimeModal(props) {
     </Form.Group>
     <Form.Group>
       <Form.Row className="input-row">
-        <Col><Form.Label>开始观看日期</Form.Label><Form.Control defaultValue={oldValue.start_date} id="start_date" type="input" /></Col>
-        <Col><Form.Label>结束观看日期 <span className="clickable" onClick={handleFillTodayDate}>(今日日期)</span></Form.Label><Form.Control defaultValue={oldValue.end_date} id="end_date" type="input" /></Col>
+        <Col><Form.Label>开始观看日期 <span className="clickable" onClick={() => handleFillTodayDate(true, false)}>(今日日期)</span></Form.Label><Form.Control defaultValue={oldValue.start_date} id="start_date" type="input" /></Col>
+        <Col><Form.Label>结束观看日期 <span className="clickable" onClick={() => handleFillTodayDate(false, true)}>(今日日期)</span></Form.Label><Form.Control defaultValue={oldValue.end_date} id="end_date" type="input" /></Col>
         <Col><Form.Label>观看次数</Form.Label><Form.Control defaultValue={oldValue.times_watched} id="times_watched" type="input" /></Col>
       </Form.Row>
     </Form.Group>
