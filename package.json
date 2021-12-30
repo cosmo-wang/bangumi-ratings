@@ -4,7 +4,7 @@
   "version": "1.4.0",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "bootstrap": "^4.6.1",
@@ -16,11 +16,11 @@
     "react-beautiful-dnd": "^13.1.0",
     "react-bootstrap": "^1.6.4",
     "react-bootstrap-table": "^4.3.1",
-    "react-bootstrap-table-next": "^4.0.3",
+    "react-bootstrap-table-next": "^1.1.0",
     "react-dom": "^16.14.0",
     "react-icons": "^3.11.0",
     "react-router-dom": "^5.3.0",
-    "react-scripts": "^4.0.3",
+    "react-scripts": "^5.0.0",
     "uuidv4": "^6.2.12"
   },
   "scripts": {
