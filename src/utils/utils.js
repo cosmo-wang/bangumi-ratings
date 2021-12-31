@@ -1,21 +1,23 @@
+import moment from 'moment';
+
 // return the user data from the session storage
 export const getUser = () => {
   const userStr = sessionStorage.getItem('user');
   if (userStr) return JSON.parse(userStr);
   else return null;
 }
- 
+
 // return the token from the session storage
 export const getToken = () => {
   return sessionStorage.getItem('token') || null;
 }
- 
+
 // remove the token and user from the session storage
 export const removeUserSession = () => {
   sessionStorage.removeItem('token');
   sessionStorage.removeItem('user');
 }
- 
+
 // set the token and user from the session storage
 export const setUserSession = (user, token) => {
   sessionStorage.setItem('token', token);
@@ -35,6 +37,8 @@ export function formatEpisodes(tv_episodes, movies) {
 }
 
 export function formatDate(start_date, end_date) {
+  start_date = moment(start_date);
+  end_date = moment(end_date);
   if (!start_date.isValid()) {
     return ""
   } else if (!end_date.isValid()) {
@@ -56,19 +60,19 @@ export function formatTime(time) {
 }
 
 export function calculateDailyTime(row) {
-  const days = row.end_date.diff(row.start_date, 'days') + 1;
-  const episode_length = row.episode_length === undefined || row.episode_length === 0 ? 24 : row.episode_length;
-  const totalTime = row.tv_episodes * episode_length + row.movies * 90;
+  const days = moment(row.endDate).diff(moment(row.startDate), 'days') + 1;
+  const episodeLength = row.episodeLength === undefined || row.episodeLength === 0 ? 24 : row.episodeLength;
+  const totalTime = row.tvEpisodes * episodeLength + row.movies * 90;
   return totalTime / days;
 }
 
 export function translate(word) {
-  switch(word) {
+  switch (word) {
     case '名称':
-      return 'name';
+      return 'nameZh';
     case '集数':
     case '预计集数':
-      return 'tv_episodes';
+      return 'tvEpisodes';
     case '状态':
       return 'status';
     case '分类':
@@ -84,21 +88,21 @@ export function translate(word) {
     case '评分':
       return 'rating';
     case '首次观看日期':
-      return 'end_date';
+      return 'endDate';
     case '观看次数':
-      return 'times_watched';
+      return 'timesWatched';
     case '年份':
       return 'year';
     case '豆瓣评分':
-      return 'douban';
+      return 'doubanRating';
     case '日均时长':
-      return 'daily_time';
+      return 'dailyTime';
     case '排名':
       return 'ranking';
     case '季度':
       return 'season';
     case '开始放送日期':
-      return 'start_date';
+      return 'startDate';
     case '更新日':
       return 'next_episode_day';
     default:
@@ -108,8 +112,8 @@ export function translate(word) {
 
 export function sortList(rawList, sortedCol) {
   return rawList.slice().sort((a, b) => {
-    const aQuantity = sortedCol === "daily_time" ? calculateDailyTime(a) : a[sortedCol];
-    const bQuantity = sortedCol === "daily_time" ? calculateDailyTime(b) : b[sortedCol];
+    const aQuantity = sortedCol === "dailyTime" ? calculateDailyTime(a) : a[sortedCol];
+    const bQuantity = sortedCol === "dailyTime" ? calculateDailyTime(b) : b[sortedCol];
     if (sortedCol === "start_date" && typeof sortedCol !== "string") {
       if (!aQuantity.isValid()) {
         return 1;
@@ -118,6 +122,8 @@ export function sortList(rawList, sortedCol) {
       } else {
         return compare(aQuantity, bQuantity);
       }
+    } else if (sortedCol === 'rating') {
+      return compare(getRating(a), getRating(b))
     } else {
       return compare(aQuantity, bQuantity);
     }
@@ -135,28 +141,28 @@ function compare(a, b) {
 }
 
 export function parseDoubanPage(pageSrc) {
-  const name = pageSrc.split("\n")[5].split(" ")[0];
+  const nameZh = pageSrc.split("\n")[5].split(" ")[0];
   const year = pageSrc.split("首播: ")[1].split("-")[0];
-  const douban = pageSrc.split("豆瓣评分")[1].split("\n")[1];
-  let tv_episodes = 12;
+  const doubanRating = pageSrc.split("豆瓣评分")[1].split("\n")[1];
+  let tvEpisodes = 12;
   try {
-    tv_episodes = parseInt(pageSrc.split("集数: ")[1].split("-")[0]);
+    tvEpisodes = parseInt(pageSrc.split("集数: ")[1].split("-")[0]);
   } catch (error) {
     console.error(error);
   }
-  let episode_length = 24;
+  let episodeLength = 24;
   try {
-    episode_length = parseInt(pageSrc.split("单集片长: ")[1].split("-")[0]);
+    episodeLength = parseInt(pageSrc.split("单集片长: ")[1].split("-")[0]);
   } catch (error) {
     console.error(error);
   }
   const description = pageSrc.split("的剧情简介 · · · · · ·")[1].split("\n\n")[1].trim();
   return {
-    name: name,
+    nameZh: nameZh,
     year: year,
-    douban: douban,
-    tv_episodes: isNaN(tv_episodes) ? 0 : tv_episodes,
-    episode_length: isNaN(episode_length) ? 12: episode_length,
+    doubanRating: doubanRating,
+    tvEpisodes: isNaN(tvEpisodes) ? 0 : tvEpisodes,
+    episodeLength: isNaN(episodeLength) ? 12 : episodeLength,
     description: description,
   }
 }
@@ -164,7 +170,7 @@ export function parseDoubanPage(pageSrc) {
 export function getSeason() {
   const d = new Date();
   const year = d.getFullYear();
-  const month = Math.floor(d.getMonth()/3) * 3 + 1;
+  const month = Math.floor(d.getMonth() / 3) * 3 + 1;
   const curSeason = year + "年" + month + "月";
   let preSeason = year + "年" + (month - 3) + "月";
   let nextSeason = year + "年" + (month + 3) + "月";
@@ -180,10 +186,10 @@ export function getSeason() {
 export function getLatestRankings(newAnimes, currentSeason) {
   let rankings = {};
   newAnimes.forEach(newAnime => {
-    const currentSeasonRankings = newAnime.seasons_ranking[currentSeason];
+    const currentSeasonRankings = newAnime.rankings[currentSeason];
     const dates = Object.keys(currentSeasonRankings);
     const latestRank = currentSeasonRankings[dates.sort()[dates.length - 1]];
-    rankings[newAnime.name] = latestRank;
+    rankings[newAnime.nameZh] = latestRank;
   });
   return rankings;
 }
@@ -208,3 +214,21 @@ export const reorder = (list, startIndex, endIndex) => {
 
   return result;
 };
+
+export const parseSeasonSchedules = (seasonSchedules) => {
+  return seasonSchedules.map(entry => {
+    const newEntry = {};
+    for (const [key, value] of Object.entries(entry)) {
+      if (key === 'rankings') {
+        newEntry[key] = JSON.parse(JSON.parse(value));
+      } else {
+        newEntry[key] = value;
+      }
+    }
+    return newEntry;
+  });
+}
+
+export const getRating = (anime) => {
+  return anime.story + anime.illustration + anime.music + anime.passion;
+}

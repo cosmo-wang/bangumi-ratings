@@ -13,7 +13,7 @@ function DraggableRankingEntry(props) {
   });
 
   return (
-    <div className="drag-item-container">
+    <div key={props.anime} className="drag-item-container">
       <Draggable
         key={props.index}
         draggableId={props.index.toString()}

@@ -6,7 +6,6 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Alert from 'react-bootstrap/Alert';
-import moment from 'moment';
 import { BiEditAlt, BiTrash } from "react-icons/bi";
 import { useAuthenticationContext } from "../context/AuthenticationContext";
 import SortHeader from './SortHeader';
@@ -19,24 +18,28 @@ import './NewAnimeList.css';
 
 function NewAnimeModal(props) {
   const oldValue = props.oldValue === undefined || props.oldValue === null ? {} : props.oldValue;
-  return <Form id="new-anime-modal" onSubmit={(event) => {props.onSubmitOrEdit(event, props.id)}}>
-    <Form.Group controlId="name">
-      <Form.Label>名称</Form.Label>
-      <Form.Control defaultValue={oldValue.name} type="input" />
+  return <Form id="new-anime-modal" onSubmit={(event) => { props.onSubmitOrEdit(event, props.id) }}>
+    <Form.Group controlId="nameZh">
+      <Form.Label>中文名称</Form.Label>
+      <Form.Control defaultValue={oldValue.nameZh} type="input" />
+    </Form.Group>
+    <Form.Group controlId="nameJp">
+      <Form.Label>日文名称</Form.Label>
+      <Form.Control defaultValue={oldValue.nameJp} type="input" />
     </Form.Group>
     <Form.Row className="input-row">
-        <Col><Form.Label>季度</Form.Label><Form.Control defaultValue={oldValue.season} id="season" type="input"/></Col>
-        <Col><Form.Label>开始放送日期</Form.Label><Form.Control defaultValue={oldValue.start_date} id="start_date" type="input"/></Col>
-        <Col><Form.Label>更新日</Form.Label><Form.Control defaultValue={oldValue.next_episode_day} id="next_episode_day" type="input"/></Col>
-      </Form.Row>
+      <Col><Form.Label>季度</Form.Label><Form.Control defaultValue={oldValue.season} id="season" type="input" /></Col>
+      <Col><Form.Label>开始放送日期</Form.Label><Form.Control defaultValue={oldValue.releaseDate} id="releaseDate" type="input" /></Col>
+      <Col><Form.Label>更新日</Form.Label><Form.Control defaultValue={oldValue.broadcastDay} id="broadcastDay" type="input" /></Col>
+    </Form.Row>
     <Form.Group>
       <Form.Row className="input-row">
-        <Col><Form.Label>状态</Form.Label><Form.Control defaultValue={oldValue.status} id="status" type="input"/></Col>
-        <Col><Form.Label>分类</Form.Label><Form.Control defaultValue={oldValue.genre} id="genre" type="input"/></Col>
-        <Col><Form.Label>预计集数</Form.Label><Form.Control defaultValue={oldValue.tv_episodes} id="tv_episodes" type="input"/></Col>
+        <Col><Form.Label>状态</Form.Label><Form.Control defaultValue={oldValue.status} id="status" type="input" /></Col>
+        <Col><Form.Label>分类</Form.Label><Form.Control defaultValue={oldValue.genre} id="genre" type="input" /></Col>
+        <Col><Form.Label>预计集数</Form.Label><Form.Control defaultValue={oldValue.tvEpisodes} id="tvEpisodes" type="input" /></Col>
       </Form.Row>
       <Form.Group>
-      <Form.Label>简介</Form.Label>
+        <Form.Label>简介</Form.Label>
         <Form.Control defaultValue={oldValue.description} id="description" as="textarea" rows="3" />
       </Form.Group>
     </Form.Group>
@@ -47,11 +50,12 @@ function NewAnimeModal(props) {
       {props.submitNewAnime ? <></> : <Button onClick={() => {
         const formElements = document.getElementById("new-anime-modal").elements;
         props.handleRateNewAnime({
-          "name": formElements.name.value,
-          "tv_episodes": Number(formElements.tv_episodes.value),
+          "nameZh": formElements.nameZh.value,
+          "nameJp": formElements.nameJp.value,
+          "tvEpisodes": Number(formElements.tvEpisodes.value),
           "genre": formElements.genre.value,
           "description": formElements.description.value,
-          "start_date": formElements.start_date.value,
+          "startDate": formElements.releaseDate.value,
           "status": formElements.status.value
         });
       }}>已追完</Button>}
@@ -84,7 +88,7 @@ function NewAnimeList(props) {
   const [sortedCol, setSortedCol] = useState(null);
   const [rateAnimePartialInfo, setRateAnimePartialInfo] = useState(null);
 
-  useEffect(() => {setSortedCol("ranking")}, []);
+  useEffect(() => { setSortedCol("ranking") }, []);
 
   const handleRateNewAnime = (partialInfo) => {
     partialInfo.status = "已看";
@@ -99,8 +103,8 @@ function NewAnimeList(props) {
 
   const sortAnimesByRankings = (animes, rankings) => {
     animes.sort((a, b) => {
-      if (rankings[a.name] > rankings[b.name]) return 1;
-      if (rankings[a.name] < rankings[b.name]) return -1;
+      if (rankings[a.nameZh] > rankings[b.nameZh]) return 1;
+      if (rankings[a.nameZh] < rankings[b.nameZh]) return -1;
       return 0;
     })
   }
@@ -129,6 +133,7 @@ function NewAnimeList(props) {
     setLocalRankings(newRankings);
   };
 
+  // handle sorting display list
   useEffect(() => {
     if (sortedCol !== null) {
       const filteredNewAnimes = newAnimes.filter((newAnime) => newAnime.season.includes(displayListSeason));
@@ -160,7 +165,7 @@ function NewAnimeList(props) {
   if (props.isLoading) {
     return <div className="loading">
       <div>正在加载......</div>
-    </div> ;
+    </div>;
   } else if (props.loadError) {
     return <Alert variant='danger'>
       追番列表加载失败！
@@ -169,18 +174,18 @@ function NewAnimeList(props) {
     return (<div className="main-element">
       <Modal centered size='lg' show={showAddModal} onHide={() => setShowAddModal(false)}>
         <Modal.Header closeButton>
-        <Modal.Title>{submitNewAnime ? "添加新追番" : "编辑追番"}</Modal.Title>
+          <Modal.Title>{submitNewAnime ? "添加新追番" : "编辑追番"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <NewAnimeModal
             submitNewAnime={submitNewAnime}
-            onSubmitOrEdit={(event, id) => {
+            onSubmitOrEdit={(event, animeId) => {
               event.preventDefault();
               if (submitNewAnime) {
                 const newRanking = Math.max(...Object.values(getLatestRankings(displayList, displayListSeason))) + 1;
-                props.onNewAnimeSubmit(event, null, true, newRanking);
+                props.onNewAnimeSubmit(event, null, newRanking);
               } else {
-                props.onNewAnimeSubmit(event, id, false);
+                props.onNewAnimeSubmit(event, animeId);
               }
               setShowAddModal(false);
             }}
@@ -192,13 +197,13 @@ function NewAnimeList(props) {
       </Modal>
       <Modal centered size='lg' show={showRateModal} onHide={() => setShowRateModal(false)}>
         <Modal.Header closeButton>
-        <Modal.Title>评价番剧</Modal.Title>
+          <Modal.Title>评价番剧</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <AnimeModal
             onSubmitOrEdit={(event, id) => {
               event.preventDefault();
-              props.onAnimeSubmit(event, id, true);
+              props.onAnimeSubmit(event, id);
               setShowRateModal(false);
             }}
             oldValue={rateAnimePartialInfo}
@@ -211,7 +216,7 @@ function NewAnimeList(props) {
           <Modal.Title>删除番剧</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>{`确定要删除番剧“${animeToDelete.name}”吗`}</p>
+          <p>{`确定要删除番剧“${animeToDelete.nameZh}”吗`}</p>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={() => {
@@ -219,7 +224,7 @@ function NewAnimeList(props) {
             setShowDeleteConfirmation(false);
           }}>取消</Button>
           <Button variant="danger" onClick={() => {
-            props.deleteNewAnime(animeToDelete.id, "NewAnimes");
+            props.deleteAnime({ variables: {animeId: animeToDelete.animeId} });
             setAnimeToDelete({});
             setShowDeleteConfirmation(false);
           }}>确定</Button>
@@ -227,33 +232,28 @@ function NewAnimeList(props) {
       </Modal>
       <Modal centered size='lg' show={showRankings} onHide={() => setShowRankings(false)}>
         <Modal.Header closeButton>
-        <Modal.Title>番剧排名</Modal.Title>
+          <Modal.Title>番剧排名</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Rankings rankings={rankingsDictToArray(localRankings)} onDragEnd={onDragEnd}/>
+          <Rankings rankings={rankingsDictToArray(localRankings)} onDragEnd={onDragEnd} />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={() => {
-            const updatedIds = [];
-            const newRankings = {};
-            const dateString = moment().format("YYYY-MM-DD");
-            displayList.forEach(row => {
-              updatedIds.push(row.id);
-              const newRanking = Object.assign({}, row.seasons_ranking);
-              newRanking[displayListSeason][dateString] = localRankings[row.name];
-              newRankings[row.id] = newRanking;
-            })
-            props.updateNewAnimesRankings(updatedIds, newRankings, displayListSeason);
+            const newRankings = {
+              "season": displayListSeason,
+              "rankings": rankingsDictToArray(localRankings)
+            }
+            props.updateRankings({ variables: {newRankings: newRankings} });
             setShowRankings(false)
           }}>提交</Button>
         </Modal.Footer>
       </Modal>
       <Modal centered size='lg' show={showToday} onHide={() => setShowToday(false)}>
         <Modal.Header closeButton>
-        <Modal.Title>近期更新</Modal.Title>
+          <Modal.Title>近期更新</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <DailyNewAnimes displayList={displayList}/>
+          <DailyNewAnimes displayList={displayList} />
         </Modal.Body>
       </Modal>
       <div className="button-group">
@@ -271,7 +271,7 @@ function NewAnimeList(props) {
           }}>添加追番</Button> : <></>}
           {authenticated ? <Button className="pink-button" onClick={() => setShowRankings(true)}>排名</Button> : <></>}
           <Button className="pink-button" onClick={() => setShowToday(true)}>近期更新</Button>
-          <Button className="pink-button" onClick={props.refresh}>刷新</Button>
+          {/* <Button className="pink-button" onClick={props.refresh}>刷新</Button> */}
         </div>
       </div>
       <div>
@@ -279,8 +279,8 @@ function NewAnimeList(props) {
           <thead>
             <tr className='table-headers'>
               {tableHeaders.map(header => {
-                if (header === '更新日' || header === '排名' || header === '开始放送日期'){
-                  return <SortHeader key={header} header={header} sort={() => setSortedCol(translate(header))}/>;
+                if (header === '更新日' || header === '排名' || header === '开始放送日期') {
+                  return <SortHeader key={header} header={header} sort={() => setSortedCol(translate(header))} />;
                 } else {
                   return <th key={header} >{header}</th>
                 }
@@ -289,42 +289,43 @@ function NewAnimeList(props) {
           </thead>
           <tbody>
             {
-              displayList.map(row => 
-                <tr key={row.name}>
-                  <td>{rankings[row.name]}</td>
-                  <td className='anime-name'>{row.name}</td>
+              displayList.map(row =>
+                <tr key={row.animeId + row.season}>
+                  <td>{rankings[row.nameZh]}</td>
+                  <td className='anime-name'>{row.nameZh}</td>
                   <td>{row.genre}</td>
                   <td>{row.season}</td>
-                  <td>{row.start_date}</td>
-                  <td>{row.next_episode_day}</td>
-                  <td>{formatEpisodes(row.tv_episodes, 0)}</td>
+                  <td>{row.releaseDate}</td>
+                  <td>{row.broadcastDay}</td>
+                  <td>{formatEpisodes(row.tvEpisodes, 0)}</td>
                   <td>{row.status}</td>
                   <td> {authenticated ?
                     <>
                       <BiEditAlt className="clickable" onClick={() => {
-                        setActiveId(row.id);
+                        setActiveId(row.animeId);
                         setEditAnimeOldValue({
-                          name: row.name,
-                          tv_episodes: row.tv_episodes,
+                          nameZh: row.nameZh,
+                          nameJp: row.nameJp,
+                          tvEpisodes: row.tvEpisodes,
                           genre: row.genre,
                           description: row.description,
-                          start_date: row.start_date,
-                          next_episode_day: row.next_episode_day,
+                          releaseDate: row.releaseDate,
+                          broadcastDay: row.broadcastDay,
                           season: row.season,
                           status: row.status
                         });
                         setSubmitNewAnime(false);
                         setShowAddModal(true);
-                      }}/><BiTrash className="icon clickable" onClick={() => {
+                      }} /><BiTrash className="icon clickable" onClick={() => {
                         setAnimeToDelete({
-                          name: row.name,
-                          id: row.id,
+                          nameZh: row.nameZh,
+                          animeId: row.animeId,
                         });
                         setShowDeleteConfirmation(true);
-                      }}/>
+                      }} />
                     </> : <></>
                   }</td>
-                </tr>  
+                </tr>
               )
             }
           </tbody>
