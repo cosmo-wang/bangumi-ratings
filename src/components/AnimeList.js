@@ -11,7 +11,7 @@ import SortHeader from './SortHeader';
 import FilterHeader from './FilterHeader';
 import Description from './Description';
 import AnimeModal from './AnimeModal';
-import { sortList, formatEpisodes, formatDate, translate, calculateDailyTime, formatTime, parseDoubanPage } from "../utils/utils";
+import { sortList, formatEpisodes, formatDate, translate, calculateDailyTime, formatTime, parseDoubanPage, getRating } from "../utils/utils";
 import '../App.css';
 import './AnimeList.css';
 
@@ -19,7 +19,7 @@ function AnimeList(props) {
 
   const { authenticated } = useAuthenticationContext();
   
-  const { ratings } = React.useContext(AnimeDataContext);
+  const { animes } = React.useContext(AnimeDataContext);
 
   const watchedHeaders = ['序号', '名称', '集数', '分类', '剧情', '作画', '音乐', '情怀', '评分', '首次观看日期', '日均时长', ''];
   const wantToWatchHeaders = ['序号', '名称', '集数', '分类', '年份', '豆瓣评分', '简介', ''];
@@ -33,42 +33,42 @@ function AnimeList(props) {
   const [animeToDelete, setAnimeToDelete] = useState({});
   const [activeId, setActiveId] = useState();
   const [displayListStatus, setDisplayListStatus] = useState("已看");
-  const [displayList, setDisplayList] = useState(ratings);
+  const [displayList, setDisplayList] = useState(animes);
   const [tableHeaders, setTableHeaders] = useState(watchedHeaders);
   const [filterList, setFilterList] = useState({});
-  const [sortedCol, setSortedCol] = useState("end_date");
+  const [sortedCol, setSortedCol] = useState("endDate");
   const [editAnimeOldValue, setEditAnimeOldValue] = useState(null);
 
   useEffect(() => {
     setFilterList([]);
-    setDisplayList(sortList(ratings.filter((rating) => rating.status === displayListStatus), "end_date"));
-  }, [props.isLoading, ratings, displayListStatus]);
+    setDisplayList(sortList(animes.filter((rating) => rating.status === displayListStatus), "endDate"));
+  }, [props.isLoading, animes, displayListStatus]);
 
   useEffect(() => {
     if (sortedCol !== null) {
-      if (displayListStatus === '在看' && sortedCol === "end_date") {
-        setDisplayList(sortList(ratings.filter((rating) => rating.status === displayListStatus), "start_date"));
+      if (displayListStatus === '在看' && sortedCol === "endDate") {
+        setDisplayList(sortList(animes.filter((rating) => rating.status === displayListStatus), "startDate"));
       } else {
-        setDisplayList(sortList(ratings.filter((rating) => rating.status === displayListStatus), sortedCol));
+        setDisplayList(sortList(animes.filter((rating) => rating.status === displayListStatus), sortedCol));
       }
       setSortedCol(null);
     } else {
       if (displayListStatus === '在看' ) {
-        setDisplayList(sortList(ratings.filter((rating) => rating.status === displayListStatus), "start_date"));
+        setDisplayList(sortList(animes.filter((rating) => rating.status === displayListStatus), "startDate"));
       }
     }
-  }, [sortedCol, ratings, displayListStatus]);
+  }, [sortedCol, animes, displayListStatus]);
 
   useEffect(() => {
     if (filterList.length !== 0) {
       for (const [key, value] of Object.entries(filterList)) {
-        setDisplayList(ratings.filter((item) => {
+        setDisplayList(animes.filter((item) => {
           return item[key].includes(value) && item.status === displayListStatus;
         }));
       }
       setFilterList([]);
     }
-  }, [ratings, filterList, displayListStatus]);
+  }, [animes, filterList, displayListStatus]);
 
   const changeStatus = (e) => {
     const newStatus = e.target.innerHTML;
@@ -118,11 +118,11 @@ function AnimeList(props) {
             onSubmitOrEdit={(event, id) => {
               event.preventDefault();
               if (submitNewAnime) {
-                props.onAnimeSubmit(event, null, true);
+                props.onAnimeSubmit(event, null);
               } else if (submitNewAnimeAuto) {
-                props.onAnimeSubmit(event, null, true);
+                props.onAnimeSubmit(event, null);
               } else {
-                props.onAnimeSubmit(event, id, false);
+                props.onAnimeSubmit(event, id);
               }
               setShowAnimeModal(false);
             }}
@@ -140,12 +140,12 @@ function AnimeList(props) {
             event.preventDefault();
             const info = parseDoubanPage(event.target.elements.html.value);
             setEditAnimeOldValue({
-              name: info.name,
+              nameZh: info.nameZh,
               year: info.year,
-              douban: info.douban,
-              tv_episodes: info.tv_episodes,
+              doubanRating: info.doubanRating,
+              tvEpisodes: info.tvEpisodes,
               movies: 0,
-              episode_length: info.episode_length,
+              episodeLength: info.episodeLength,
               status: "想看",
               genre: "",
               description: info.description,
@@ -153,9 +153,9 @@ function AnimeList(props) {
               illustration: 0,
               music: 0,
               passion: 0,
-              start_date: null,
-              end_date: null,
-              times_watched: 0,
+              startDate: null,
+              endDate: null,
+              timesWatched: 0,
             });
             setSubmitNewAnimeAuto(true);
             setShowAnimeModalAuto(false);
@@ -177,7 +177,7 @@ function AnimeList(props) {
           <Modal.Title>删除番剧</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>{`确定要删除番剧“${animeToDelete.name}”吗`}</p>
+          <p>{`确定要删除番剧“${animeToDelete.nameZh}”吗`}</p>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={() => {
@@ -185,7 +185,7 @@ function AnimeList(props) {
             setShowDeleteConfirmation(false);
           }}>取消</Button>
           <Button variant="danger" onClick={() => {
-            props.deleteAnime(animeToDelete.id, "Ratings");
+            props.deleteAnime({ variables: {animeId: animeToDelete.animeId} });
             setAnimeToDelete({});
             setShowDeleteConfirmation(false);
           }}>确定</Button>
@@ -210,7 +210,7 @@ function AnimeList(props) {
             setShowAnimeModalAuto(true);
             setSubmitNewAnime(true);
           }}>自动添加</Button> : <></>}
-          <Button className="pink-button" onClick={props.refresh}>刷新</Button>
+          {/* <Button className="pink-button" onClick={props.refresh}>刷新</Button> */}
         </div>
       </div>
       <div>
@@ -230,7 +230,7 @@ function AnimeList(props) {
                     }}
                     clearFilter={() => {
                       setFilterList([]);
-                      setDisplayList(sortList(ratings.filter((rating) => rating.status === displayListStatus), "end_date"));
+                      setDisplayList(sortList(animes.filter((rating) => rating.status === displayListStatus), "end_date"));
                     }}
                   />;
                 } else if (header === '序号') {
@@ -246,42 +246,44 @@ function AnimeList(props) {
           <tbody>
             {
               displayList.map((row, idx) =>
-                <tr key={row.name}>
+                <tr key={row.animeId}>
                   <td>{idx + 1}</td>
                   <td className='anime-name clickable' onClick={(e) => {
                     setActiveDescription(
                       {
-                        name: row.name,
-                        douban: row.douban,
+                        nameZh: row.nameZh,
+                        nameJp: row.nameJp,
+                        doubanRating: row.doubanRating,
                         year: row.year,
                         genre: row.genre,
-                        episodes: row.tv_episodes,
-                        episode_length: row.episode_length,
+                        episodes: row.tvEpisodes,
+                        episodeLength: row.episodeLength,
                         description: row.description,
                       }
                     );
                     setShowDescription(true);
-                  }}>{row.name}</td>
-                  <td>{formatEpisodes(row.tv_episodes, row.movies)}</td>
+                  }}>{row.nameZh}</td>
+                  <td>{formatEpisodes(row.tvEpisodes, row.movies)}</td>
                   <td>{row.genre}</td>
                   <td>{displayListStatus === '想看' ? row.year : row.story}</td>
-                  <td>{displayListStatus === '想看' ? row.douban : row.illustration}</td>
+                  <td>{displayListStatus === '想看' ? row.doubanRating : row.illustration}</td>
                   <td>{displayListStatus === '想看' ? formatDescription(row.description) : row.music}</td>
                   {displayListStatus === '想看' ? "" : <td>{row.passion}</td>}
-                  {displayListStatus === '想看' ? "" : <td>{row.rating}</td>}
-                  {displayListStatus === '想看' ? "" : <td>{formatDate(row.start_date, row.end_date)}</td>}
+                  {displayListStatus === '想看' ? "" : <td>{getRating(row).toFixed(1)}</td>}
+                  {displayListStatus === '想看' ? "" : <td>{formatDate(row.startDate, row.endDate)}</td>}
                   {displayListStatus === '想看' ? "" : <td>{formatTime(calculateDailyTime(row))}</td>}
                   <td> {authenticated ?
                       <>
                         <BiEditAlt className="clickable" onClick={() => {
-                          setActiveId(row.id);
+                          setActiveId(row.animeId);
                           setEditAnimeOldValue({
-                            name: row.name,
+                            nameZh: row.nameZh,
+                            nameJp: row.nameJp,
                             year: row.year,
-                            douban: row.douban,
-                            tv_episodes: row.tv_episodes,
+                            doubanRating: row.doubanRating,
+                            tvEpisodes: row.tvEpisodes,
                             movies: row.movies,
-                            episode_length: row.episode_length,
+                            episodeLength: row.episodeLength,
                             status: row.status,
                             genre: row.genre,
                             description: row.description,
@@ -289,16 +291,16 @@ function AnimeList(props) {
                             illustration: row.illustration,
                             music: row.music,
                             passion: row.passion,
-                            start_date: row.start_date.format('YYYY-MM-DD'),
-                            end_date: row.end_date.format('YYYY-MM-DD'),
-                            times_watched: row.times_watched,
+                            startDate: row.startDate,
+                            endDate: row.endDate,
+                            timesWatched: row.timesWatched,
                           });
                           setSubmitNewAnime(false);
                           setShowAnimeModal(true);
                         }}/><BiTrash className="icon clickable" onClick={() => {
                           setAnimeToDelete({
-                            name: row.name,
-                            id: row.id,
+                            nameZh: row.nameZh,
+                            animeId: row.animeId,
                           });
                           setShowDeleteConfirmation(true);
                         }}/>

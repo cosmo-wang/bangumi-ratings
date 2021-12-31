@@ -67,51 +67,17 @@
   flex-wrap: wrap;
 }
 
-.bangumi-name {
+.summary-anime-name {
   margin-right: 2rem;
 }
 
-.summary-quotes {
+.summary-highlight {
   width: 100%;
   display: flex;
   flex-direction: column;
   overflow: scroll;
 }
 
-.add-quote-button {
-  align-self: center;
+.summary-highlight::-webkit-scrollbar {
+  display: none;
 }
-
-.add-more-quote-button {
-  align-self: flex-end;
-  margin: 0.5em 0;
-}
-
-blockquote {
-  font-family: Georgia, serif;
-  font-size: 18px;
-  font-style: italic;
-  text-align: center;
-  width: 100%;
-  padding: 0.35em 0.5em 0.35em 2.5em;
-  margin: 1px;
-  line-height: 1.45;
-  position: relative;
-  color: #383838;
-}
-
-.quote-translation {
-  font-size: 10px;
-}
-  
-blockquote cite {
-  color: #999999;
-  font-size: 14px;
-  display: block;
-  margin-top: 5px;
-}
-   
-blockquote cite:before {
-  content: "\2014 \2009";
-}
-

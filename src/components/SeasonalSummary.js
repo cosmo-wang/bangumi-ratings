@@ -6,11 +6,9 @@ import { compareSeason } from '../utils/utils';
 import '../App.css';
 import './SeasonalSummary.css';
 
-export default function SeasonalSummary(props) {
+export default function SeasonalSummary() {
   const { newAnimes } = useContext(AnimeDataContext);
-
   const [summaryData, setSummaryData] = useState([]);
-
 
   const formatRankingData = (data) => {
     const res = [];
@@ -23,8 +21,7 @@ export default function SeasonalSummary(props) {
   useEffect(() => {
     const tempData = {};
     newAnimes.forEach(newAnime => {
-      const rankings = newAnime["seasons_ranking"];
-
+      const rankings = newAnime["rankings"];
       for (const [season, seasonRankings] of Object.entries(rankings)) {
         if (tempData[season] === undefined) {
           tempData[season] = {
@@ -56,7 +53,7 @@ export default function SeasonalSummary(props) {
           };
         }
         tempData[season].series.push({
-          name: newAnime.name,
+          name: newAnime.nameZh,
           data: formatRankingData(seasonRankings)
         })
       }

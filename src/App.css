@@ -10,6 +10,10 @@
   margin-bottom: 1rem;
 }
 
+.main-element::-webkit-scrollbar {
+  display: none;
+}
+
 .pink-button {
   color: #000000 !important;
   background-color: #fe8a96 !important;
@@ -46,4 +50,8 @@
   overflow: scroll;
   opacity: 0.8;
   text-align: center;
+}
+
+.summaries::-webkit-scrollbar {
+  display: none;
 }
