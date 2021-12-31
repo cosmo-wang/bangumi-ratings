@@ -12,7 +12,7 @@ function UserManagement() {
         <div className="text-button clickable" onClick={handleSignOut}>注销</div>
       </div>
   } else {
-    return <div className="text-button clickable" onClick={() => setAuthenticating(true)}>登陆</div>
+    return <div className="text-button clickable" onClick={() => setAuthenticating(true)}>登录</div>
   }
 }
 

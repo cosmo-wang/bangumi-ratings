@@ -34,7 +34,7 @@ export default function Login() {
         </Form.Group>
         <div className="button-group">
           <Button className="pink-button" size="lg" type="submit" disabled={!validateForm()}>
-            登陆
+            登录
           </Button>
           <Button className="pink-button" size="lg" type="submit" onClick={() => setAuthenticating(false)}>
             取消
