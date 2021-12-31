@@ -17,29 +17,41 @@ export default function AnimeModal(props) {
     const todayDate = moment(new Date()).format("YYYY-MM-DD");
     const newOldValue = JSON.parse(JSON.stringify(oldValue));
     if (startDate) {
-      newOldValue.start_date = todayDate;
+      newOldValue.startDate = todayDate;
     } else if (endDate) {
-      newOldValue.end_date = todayDate;
+      newOldValue.endDate = todayDate;
     }
     setOldValue(newOldValue);
   }
 
   return <Form onSubmit={(event) => { props.onSubmitOrEdit(event, props.id) }}>
-    <Form.Group controlId="name">
-      <Form.Label>名称</Form.Label>
-      <Form.Control defaultValue={oldValue.name} type="input" />
+    <Form.Group controlId="nameZh">
+      <Form.Label>中文名称</Form.Label>
+      <Form.Control defaultValue={oldValue.nameZh} type="input" />
+    </Form.Group>
+    <Form.Group controlId="nameJp">
+      <Form.Label>日文名称</Form.Label>
+      <Form.Control defaultValue={oldValue.nameJp} type="input" />
     </Form.Group>
     <Form.Group>
       <Form.Row className="input-row">
-        <Col><Form.Label>豆瓣评分<a href={"https://www.douban.com"} target="_blank" rel="noopener noreferrer"><AiOutlineSearch className="icon clickable" /></a></Form.Label><Form.Control defaultValue={oldValue.douban} id="douban" type="input" /></Col>
+        <Col>
+          <Form.Label>
+            豆瓣评分
+            <a href={"https://www.douban.com/search?q=" + oldValue.nameZh} target="_blank" rel="noopener noreferrer">
+              <AiOutlineSearch className="icon clickable" />
+            </a>
+          </Form.Label>
+          <Form.Control defaultValue={oldValue.doubanRating} id="doubanRating" type="input" />
+        </Col>
         <Col><Form.Label>年份</Form.Label><Form.Control defaultValue={oldValue.year} id="year" type="input" /></Col>
         <Col><Form.Label>状态</Form.Label><Form.Control defaultValue={oldValue.status} id="status" type="input" /></Col>
       </Form.Row>
       <Form.Row className="input-row">
         <Col><Form.Label>分类</Form.Label><Form.Control defaultValue={oldValue.genre} id="genre" type="input" /></Col>
-        <Col><Form.Label>TV集数</Form.Label><Form.Control defaultValue={oldValue.tv_episodes} id="tv_episodes" type="input" /></Col>
+        <Col><Form.Label>TV集数</Form.Label><Form.Control defaultValue={oldValue.tvEpisodes} id="tvEpisodes" type="input" /></Col>
         <Col><Form.Label>剧场版</Form.Label><Form.Control defaultValue={oldValue.movies} id="movies" type="input" /></Col>
-        <Col><Form.Label>单集片长</Form.Label><Form.Control defaultValue={oldValue.episode_length} id="episode_length" type="input" /></Col>
+        <Col><Form.Label>单集片长</Form.Label><Form.Control defaultValue={oldValue.episodeLength} id="episodeLength" type="input" /></Col>
       </Form.Row>
     </Form.Group>
     <Form.Group>
@@ -56,9 +68,9 @@ export default function AnimeModal(props) {
     </Form.Group>
     <Form.Group>
       <Form.Row className="input-row">
-        <Col><Form.Label>开始观看日期 <span className="clickable" onClick={() => handleFillTodayDate(true, false)}>(今日日期)</span></Form.Label><Form.Control defaultValue={oldValue.start_date} id="start_date" type="input" /></Col>
-        <Col><Form.Label>结束观看日期 <span className="clickable" onClick={() => handleFillTodayDate(false, true)}>(今日日期)</span></Form.Label><Form.Control defaultValue={oldValue.end_date} id="end_date" type="input" /></Col>
-        <Col><Form.Label>观看次数</Form.Label><Form.Control defaultValue={oldValue.times_watched} id="times_watched" type="input" /></Col>
+        <Col><Form.Label>开始观看日期 <span className="clickable" onClick={() => handleFillTodayDate(true, false)}>(今日日期)</span></Form.Label><Form.Control defaultValue={oldValue.startDate} id="startDate" type="input" /></Col>
+        <Col><Form.Label>结束观看日期 <span className="clickable" onClick={() => handleFillTodayDate(false, true)}>(今日日期)</span></Form.Label><Form.Control defaultValue={oldValue.endDate} id="endDate" type="input" /></Col>
+        <Col><Form.Label>观看次数</Form.Label><Form.Control defaultValue={oldValue.timesWatched} id="timesWatched" type="input" /></Col>
       </Form.Row>
     </Form.Group>
     <Button className="pink-button" type="submit">
