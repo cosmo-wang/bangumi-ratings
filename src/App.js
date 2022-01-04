@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { gql, useQuery, useMutation } from '@apollo/client';
+import Parse from 'parse';
+import * as Env from "./environments";
 import Navivation from './components/Navigation';
 import AnimeDataContext from './context/AnimeDataContext';
 import AnimeList from './components/AnimeList';
@@ -9,10 +11,11 @@ import SeasonalSummary from './components/SeasonalSummary';
 import Login from "./components/Login";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { AuthenticationContext } from "./context/AuthenticationContext";
-import { getUser, getToken, parseSeasonSchedules } from "./utils/utils";
+import { getUser, getToken, setUserSession, removeUserSession, parseSeasonSchedules } from "./utils/utils";
 import './App.css';
 
-const AUTH_URL = 'http://bangumi-ratings-server.com/authenticate?';
+Parse.initialize(Env.APPLICATION_ID, Env.JAVASCRIPT_KEY);
+Parse.serverURL = Env.SERVER_URL;
 
 const GET_ALL_DATA = gql`
   query GetAllData {
@@ -219,24 +222,19 @@ function App() {
   const handleLogin = (event) => {
     event.preventDefault();
     // Create a new instance of the user class
-    fetch(`${AUTH_URL}username=${username}&password=${password}`)
-      .then((res) => {
+    Parse.User.logIn(username, password).then((user) => {
+        setUserSession(user, user.getSessionToken());
         setAuthenticating(false);
-        if (res.status === 200) {
-          setAuthenticated(true);
-        } else {
-          setAuthenticated(false);
-          alert('登录失败');
-        }
-      })
-      .catch((error) => {
+        setAuthenticated(true);
+    }).catch(function(error){
         alert(error.message);
-      })
+    });
   }
 
   const handleSignOut = () => {
     setUser(null);
     setToken(null);
+    removeUserSession();
     setAuthenticated(false);
   }
 
