@@ -116,7 +116,7 @@ function App() {
   const [activePage, setActivePage] = useState("AnimeList")
 
   // data related states
-  const { loading, error, data } = useQuery(GET_ALL_DATA);
+  const { loading, error, data, refetch } = useQuery(GET_ALL_DATA);
   const [updateOrAddAnime] = useMutation(UPDATE_OR_ADD_ANIME, {
     refetchQueries: [
       GET_ALL_DATA
@@ -246,6 +246,7 @@ function App() {
           loadError={error !== undefined}
           onAnimeSubmit={handleAnimeSubmit}
           deleteAnime={deleteAnime}
+          refresh={refetch}
         />;
       case 'NewAnimeList':
         return <NewAnimeList
@@ -255,6 +256,7 @@ function App() {
           onNewAnimeSubmit={handleNewAnimeSubmit}
           deleteAnime={deleteAnime}
           updateRankings={updateRankings}
+          refresh={refetch}
         />
       case 'MonthlySummary':
         return <MonthlySummary />;
@@ -266,6 +268,7 @@ function App() {
           loadError={error !== undefined}
           onAnimeSubmit={handleAnimeSubmit}
           deleteAnime={deleteAnime}
+          refresh={refetch}
         />;
     }
   }

@@ -271,7 +271,7 @@ function NewAnimeList(props) {
           }}>添加追番</Button> : <></>}
           {authenticated ? <Button className="pink-button" onClick={() => setShowRankings(true)}>排名</Button> : <></>}
           <Button className="pink-button" onClick={() => setShowToday(true)}>近期更新</Button>
-          {/* <Button className="pink-button" onClick={props.refresh}>刷新</Button> */}
+          <Button className="pink-button" onClick={() => props.refresh()}>刷新</Button>
         </div>
       </div>
       <div>

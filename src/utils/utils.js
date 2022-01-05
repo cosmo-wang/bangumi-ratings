@@ -66,7 +66,7 @@ export function calculateDailyTime(row) {
   return totalTime / days;
 }
 
-export function translate(word) {
+export function translate(word, rated) {
   switch (word) {
     case '名称':
       return 'nameZh';
@@ -88,7 +88,7 @@ export function translate(word) {
     case '评分':
       return 'rating';
     case '首次观看日期':
-      return 'endDate';
+      return rated ? 'endDate' : 'startDate';
     case '观看次数':
       return 'timesWatched';
     case '年份':
@@ -104,7 +104,7 @@ export function translate(word) {
     case '开始放送日期':
       return 'startDate';
     case '更新日':
-      return 'next_episode_day';
+      return 'broadcastDay';
     default:
       return 'unknown';
   }
