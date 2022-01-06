@@ -193,7 +193,6 @@ function App() {
       "endDate": formElements.endDate.value === "" ? null : formElements.endDate.value,
       "timesWatched": Number(formElements.timesWatched.value),
     };
-    console.log(newData);
     if (animeId !== null) {
       newData['animeId'] = animeId;
     }
@@ -212,7 +211,7 @@ function App() {
       "releaseDate": formElements.releaseDate.value === "" ? null : formElements.releaseDate.value,
       "broadcastDay": formElements.broadcastDay.value,
       "season": formElements.season.value,
-      "status": formElements.status.value,
+      "status": formElements[10].value,
     };
     if (animeId !== null) {
       newData['animeId'] = animeId;

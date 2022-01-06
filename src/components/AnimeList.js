@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AnimeDataContext from '../context/AnimeDataContext';
-import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
@@ -18,32 +16,9 @@ import Alert from '@mui/material/Alert';
 import { useAuthenticationContext } from "../context/AuthenticationContext";
 import Description from './Description';
 import AnimeModal from './AnimeModal';
-import { sortList, formatEpisodes, formatDate, translate, calculateDailyTime, formatTime, parseDoubanPage, getRating, getTodayDate } from "../utils/utils";
+import { StyledTableCell, StyledTableRow, sortList, formatEpisodes, formatDate, translate, calculateDailyTime, formatTime, parseDoubanPage, getRating, getTodayDate } from "../utils/utils";
 import '../App.css';
 import './AnimeList.css';
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: '#fe8a96',
-    color: theme.palette.common.black,
-    fontSize: 15,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    backgroundColor: theme.palette.common.white,
-    color: theme.palette.common.black,
-    fontSize: 15,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  '&:last-child td, &:last-child th': {
-    border: 0,
-  },
-}));
 
 function FilterBox(props) {
 
@@ -158,7 +133,7 @@ function AnimeList(props) {
 
   const [useRatedHeaders, setUseRatedHeaders] = useState(true);
   const ratedHeaders = [
-    { label: '序号', toComponent: (row, idx) => <StyledTableCell key='序号' align='center'>{idx + 1}</StyledTableCell> },
+    { label: '序号', toComponent: (row, idx) => <StyledTableCell key='序号' align='center' style={{ width: '7%' }}>{idx + 1}</StyledTableCell> },
     {
       label: '名称', toComponent: (row) => <StyledTableCell key='名称' align='center' style={{ width: '17%' }}>{row.nameZh}</StyledTableCell>
     },
@@ -386,7 +361,6 @@ function AnimeList(props) {
           >
             <div className="input-row">
               <TextField
-                fullWidth
                 id="doubanSource"
                 label="豆瓣页面源"
                 fullWidth

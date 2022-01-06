@@ -22,11 +22,7 @@
     "parse": "^3.4.0",
     "react": "^16.14.0",
     "react-beautiful-dnd": "^13.1.0",
-    "react-bootstrap": "^1.6.4",
-    "react-bootstrap-table": "^4.3.1",
-    "react-bootstrap-table-next": "^1.1.0",
     "react-dom": "^16.14.0",
-    "react-icons": "^3.11.0",
     "react-router-dom": "^5.3.0",
     "react-scripts": "^5.0.0",
     "uuidv4": "^6.2.12"

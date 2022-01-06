@@ -1,53 +1,116 @@
 import React, { useState, useEffect } from 'react';
 import AnimeDataContext from '../context/AnimeDataContext';
-import Table from 'react-bootstrap/Table';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import Col from 'react-bootstrap/Col';
-import Alert from 'react-bootstrap/Alert';
-import { BiEditAlt, BiTrash } from "react-icons/bi";
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
+import Alert from '@mui/material/Alert';
 import { useAuthenticationContext } from "../context/AuthenticationContext";
-import SortHeader from './SortHeader';
 import AnimeModal from './AnimeModal';
 import Rankings from './Rankings';
 import DailyNewAnimes from './DailyNewAnimes';
-import { getSeason, formatEpisodes, translate, sortList, getLatestRankings, reorder } from "../utils/utils";
+import { StyledTableCell, StyledTableRow, getSeason, formatEpisodes, getLatestRankings, reorder } from "../utils/utils";
 import '../App.css';
 import './NewAnimeList.css';
 
 function NewAnimeModal(props) {
-  const oldValue = props.oldValue === undefined || props.oldValue === null ? {} : props.oldValue;
-  return <Form id="new-anime-modal" onSubmit={(event) => { props.onSubmitOrEdit(event, props.id) }}>
-    <Form.Group controlId="nameZh">
-      <Form.Label>中文名称</Form.Label>
-      <Form.Control defaultValue={oldValue.nameZh} type="input" />
-    </Form.Group>
-    <Form.Group controlId="nameJp">
-      <Form.Label>日文名称</Form.Label>
-      <Form.Control defaultValue={oldValue.nameJp} type="input" />
-    </Form.Group>
-    <Form.Row className="input-row">
-      <Col><Form.Label>季度</Form.Label><Form.Control defaultValue={oldValue.season} id="season" type="input" /></Col>
-      <Col><Form.Label>开始放送日期</Form.Label><Form.Control defaultValue={oldValue.releaseDate} id="releaseDate" type="input" /></Col>
-      <Col><Form.Label>更新日</Form.Label><Form.Control defaultValue={oldValue.broadcastDay} id="broadcastDay" type="input" /></Col>
-    </Form.Row>
-    <Form.Group>
-      <Form.Row className="input-row">
-        <Col><Form.Label>状态</Form.Label><Form.Control defaultValue={oldValue.status} id="status" type="input" /></Col>
-        <Col><Form.Label>分类</Form.Label><Form.Control defaultValue={oldValue.genre} id="genre" type="input" /></Col>
-        <Col><Form.Label>预计集数</Form.Label><Form.Control defaultValue={oldValue.tvEpisodes} id="tvEpisodes" type="input" /></Col>
-      </Form.Row>
-      <Form.Group>
-        <Form.Label>简介</Form.Label>
-        <Form.Control defaultValue={oldValue.description} id="description" as="textarea" rows="3" />
-      </Form.Group>
-    </Form.Group>
-    <div>
-      <Button className="pink-button" type="submit">
+  const statuses = ['想看', '在看', '已看'];
+  const res = <Box
+    onSubmit={(event) => { props.onSubmitOrEdit(event, props.id) }}
+    component="form"
+    sx={{
+      '& .MuiTextField-root': { m: 1.3 },
+    }}
+    noValidate
+    autoComplete="off"
+  >
+    <div className="input-row">
+      <TextField
+        fullWidth
+        id="nameZh"
+        label="中文名称"
+        size="small"
+        defaultValue={props.oldValue.nameZh}
+      />
+    </div>
+    <div className="input-row">
+      <TextField
+        fullWidth
+        id="nameJp"
+        label="日文名称"
+        size="small"
+        defaultValue={props.oldValue.nameJp}
+      />
+    </div>
+    <div className="input-row">
+      <TextField
+        id="season"
+        label="季度"
+        size="small"
+        defaultValue={props.oldValue.season}
+      />
+      <TextField
+        id="releaseDate"
+        label="开始放送日期"
+        size="small"
+        defaultValue={props.oldValue.releaseDate}
+      />
+      <TextField
+        id="broadcastDay"
+        label="更新日"
+        size="small"
+        defaultValue={props.oldValue.broadcastDay}
+      />
+    </div>
+    <div className="input-row">
+      <TextField
+        id="status"
+        select
+        label="状态"
+        size="small"
+        defaultValue={props.oldValue.status}
+      >
+        {statuses.map((status) => <MenuItem key={status} value={status}>
+          {status}
+        </MenuItem>)}
+      </TextField>
+      <TextField
+        id="genre"
+        label="分类"
+        size="small"
+        defaultValue={props.oldValue.genre}
+      />
+      <TextField
+        id="tvEpisodes"
+        label="预计集数"
+        size="small"
+        defaultValue={props.oldValue.tvEpisodes}
+      />
+    </div>
+    <div className="input-row">
+      <TextField
+        id="description"
+        label="简介"
+        fullWidth
+        multiline
+        rows={6}
+        defaultValue={props.oldValue.description}
+      />
+    </div>
+    <div className="input-button-row">
+      <Button variant="contained" type="submit">
         提交
       </Button>
-      {props.submitNewAnime ? <></> : <Button onClick={() => {
+      {props.submitNewAnime ? <></> : <Button variant="contained" onClick={() => {
         const formElements = document.getElementById("new-anime-modal").elements;
         props.handleRateNewAnime({
           "nameZh": formElements.nameZh.value,
@@ -60,8 +123,8 @@ function NewAnimeModal(props) {
         });
       }}>已追完</Button>}
     </div>
-
-  </Form>
+  </Box>;
+  return res;
 }
 
 function NewAnimeList(props) {
@@ -69,7 +132,18 @@ function NewAnimeList(props) {
   const { authenticated } = useAuthenticationContext();
   const { newAnimes } = React.useContext(AnimeDataContext);
 
-  const tableHeaders = ['排名', '名称', '分类', '季度', '开始放送日期', '更新日', '预计集数', '状态', '']
+  const tableHeaders = [
+    { label: '排名', toComponent: (row, idx) => <StyledTableCell key='排名' align='center' style={{ width: '7%' }}>{idx + 1}</StyledTableCell> },
+    {
+      label: '名称', toComponent: (row) => <StyledTableCell key='名称' align='center' style={{ width: '20%' }}>{row.nameZh}</StyledTableCell>
+    },
+    { label: '分类', toComponent: (row) => <StyledTableCell key='分类' align='center' style={{ width: '11%' }}>{row.genre}</StyledTableCell> },
+    { label: '季度', toComponent: (row) => <StyledTableCell key='季度' align='center' style={{ width: '11%' }}>{row.season}</StyledTableCell> },
+    { label: '开始放送日期', toComponent: (row) => <StyledTableCell key='开始放送日期' align='center' style={{ width: '15%' }}>{row.releaseDate}</StyledTableCell> },
+    { label: '更新日', toComponent: (row) => <StyledTableCell key='更新日' align='center' style={{ width: '8%' }}>{row.broadcastDay}</StyledTableCell> },
+    { label: '预计集数', toComponent: (row) => <StyledTableCell key='预计集数' align='center' style={{ width: '10%' }}>{formatEpisodes(row.tvEpisodes, 0)}</StyledTableCell> },
+    { label: '状态', toComponent: (row) => <StyledTableCell key='状态' align='center' style={{ width: '7%' }}>{row.status}</StyledTableCell> },
+  ];
 
   const [seasons, setSeasons] = useState([])
   const [showAddModal, setShowAddModal] = useState(false);
@@ -85,10 +159,7 @@ function NewAnimeList(props) {
   const [displayList, setDisplayList] = useState(newAnimes);
   const [displayListSeason, setDisplayListSeason] = useState(null);
   const [editAnimeOldValue, setEditAnimeOldValue] = useState(null);
-  const [sortedCol, setSortedCol] = useState(null);
   const [rateAnimePartialInfo, setRateAnimePartialInfo] = useState(null);
-
-  useEffect(() => { setSortedCol("ranking") }, []);
 
   const handleRateNewAnime = (partialInfo) => {
     partialInfo.status = "已看";
@@ -98,7 +169,7 @@ function NewAnimeList(props) {
   }
 
   const changeSeason = (e) => {
-    setDisplayListSeason(e.target.innerHTML);
+    setDisplayListSeason(e.target.innerText.trim());
   }
 
   const sortAnimesByRankings = (animes, rankings) => {
@@ -135,17 +206,10 @@ function NewAnimeList(props) {
 
   // handle sorting display list
   useEffect(() => {
-    if (sortedCol !== null) {
-      const filteredNewAnimes = newAnimes.filter((newAnime) => newAnime.season.includes(displayListSeason));
-      if (sortedCol === 'ranking') {
-        sortAnimesByRankings(filteredNewAnimes, rankings);
-        setDisplayList(filteredNewAnimes);
-      } else {
-        setDisplayList(sortList(filteredNewAnimes, sortedCol));
-      }
-      setSortedCol(null);
-    }
-  }, [sortedCol, newAnimes, displayListSeason, rankings]);
+    const filteredNewAnimes = newAnimes.filter((newAnime) => newAnime.season.includes(displayListSeason));
+    sortAnimesByRankings(filteredNewAnimes, rankings);
+    setDisplayList(filteredNewAnimes);
+  }, [newAnimes, displayListSeason, rankings]);
 
   useEffect(() => {
     const seasons = getSeason();
@@ -167,16 +231,14 @@ function NewAnimeList(props) {
       <div>正在加载......</div>
     </div>;
   } else if (props.loadError) {
-    return <Alert variant='danger'>
+    return <Alert severity="error">
       追番列表加载失败！
     </Alert>;
   } else {
     return (<div className="main-element">
-      <Modal centered size='lg' show={showAddModal} onHide={() => setShowAddModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>{submitNewAnime ? "添加新追番" : "编辑追番"}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
+      <Dialog onClose={() => setShowAddModal(false)} open={showAddModal} fullWidth={true} maxWidth='md'>
+        <DialogTitle>{submitNewAnime ? "添加新追番" : "编辑番剧"}</DialogTitle>
+        <DialogContent dividers>
           <NewAnimeModal
             submitNewAnime={submitNewAnime}
             onSubmitOrEdit={(event, animeId) => {
@@ -193,13 +255,11 @@ function NewAnimeList(props) {
             id={activeId}
             handleRateNewAnime={handleRateNewAnime}
           />
-        </Modal.Body>
-      </Modal>
-      <Modal centered size='lg' show={showRateModal} onHide={() => setShowRateModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>评价番剧</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
+        </DialogContent>
+      </Dialog>
+      <Dialog onClose={() => setShowRateModal(false)} open={showRateModal} fullWidth={true} maxWidth='md'>
+        <DialogTitle>评价番剧</DialogTitle>
+        <DialogContent dividers>
           <AnimeModal
             onSubmitOrEdit={(event, id) => {
               event.preventDefault();
@@ -209,128 +269,106 @@ function NewAnimeList(props) {
             oldValue={rateAnimePartialInfo}
             id={activeId}
           />
-        </Modal.Body>
-      </Modal>
-      <Modal centered size="sm" show={showDeleteConfirmation} onHide={() => setShowDeleteConfirmation(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>删除番剧</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
+        </DialogContent>
+      </Dialog>
+      <Dialog onClose={() => setShowDeleteConfirmation(false)} open={showDeleteConfirmation} maxWidth='sm'>
+        <DialogTitle>删除番剧</DialogTitle>
+        <DialogContent dividers>
           <p>{`确定要删除番剧“${animeToDelete.nameZh}”吗`}</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary" onClick={() => {
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" onClick={() => {
             setAnimeToDelete({});
             setShowDeleteConfirmation(false);
           }}>取消</Button>
-          <Button variant="danger" onClick={() => {
-            props.deleteAnime({ variables: {animeId: animeToDelete.animeId} });
+          <Button variant="contained" color="error" onClick={() => {
+            props.deleteAnime({ variables: { animeId: animeToDelete.animeId } });
             setAnimeToDelete({});
             setShowDeleteConfirmation(false);
           }}>确定</Button>
-        </Modal.Footer>
-      </Modal>
-      <Modal centered size='lg' show={showRankings} onHide={() => setShowRankings(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>番剧排名</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
+        </DialogActions>
+      </Dialog>
+      <Dialog onClose={() => setShowRankings(false)} open={showRankings} fullWidth={true} maxWidth='md'>
+        <DialogTitle>番剧排名</DialogTitle>
+        <DialogContent dividers>
           <Rankings rankings={rankingsDictToArray(localRankings)} onDragEnd={onDragEnd} />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary" onClick={() => {
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" onClick={() => {
             const newRankings = {
               "season": displayListSeason,
               "rankings": rankingsDictToArray(localRankings)
             }
-            props.updateRankings({ variables: {newRankings: newRankings} });
+            props.updateRankings({ variables: { newRankings: newRankings } });
             setShowRankings(false)
           }}>提交</Button>
-        </Modal.Footer>
-      </Modal>
-      <Modal centered size='lg' show={showToday} onHide={() => setShowToday(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>近期更新</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
+        </DialogActions>
+      </Dialog>
+      <Dialog onClose={() => setShowToday(false)} open={showToday} fullWidth={true} maxWidth='md'>
+        <DialogTitle>近期更新</DialogTitle>
+        <DialogContent>
           <DailyNewAnimes displayList={displayList} />
-        </Modal.Body>
-      </Modal>
+        </DialogContent>
+      </Dialog>
       <div className="button-group">
         <div>
-          {seasons.map(season => <Button key={season} className="pink-button" onClick={changeSeason}>
+          {seasons.map(season => <Button key={season} variant="contained" onClick={changeSeason}>
             {season}
           </Button>)}
         </div>
         <div>
-          {authenticated ? <Button className="pink-button" onClick={() => {
+          {authenticated ? <Button variant="contained" onClick={() => {
             setSubmitNewAnime(true);
-            setEditAnimeOldValue(null);
+            setEditAnimeOldValue({
+              status: '想看'
+            });
             setActiveId(null);
             setShowAddModal(true);
           }}>添加追番</Button> : <></>}
-          {authenticated ? <Button className="pink-button" onClick={() => setShowRankings(true)}>排名</Button> : <></>}
-          <Button className="pink-button" onClick={() => setShowToday(true)}>近期更新</Button>
-          <Button className="pink-button" onClick={() => props.refresh()}>刷新</Button>
+          {authenticated ? <Button variant="contained" onClick={() => setShowRankings(true)}>排名</Button> : <></>}
+          <Button variant="contained" onClick={() => setShowToday(true)}>近期更新</Button>
+          <Button variant="contained" onClick={() => props.refresh()}>刷新</Button>
         </div>
       </div>
-      <div>
-        <Table striped borderless hover size="sm" variant="light" id="table">
-          <thead>
-            <tr className='table-headers'>
-              {tableHeaders.map(header => {
-                if (header === '更新日' || header === '排名' || header === '开始放送日期') {
-                  return <SortHeader key={header} header={header} sort={() => setSortedCol(translate(header))} />;
-                } else {
-                  return <th key={header} >{header}</th>
+      <TableContainer sx={{ maxHeight: '100%' }}>
+        <Table stickyHeader size="small" aria-label="customized table">
+          <TableHead>
+            <TableRow>
+              {tableHeaders.map((header) => (
+                <StyledTableCell
+                  key={header.label}
+                  align='center'
+                >
+                  {header.label}
+                </StyledTableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {displayList.map((row, idx) =>
+              <StyledTableRow key={row.id} className='clickable' onClick={() => {
+                if (authenticated) {
+                  setActiveId(row.animeId);
+                  setEditAnimeOldValue({
+                    nameZh: row.nameZh,
+                    nameJp: row.nameJp,
+                    tvEpisodes: row.tvEpisodes,
+                    genre: row.genre,
+                    description: row.description,
+                    releaseDate: row.releaseDate,
+                    broadcastDay: row.broadcastDay,
+                    season: row.season,
+                    status: row.status
+                  });
+                  setSubmitNewAnime(false);
+                  setShowAddModal(true);
                 }
-              })}
-            </tr>
-          </thead>
-          <tbody>
-            {
-              displayList.map(row =>
-                <tr key={row.animeId + row.season}>
-                  <td>{rankings[row.nameZh]}</td>
-                  <td className='anime-name'>{row.nameZh}</td>
-                  <td>{row.genre}</td>
-                  <td>{row.season}</td>
-                  <td>{row.releaseDate}</td>
-                  <td>{row.broadcastDay}</td>
-                  <td>{formatEpisodes(row.tvEpisodes, 0)}</td>
-                  <td>{row.status}</td>
-                  <td> {authenticated ?
-                    <>
-                      <BiEditAlt className="clickable" onClick={() => {
-                        setActiveId(row.animeId);
-                        setEditAnimeOldValue({
-                          nameZh: row.nameZh,
-                          nameJp: row.nameJp,
-                          tvEpisodes: row.tvEpisodes,
-                          genre: row.genre,
-                          description: row.description,
-                          releaseDate: row.releaseDate,
-                          broadcastDay: row.broadcastDay,
-                          season: row.season,
-                          status: row.status
-                        });
-                        setSubmitNewAnime(false);
-                        setShowAddModal(true);
-                      }} /><BiTrash className="icon clickable" onClick={() => {
-                        setAnimeToDelete({
-                          nameZh: row.nameZh,
-                          animeId: row.animeId,
-                        });
-                        setShowDeleteConfirmation(true);
-                      }} />
-                    </> : <></>
-                  }</td>
-                </tr>
-              )
-            }
-          </tbody>
+              }}>
+                {tableHeaders.map((header) => header.toComponent(row, idx))}
+              </StyledTableRow>)}
+          </TableBody>
         </Table>
-      </div>
+      </TableContainer>
     </div>);
   }
 }

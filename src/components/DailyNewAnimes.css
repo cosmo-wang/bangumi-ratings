@@ -1,3 +1,14 @@
-.list-group {
-  margin-bottom: 10px;
+.daily-new-animes {
+  border: 1px solid black;
+  border-radius: 2px;
+  margin-bottom: 10px !important;
+  padding: 0 !important;
+}
+
+.active-day {
+  background-color: rgb(184, 218, 255) !important;
+}
+
+.inactive-day {
+  background-color: rgb(198, 200, 202) !important;
 }
