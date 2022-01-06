@@ -55,3 +55,20 @@
 .summaries::-webkit-scrollbar {
   display: none;
 }
+
+.input-row {
+  width: 100%;
+  display: flex;
+}
+
+.input-row div {
+  flex-grow: 1;
+}
+
+.input-button-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+

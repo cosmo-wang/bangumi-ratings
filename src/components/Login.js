@@ -1,6 +1,7 @@
 import React from "react";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
 import { useAuthenticationContext } from "../context/AuthenticationContext";
 import "./Login.css";
 import "../App.css";
@@ -14,33 +15,37 @@ export default function Login() {
 
   return (
     <div className="Login">
-      <Form onSubmit={handleLogin}>
-        <Form.Group size="lg" controlId="username">
-          <Form.Label>用户名</Form.Label>
-          <Form.Control
-            autoFocus
-            type="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </Form.Group>
-        <Form.Group size="lg" controlId="password">
-          <Form.Label>密码</Form.Label>
-          <Form.Control
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </Form.Group>
+      <Box
+        onSubmit={handleLogin}
+        component="form"
+        sx={{
+          '& .MuiTextField-root': { m: 1.3 },
+        }}
+        noValidate
+        autoComplete="off"
+      >
+        <TextField
+          fullWidth
+          id="username"
+          label="用户名"
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <TextField
+          fullWidth
+          id="password"
+          type="password"
+          label="密码"
+          onChange={(e) => setPassword(e.target.value)}
+        />
         <div className="button-group">
-          <Button className="pink-button" size="lg" type="submit" disabled={!validateForm()}>
+          <Button variant='contained' type="submit" disabled={!validateForm()}>
             登录
           </Button>
-          <Button className="pink-button" size="lg" type="submit" onClick={() => setAuthenticating(false)}>
+          <Button variant='contained' type="submit" onClick={() => setAuthenticating(false)}>
             取消
           </Button>
         </div>
-      </Form>
+      </Box>
     </div>
   );
 }

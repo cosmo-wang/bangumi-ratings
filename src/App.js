@@ -182,7 +182,7 @@ function App() {
       "tvEpisodes": Number(formElements.tvEpisodes.value),
       "movies": Number(formElements.movies.value),
       "episodeLength": Number(formElements.episodeLength.value),
-      "status": formElements.status.value,
+      "status": formElements[8].value,
       "genre": formElements.genre.value,
       "description": formElements.description.value,
       "story": Number(formElements.story.value),
@@ -193,6 +193,7 @@ function App() {
       "endDate": formElements.endDate.value === "" ? null : formElements.endDate.value,
       "timesWatched": Number(formElements.timesWatched.value),
     };
+    console.log(newData);
     if (animeId !== null) {
       newData['animeId'] = animeId;
     }

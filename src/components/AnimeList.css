@@ -4,10 +4,6 @@ th {
   top: 0;
 }
 
-.anime-name {
-  width: 15%;
-}
-
 #filter-box {
   display: grid;
   grid-template-columns: 6% 30% auto;
@@ -23,6 +19,11 @@ th {
   margin-bottom: 10px;
   border-radius: 5px;
   padding: 10px;
+}
+
+#filter-box button {
+  color: black;
+  border-color: rgb(180, 180, 180);
 }
 
 #status-label {
@@ -94,14 +95,10 @@ th {
   flex-wrap: wrap;
   align-items: center;
   flex: 1;
-}
-
-.filter-choice {
-  padding: 0 10px;
-  margin: 5px 2px;
+  gap: 10px 5px;
+  color: black;
 }
 
 .selected-filter {
-  background-color: #fe8a96;
   border-radius: 5px;
 }

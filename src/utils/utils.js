@@ -232,3 +232,5 @@ export const parseSeasonSchedules = (seasonSchedules) => {
 export const getRating = (anime) => {
   return anime.story + anime.illustration + anime.music + anime.passion;
 }
+
+export const getTodayDate = () => { return moment(new Date()).format("YYYY-MM-DD"); }

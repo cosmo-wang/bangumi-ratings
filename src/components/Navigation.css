@@ -1,15 +1,9 @@
 #navbar {
   margin-bottom: 20px;
-  background-color: #fe8a96;
 }
 
-#user-management {
+#navbar-container {
   display: flex;
   justify-content: space-between;
-}
-
-.text-button:hover {
-  color: blue;
-  text-decoration: underline;
-  text-decoration-color: blue;
+  align-items: center;
 }

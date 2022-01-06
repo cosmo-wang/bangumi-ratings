@@ -1,26 +1,34 @@
 import React from 'react';
-import { AiOutlineSearch } from "react-icons/ai";
+import Button from '@mui/material/Button';
+import { formatEpisodes } from "../utils/utils";
 import './Description.css';
+import '../App.css';
 
 export default function Description(props) {
-  const description = props.description;
-  return description === undefined || description === null ? 
+  return props.anime === undefined || props.anime === null ? 
     <p>暂无简介</p> :
     <div className="description">
       <div>
         <h1>
-          {description.nameZh}
-          <a href={"https://www.douban.com/search?q=" + description.nameZh} target="_blank" rel="noopener noreferrer">
-            <AiOutlineSearch className="icon clickable" />
+          <a href={"https://www.douban.com/search?q=" + props.anime.nameZh} target="_blank" rel="noopener noreferrer">
+            {props.anime.nameZh}
           </a>
         </h1>
-        <p>日文名称：{description.nameJp}</p>
-        <p>豆瓣评分：{description.doubanRating}</p>
-        <p>年份：{description.year}</p>
-        <p>分类：{description.genre}</p>
-        <p>集数：{description.episodes}</p>
-        <p>单集片长：{description.episodeLength}</p>
-        <p>简介：{description.description}</p>
+        <p>日文名称：{props.anime.nameJp}</p>
+        <p>豆瓣评分：{props.anime.doubanRating}</p>
+        <p>年份：{props.anime.year}</p>
+        <p>分类：{props.anime.genre}</p>
+        <p>集数：{formatEpisodes(props.anime.tvEpisodes, props.anime.movies)}</p>
+        <p>单集片长：{props.anime.episodeLength}</p>
+        <p>简介：{props.anime.description}</p>
+        {props.authenticated ? <div className="input-button-row">
+          <Button variant='contained' onClick={props.editAnime}>
+            编辑
+          </Button>
+          <Button variant='contained' color='error' onClick={props.deleteAnime}>
+            删除
+          </Button>
+        </div> : <></>}
       </div>
     </div>;
 }

@@ -4,5 +4,13 @@
 }
 
 .description div {
-  margin-left: 2rem;
+  margin: 2rem;
+}
+
+a:link {
+  color: black;
+}
+
+a:hover {
+  color: blue;
 }
