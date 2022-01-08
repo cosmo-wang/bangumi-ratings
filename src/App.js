@@ -30,6 +30,7 @@ const GET_ALL_DATA = gql`
       genre,
       year,
       doubanRating,
+      doubanLink,
       description,
       startDate,
       endDate,
@@ -172,31 +173,9 @@ function App() {
     }
   }, [user, token])
 
-  const handleAnimeSubmit = (event, animeId) => {
-    const formElements = event.target.elements;
-    const newData = {
-      "nameZh": formElements.nameZh.value,
-      "nameJp": formElements.nameJp.value,
-      "year": formElements.year.value,
-      "doubanRating": Number(formElements.doubanRating.value),
-      "tvEpisodes": Number(formElements.tvEpisodes.value),
-      "movies": Number(formElements.movies.value),
-      "episodeLength": Number(formElements.episodeLength.value),
-      "status": formElements[8].value,
-      "genre": formElements.genre.value,
-      "description": formElements.description.value,
-      "story": Number(formElements.story.value),
-      "illustration": Number(formElements.illustration.value),
-      "music": Number(formElements.music.value),
-      "passion": Number(formElements.passion.value),
-      "startDate": formElements.startDate.value === "" ? null : formElements.startDate.value,
-      "endDate": formElements.endDate.value === "" ? null : formElements.endDate.value,
-      "timesWatched": Number(formElements.timesWatched.value),
-    };
-    if (animeId !== null) {
-      newData['animeId'] = animeId;
-    }
-    updateOrAddAnime({ variables: {newData: newData}})
+  const handleAnimeSubmit = (newAnimeData) => {
+    delete newAnimeData['__typename'];
+    updateOrAddAnime({ variables: {newData: newAnimeData}})
   };
 
   const handleNewAnimeSubmit = (event, animeId) => {

@@ -1,7 +1,34 @@
+import { useState, useEffect } from "react";
 import moment from 'moment';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import { styled } from '@mui/material/styles';
+
+export function useWindowSize() {
+  // Initialize state with undefined width/height so server and client renders match
+  // Learn more here: https://joshwcomeau.com/react/the-perils-of-rehydration/
+  const [windowSize, setWindowSize] = useState({
+    width: undefined,
+    height: undefined,
+  });
+  useEffect(() => {
+    // Handler to call on window resize
+    function handleResize() {
+      // Set window width/height to state
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }
+    // Add event listener
+    window.addEventListener("resize", handleResize);
+    // Call handler right away so state gets updated with initial window size
+    handleResize();
+    // Remove event listener on cleanup
+    return () => window.removeEventListener("resize", handleResize);
+  }, []); // Empty array ensures that effect is only run on mount
+  return windowSize;
+}
 
 export const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -53,11 +80,11 @@ export function formatEpisodes(tv_episodes, movies) {
   if (tv_episodes === undefined || movies === undefined) {
     return "";
   } else if (tv_episodes === 0) {
-    return `剧场版×${movies}`;
+    return `剧场版 × ${movies}`;
   } else if (movies === 0) {
-    return `${tv_episodes}集`;
+    return `${tv_episodes} 集`;
   } else {
-    return `${tv_episodes}集+剧场版×${movies}`;
+    return `${tv_episodes} 集 + 剧场版×${movies}`;
   }
 }
 

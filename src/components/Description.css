@@ -1,16 +1,225 @@
-.description {
-  display: flex;
-  flex-direction: row;
+.description-container {
+  padding: 15px;
+  display: grid;
+  grid-template-columns: 70% 30%;
+  grid-template-rows: 25% 15% auto 25% 7%;
+  grid-template-areas: 
+  'titles year-status-genre'
+  'anime-info .'
+  'anime-info anime-ratings'
+  'anime-info anime-times'
+  '. buttons';
+  grid-column-gap: 20px;
+  grid-row-gap: 10px;
 }
 
-.description div {
-  margin: 2rem;
-}
-
-a:link {
+.name-zh a:link {
   color: black;
 }
 
-a:hover {
-  color: blue;
+.name-zh a:hover {
+  color: rgb(181, 67, 73);;
+}
+
+.name-zh a:visited {
+  color: rgb(136, 67, 70);;
+}
+
+.titles {
+  border-bottom: 3px solid rgb(138, 136, 136);
+  grid-area: titles;
+  gap: 15px;
+}
+
+.name-zh {
+  font-size: 20pt;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.name-jp {
+  font-size: 12pt;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.anime-info {
+  margin-top: 15px;
+  grid-area: anime-info;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.label {
+  color: rgb(142, 138, 137);
+}
+
+.episodes, .episode-length, .douban-rating {
+  display: flex;
+}
+
+.douban-rating-value {
+  margin-right: 10px;
+  color: rgb(213, 141, 46);
+  font-weight: bold;
+}
+
+.to-douban-arrow {
+  margin-left: 10px;
+}
+
+.description {
+  display: flex;
+  flex-direction: column;
+  color: rgb(71, 72, 73);
+  margin-bottom: 10px;
+}
+
+.description .label {
+  margin-bottom: 5px;
+}
+
+.year-status-genre {
+  margin-right: 20px;
+  grid-area: year-status-genre;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgb(254, 169, 170);
+  border-radius: 25px;
+  padding: 20px;
+}
+
+.year-info {
+  font-size: 20pt;
+  font-weight: bold;
+  color: rgb(238, 61, 74);
+}
+
+.status {
+  font-size: 17pt;
+  font-weight: bold;
+  color: rgb(68, 11, 14);
+}
+
+.genre {
+  font-size: 17pt;
+  font-weight: bold;
+  color: rgb(181, 67, 73);
+}
+
+.anime-ratings {
+  margin-right: 20px;
+  background: rgb(255, 202, 169);
+  border-radius: 25px;
+  padding: 20px 20px 15px 20px;
+  grid-row-start: 2;
+  grid-row-end:   4;
+  display: grid;
+  grid-template-columns: 20% 15% auto;
+  grid-template-rows: 20% 20% 20% 20% 20%;
+  grid-template-areas: 
+  'overall-number overall-number overall-stars'
+  'story-label story-number story-stars'
+  'illustration-label illustration-number illustration-stars'
+  'music-label music-number music-stars'
+  'passion-label passion-number passion-stars';
+  justify-content: center;
+  align-items: center;
+}
+
+.overall-number {
+  grid-area: overall-number;
+  font-size: 30pt;
+  margin-top: 15px;
+  margin-bottom: 20px;
+}
+
+.overall-stars {
+  grid-area: overall-stars;
+}
+
+.story-label {
+  grid-area: story-label;
+}
+
+.story-number {
+  grid-area: story-number;
+}
+
+.story-stars {
+  grid-area: story-stars;
+}
+
+.illustration-label {
+  grid-area: illustration-label;
+}
+
+.illustration-number {
+  grid-area: illustration-number;
+}
+
+.illustration-stars {
+  grid-area: illustration-stars;
+}
+
+.music-label {
+  grid-area: music-label;
+}
+
+.music-number {
+  grid-area: music-number;
+}
+
+.music-stars {
+  grid-area: music-stars;
+}
+
+.story-label {
+  grid-area: story-label;
+}
+
+.passion-number {
+  grid-area: passion-number;
+}
+
+.passion-stars {
+  grid-area: passion-stars;
+}
+
+.anime-times {
+  margin-right: 20px;
+  background: rgb(220, 220, 220);
+  border-radius: 25px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.anime-times div {
+  text-align: center;
+}
+
+.watch-dates-label, .daily-time-label {
+  color: rgb(138, 138, 138);
+}
+
+.watch-dates-label {
+  border-bottom: 2px solid rgb(200, 200, 200);
+}
+
+.watch-dates {
+  border-bottom: 2px solid rgb(151, 153, 153);
+}
+
+.daily-time-label {
+  border-bottom: 2px solid rgb(200, 200, 200);
+}
+
+.input-button-row {
+  margin-top: 10px;
+  grid-area: buttons;
 }

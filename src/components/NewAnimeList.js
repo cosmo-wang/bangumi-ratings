@@ -25,6 +25,7 @@ import './NewAnimeList.css';
 function NewAnimeModal(props) {
   const statuses = ['想看', '在看', '已看'];
   const res = <Box
+    id='new-anime-modal'
     onSubmit={(event) => { props.onSubmitOrEdit(event, props.id) }}
     component="form"
     sx={{
@@ -107,9 +108,6 @@ function NewAnimeModal(props) {
       />
     </div>
     <div className="input-button-row">
-      <Button variant="contained" type="submit">
-        提交
-      </Button>
       {props.submitNewAnime ? <></> : <Button variant="contained" onClick={() => {
         const formElements = document.getElementById("new-anime-modal").elements;
         props.handleRateNewAnime({
@@ -119,9 +117,12 @@ function NewAnimeModal(props) {
           "genre": formElements.genre.value,
           "description": formElements.description.value,
           "startDate": formElements.releaseDate.value,
-          "status": formElements.status.value
+          "status": formElements[10].value
         });
       }}>已追完</Button>}
+      <Button variant="contained" type="submit">
+        提交
+      </Button>
     </div>
   </Box>;
   return res;
