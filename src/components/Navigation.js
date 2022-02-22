@@ -27,9 +27,9 @@ function UserManagement() {
 const pages = [
   { id: 'AnimeList', label: '补番列表' },
   { id: 'NewAnimeList', label: '追番列表' },
+  { id: 'GameList', label: '游戏列表'},
   { id: 'MonthlySummary', label: '每月总结' },
   { id: 'SeasonalSummary', label: '季度总结' },
-  { id: 'GameList', label: '游戏列表'},
 ];
 
 function Navigation(props) {
@@ -52,7 +52,7 @@ function Navigation(props) {
           component="div"
           sx={{ mr: 1, display: { xs: 'none', md: 'flex' } }}
         >
-          追番补番列表
+          动漫游戏列表
         </Typography>
         <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
           <IconButton
@@ -101,7 +101,7 @@ function Navigation(props) {
           component="div"
           sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
         >
-          追番补番列表
+          动漫游戏列表
         </Typography>
         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
           {pages.map((page) => (
