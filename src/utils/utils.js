@@ -77,11 +77,11 @@ export const setUserSession = (user, token) => {
 }
 
 export function formatEpisodes(tv_episodes, movies) {
-  if (tv_episodes === undefined || movies === undefined) {
+  if (tv_episodes === undefined) {
     return "";
   } else if (tv_episodes === 0) {
     return `剧场版 × ${movies}`;
-  } else if (movies === 0) {
+  } else if (movies === 0 || movies === undefined) {
     return `${tv_episodes} 集`;
   } else {
     return `${tv_episodes} 集 + 剧场版×${movies}`;
@@ -101,7 +101,7 @@ export function formatDate(start_date, end_date) {
 }
 
 export function formatTime(time) {
-  if (isNaN(time)) {
+  if (isNaN(time) || time < 0) {
     return "-";
   }
   if (time >= 60) {
@@ -111,10 +111,16 @@ export function formatTime(time) {
   }
 }
 
-export function calculateDailyTime(row) {
-  const days = moment(row.endDate).diff(moment(row.startDate), 'days') + 1;
-  const episodeLength = row.episodeLength === undefined || row.episodeLength === 0 ? 24 : row.episodeLength;
-  const totalTime = row.tvEpisodes * episodeLength + row.movies * 90;
+const formatDescription = (description) => {
+  if (description !== null && description !== undefined) {
+    return description.substring(0, 50) + '......';
+  }
+}
+
+export function calculateDailyTime(item) {
+  const days = moment(item.endDate).diff(moment(item.startDate), 'days') + 1;
+  const episodeLength = item.episodeLength === undefined || item.episodeLength === 0 ? 24 : item.episodeLength;
+  const totalTime = item.tvEpisodes * episodeLength + item.movies * 90;
   return totalTime / days;
 }
 
@@ -192,47 +198,39 @@ function compare(a, b) {
   }
 }
 
-export function parseDoubanPage(pageSrc) {
-  const nameZh = pageSrc.split("\n")[5].split(" ")[0];
-  const year = pageSrc.split("首播: ")[1].split("-")[0];
-  const doubanRating = pageSrc.split("豆瓣评分")[1].split("\n")[1];
-  let tvEpisodes = 12;
-  try {
-    tvEpisodes = parseInt(pageSrc.split("集数: ")[1].split("-")[0]);
-  } catch (error) {
-    console.error(error);
-  }
-  let episodeLength = 24;
-  try {
-    episodeLength = parseInt(pageSrc.split("单集片长: ")[1].split("-")[0]);
-  } catch (error) {
-    console.error(error);
-  }
-  const description = pageSrc.split("的剧情简介 · · · · · ·")[1].split("\n\n")[1].trim();
-  return {
-    nameZh: nameZh,
-    year: year,
-    doubanRating: doubanRating,
-    tvEpisodes: isNaN(tvEpisodes) ? 0 : tvEpisodes,
-    episodeLength: isNaN(episodeLength) ? 12 : episodeLength,
-    description: description,
-  }
+const daySorter = {
+  // "sunday": 0, // << if sunday is first day of week
+  "星期一": 1,
+  "星期二": 2,
+  "星期三": 3,
+  "星期四": 4,
+  "星期五": 5,
+  "星期六": 6,
+  "星期日": 7
 }
 
-export function getSeason() {
+export function sortByDay(a, b) {
+  return daySorter[a] - daySorter[b]
+}
+
+export function sortSeasons(seasons) {
+  seasons.sort((a, b) => {
+    const splittedA = a.split('年');
+    const splittedB = b.split('年');
+    if (parseInt(splittedA[0]) === parseInt(splittedB[0])) {
+      return parseInt(splittedA[1]) - parseInt(splittedB[1]);
+    } else {
+      return parseInt(splittedA[0]) - parseInt(splittedB[0]);
+    }
+  });
+  return seasons;
+}
+
+export function getCurrentSeason() {
   const d = new Date();
   const year = d.getFullYear();
   const month = Math.floor(d.getMonth() / 3) * 3 + 1;
-  const curSeason = year + "年" + month + "月";
-  let preSeason = year + "年" + (month - 3) + "月";
-  let nextSeason = year + "年" + (month + 3) + "月";
-  if (month === 1) {
-    preSeason = (year - 1) + "年10月";
-  }
-  if (month === 10) {
-    nextSeason = (year + 1) + "年1月";
-  }
-  return [preSeason, curSeason, nextSeason];
+  return year + "年" + month + "月";
 }
 
 export function getLatestRankings(newAnimes, currentSeason) {
@@ -286,3 +284,129 @@ export const getRating = (anime) => {
 }
 
 export const getTodayDate = () => { return moment(new Date()).format("YYYY-MM-DD"); }
+
+export const colSizes = {
+    'description': 4,
+    'doubanLink': 1,
+    'doubanRating': 1,
+    'endDate': 2,
+    'episodeLength': 1,
+    'genre': 2,
+    'illusration': 1,
+    'movies': 1,
+    'music': 1,
+    'nameJp': 3,
+    'nameZh': 3,
+    'passion': 1,
+    'startDate': 2,
+    'status': 1,
+    'story': 1,
+    'timesWatch': 1,
+    'tvEpisodes': 1,
+    'year': 1,
+    'rating': 1,
+    "watchedDate": 2,
+    "dailyTime": 1
+}
+
+export function translateEnToZh(word) {
+  switch (word) {
+    case 'description':
+      return "简介";
+    case 'doubanLink':
+      return "豆瓣链接";
+    case 'doubanRating':
+      return "豆瓣评分";
+    case 'endDate':
+      return "结束日期";
+    case 'episodeLength':
+      return "单集长度";
+    case 'genre':
+      return "分类";
+    case 'illustration':
+      return "作画";
+    case 'movies':
+      return "剧场版";
+    case 'music':
+      return "音乐";
+    case 'nameJp':
+      return "日文名称";
+    case 'nameZh':
+      return "名称";
+    case 'passion':
+      return "情怀";
+    case 'startDate':
+      return "开始日期";
+    case 'status':
+      return "状态";
+    case 'story':
+      return "故事";
+    case 'timesWatch':
+      return "观看次数";
+    case 'tvEpisodes':
+      return "TV集数";
+    case 'year':
+      return "年份";
+    case 'rating':
+      return '评分';
+    case 'watchedDate':
+      return '首次观看日期';
+    case 'dailyTime':
+      return '日均时长';
+    case 'broadcastDay':
+      return '更新日';
+    case 'releaseDate':
+      return '开播日期';
+    case 'season':
+      return '季度'
+    default:
+      return `未知：${word}`
+  }
+}
+
+export const getItemValue = (item, key) => {
+  switch (key) {
+    case 'rating':
+      return getRating(item).toFixed(1);
+    case 'watchedDate':
+      return formatDate(item['startDate'], item['endDate']);
+    case 'dailyTime':
+      return formatTime(calculateDailyTime(item).toFixed(1));
+    case 'tvEpisodes':
+      return formatEpisodes(item.tvEpisodes, item.movies);
+    case 'description':
+      return formatDescription(item.description);
+    default:
+      return item[key];
+  }
+}
+
+export const getNewAnimeHeaders = (windowWidth) => {
+  if (windowWidth < 400) {
+    return ["nameZh"];
+  } else if (windowWidth < 600) {
+    return ["nameZh", "broadcastDay"];
+  } else if (windowWidth < 900) {
+    return ["nameZh", "tvEpisodes", "broadcastDay"];
+  } else {
+    return ["nameZh", "genre", "season", "releaseDate", "broadcastDay", "tvEpisodes", "status"];
+  }
+}
+
+export const getAnimeHeaders = (windowWidth, rated) => {
+  if (windowWidth < 400) {
+    return ["nameZh"];
+  } else if (windowWidth < 600) {
+    return rated ? ["nameZh", "rating"] : ["nameZh", "description"];
+  } else if (windowWidth < 900) {
+    return rated ? ["nameZh", "tvEpisodes", "rating"] : ["nameZh", "tvEpisodes", "description"];
+  } else {
+    return rated ?
+      ["nameZh", "story", "illustration", "music", "passion", "rating", "watchedDate", "dailyTime"] :
+      ["nameZh", "year", "genre", "tvEpisodes", "description"];
+  }
+}
+
+export const getColNum = (windowWidth) => {
+  return 2 + getAnimeHeaders(windowWidth).map(header => colSizes[header]).reduce((partialSum, a) => partialSum + a, 0);
+}

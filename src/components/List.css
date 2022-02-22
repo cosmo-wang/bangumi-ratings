@@ -1,0 +1,15 @@
+.header {
+  background-color: #fe8a96;
+  position: sticky;
+  top: 0;
+  border-radius: 25px;
+  padding: 10px 15px;
+  font-weight: bold;
+}
+
+.item {
+  padding: 10px 15px;
+  background-color: rgb(255, 243, 244);
+  border-radius: 25px;
+  margin-top: 5px;
+}

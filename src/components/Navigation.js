@@ -29,6 +29,7 @@ const pages = [
   { id: 'NewAnimeList', label: '追番列表' },
   { id: 'MonthlySummary', label: '每月总结' },
   { id: 'SeasonalSummary', label: '季度总结' },
+  { id: 'GameList', label: '游戏列表'},
 ];
 
 function Navigation(props) {

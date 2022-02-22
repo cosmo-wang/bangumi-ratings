@@ -1,0 +1,25 @@
+#filter-box {
+  background-color: rgb(251, 252, 252);
+  margin-bottom: 10px;
+  border-radius: 25px;
+  padding: 5px 5px;
+}
+
+#filter-box button {
+  color: black;
+  border-color: rgb(180, 180, 180);
+}
+
+.filter-category {
+  margin: 10px 0;
+}
+
+.filter-box-choices {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  flex: 1;
+  gap: 10px 5px;
+  color: black;
+}

@@ -3,6 +3,7 @@ import Button from '@mui/material/Button';
 import Rating from '@mui/material/Rating';
 import TextField from '@mui/material/TextField';
 import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
+import { useWindowSizeContext } from "../context/WindowSizeContext";
 import { formatEpisodes, getRating, formatDate, formatTime, calculateDailyTime } from "../utils/utils";
 import './Description.css';
 import '../App.css';
@@ -97,7 +98,9 @@ function AnimeTimes(props) {
 }
 
 export default function Description(props) {
-  return <div className="description-container">
+  const { windowSize } = useWindowSizeContext();
+  const className = windowSize.width < 900 ? "description-container-mobile" : "description-container";
+  return <div className={className}>
         <Titles anime={props.anime}/>
         <Info anime={props.anime} />
         <YearStatusGenre anime={props.anime} />

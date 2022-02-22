@@ -1,4 +1,5 @@
 .main-element {
+  background-color: rgba(46, 0, 0, 0.351);
   position: fixed;
   left: 5%;
   right: 5%;
@@ -8,6 +9,8 @@
   opacity: 0.8;
   text-align: center;
   margin-bottom: 1rem;
+  padding: 10px;
+  border-radius: 25px;
 }
 
 .main-element::-webkit-scrollbar {
@@ -71,4 +74,15 @@
   gap: 10px;
 }
 
+.list-button-group {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
 
+.list-button-group button {
+  margin-left: 10px;
+  opacity: 1;
+  max-width: 90px;
+  min-width: 10px;
+}

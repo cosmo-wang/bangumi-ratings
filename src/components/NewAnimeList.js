@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import AnimeDataContext from '../context/AnimeDataContext';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -15,12 +10,13 @@ import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import Alert from '@mui/material/Alert';
 import { useAuthenticationContext } from "../context/AuthenticationContext";
+import List from './List';
+import FilterBox from './FilterBox';
 import AnimeModal from './AnimeModal';
 import Rankings from './Rankings';
 import DailyNewAnimes from './DailyNewAnimes';
-import { StyledTableCell, StyledTableRow, getSeason, formatEpisodes, getLatestRankings, reorder } from "../utils/utils";
+import { getCurrentSeason, sortSeasons, getLatestRankings, reorder } from "../utils/utils";
 import '../App.css';
-import './NewAnimeList.css';
 
 function NewAnimeModal(props) {
   const statuses = ['想看', '在看', '已看'];
@@ -133,44 +129,28 @@ function NewAnimeList(props) {
   const { authenticated } = useAuthenticationContext();
   const { newAnimes } = React.useContext(AnimeDataContext);
 
-  const tableHeaders = [
-    { label: '排名', toComponent: (row, idx) => <StyledTableCell key='排名' align='center' style={{ width: '7%' }}>{idx + 1}</StyledTableCell> },
-    {
-      label: '名称', toComponent: (row) => <StyledTableCell key='名称' align='center' style={{ width: '20%' }}>{row.nameZh}</StyledTableCell>
-    },
-    { label: '分类', toComponent: (row) => <StyledTableCell key='分类' align='center' style={{ width: '11%' }}>{row.genre}</StyledTableCell> },
-    { label: '季度', toComponent: (row) => <StyledTableCell key='季度' align='center' style={{ width: '11%' }}>{row.season}</StyledTableCell> },
-    { label: '开始放送日期', toComponent: (row) => <StyledTableCell key='开始放送日期' align='center' style={{ width: '15%' }}>{row.releaseDate}</StyledTableCell> },
-    { label: '更新日', toComponent: (row) => <StyledTableCell key='更新日' align='center' style={{ width: '8%' }}>{row.broadcastDay}</StyledTableCell> },
-    { label: '预计集数', toComponent: (row) => <StyledTableCell key='预计集数' align='center' style={{ width: '10%' }}>{formatEpisodes(row.tvEpisodes, 0)}</StyledTableCell> },
-    { label: '状态', toComponent: (row) => <StyledTableCell key='状态' align='center' style={{ width: '7%' }}>{row.status}</StyledTableCell> },
-  ];
-
-  const [seasons, setSeasons] = useState([])
   const [showAddModal, setShowAddModal] = useState(false);
   const [showRateModal, setShowRateModal] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showRankings, setShowRankings] = useState(false);
   const [showToday, setShowToday] = useState(false);
-  const [rankings, setRankings] = useState({});
   const [localRankings, setLocalRankings] = useState({});
   const [submitNewAnime, setSubmitNewAnime] = useState(false);
   const [animeToDelete, setAnimeToDelete] = useState({});
   const [activeId, setActiveId] = useState();
   const [displayList, setDisplayList] = useState(newAnimes);
-  const [displayListSeason, setDisplayListSeason] = useState(null);
   const [editAnimeOldValue, setEditAnimeOldValue] = useState(null);
   const [rateAnimePartialInfo, setRateAnimePartialInfo] = useState(null);
+
+  const [filterCategories, setFilterCategories] = useState(new Map());
+  const selectOneFilterCategory = new Set(['season']);
+  const [selectedFilterChoices, setSelectedFilterChoices] = useState({ 'season': getCurrentSeason(), 'broadcastDay': new Set() })
 
   const handleRateNewAnime = (partialInfo) => {
     partialInfo.status = "已看";
     setRateAnimePartialInfo(partialInfo);
     setShowAddModal(false);
     setShowRateModal(true);
-  }
-
-  const changeSeason = (e) => {
-    setDisplayListSeason(e.target.innerText.trim());
   }
 
   const sortAnimesByRankings = (animes, rankings) => {
@@ -205,27 +185,51 @@ function NewAnimeList(props) {
     setLocalRankings(newRankings);
   };
 
-  // handle sorting display list
-  useEffect(() => {
-    const filteredNewAnimes = newAnimes.filter((newAnime) => newAnime.season.includes(displayListSeason));
-    sortAnimesByRankings(filteredNewAnimes, rankings);
-    setDisplayList(filteredNewAnimes);
-  }, [newAnimes, displayListSeason, rankings]);
+  const toggleFilterChoice = (label, choice) => {
+    const newSelectedFilterChoices = { ...selectedFilterChoices };
+    if (label === 'season') {
+      newSelectedFilterChoices[label] = choice;
+    } else {
+      if (!newSelectedFilterChoices[label].has(choice)) {
+        newSelectedFilterChoices[label].add(choice);
+      } else {
+        newSelectedFilterChoices[label].delete(choice);
+      }
+    }
+    setSelectedFilterChoices(newSelectedFilterChoices);
+  }
 
+  // creates the filter categories
   useEffect(() => {
-    const seasons = getSeason();
-    setSeasons(seasons);
-    setDisplayListSeason(seasons[1]);
-  }, [])
+    const allSeasons = new Set();
+    const allDays = new Set();
+    const newFilterCategories = new Map();
+    newAnimes.forEach(newAnime => {
+      allSeasons.add(newAnime.season);
+      if (newAnime.broadcastDay) {
+        allDays.add(newAnime.broadcastDay);
+      }
+    })
+    newFilterCategories.set("season", sortSeasons(Array.from(allSeasons)));
+    newFilterCategories.set("broadcastDay", Array.from(allDays));
+    setFilterCategories(newFilterCategories);
+  }, [props.isLoading, newAnimes]);
 
+  // handle filtering
   useEffect(() => {
-    const filteredNewAnimes = newAnimes.filter((newAnime) => newAnime.season.includes(displayListSeason));
-    const rankings = getLatestRankings(filteredNewAnimes, displayListSeason);
-    sortAnimesByRankings(filteredNewAnimes, rankings);
-    setDisplayList(filteredNewAnimes);
-    setRankings(rankings);
+    const newDisplayList = [];
+    newAnimes.forEach((newAnime) => {
+      let seasonMatch = selectedFilterChoices['season'] === newAnime.season;
+      let broadcastDayMatch = selectedFilterChoices['broadcastDay'].size === 0 || selectedFilterChoices['broadcastDay'].has(newAnime.broadcastDay);
+      if (seasonMatch && broadcastDayMatch) {
+        newDisplayList.push(newAnime);
+      }
+    });
+    const rankings = getLatestRankings(newDisplayList, selectedFilterChoices['season']);
+    sortAnimesByRankings(newDisplayList, rankings);
+    setDisplayList(newDisplayList);
     setLocalRankings(rankings);
-  }, [props.isLoading, newAnimes, displayListSeason])
+  }, [props.isLoading, newAnimes, selectedFilterChoices])
 
   if (props.isLoading) {
     return <div className="loading">
@@ -245,7 +249,7 @@ function NewAnimeList(props) {
             onSubmitOrEdit={(event, animeId) => {
               event.preventDefault();
               if (submitNewAnime) {
-                const newRanking = Math.max(...Object.values(getLatestRankings(displayList, displayListSeason))) + 1;
+                const newRanking = Math.max(...Object.values(getLatestRankings(displayList, selectedFilterChoices['season']))) + 1;
                 props.onNewAnimeSubmit(event, null, newRanking);
               } else {
                 props.onNewAnimeSubmit(event, animeId);
@@ -297,7 +301,7 @@ function NewAnimeList(props) {
         <DialogActions>
           <Button variant="contained" onClick={() => {
             const newRankings = {
-              "season": displayListSeason,
+              "season": selectedFilterChoices['season'],
               "rankings": rankingsDictToArray(localRankings)
             }
             props.updateRankings({ variables: { newRankings: newRankings } });
@@ -311,65 +315,43 @@ function NewAnimeList(props) {
           <DailyNewAnimes displayList={displayList} />
         </DialogContent>
       </Dialog>
-      <div className="button-group">
-        <div>
-          {seasons.map(season => <Button key={season} variant="contained" onClick={changeSeason}>
-            {season}
-          </Button>)}
-        </div>
-        <div>
-          {authenticated ? <Button variant="contained" onClick={() => {
-            setSubmitNewAnime(true);
-            setEditAnimeOldValue({
-              status: '想看'
-            });
-            setActiveId(null);
-            setShowAddModal(true);
-          }}>添加追番</Button> : <></>}
-          {authenticated ? <Button variant="contained" onClick={() => setShowRankings(true)}>排名</Button> : <></>}
-          <Button variant="contained" onClick={() => setShowToday(true)}>近期更新</Button>
-          <Button variant="contained" onClick={() => props.refresh()}>刷新</Button>
-        </div>
+      <div className="list-button-group">
+        {authenticated ? <Button variant="contained" onClick={() => {
+          setSubmitNewAnime(true);
+          setEditAnimeOldValue({
+            status: '想看'
+          });
+          setActiveId(null);
+          setShowAddModal(true);
+        }}>添加追番</Button> : <></>}
+        {authenticated ? <Button variant="contained" onClick={() => setShowRankings(true)}>排名</Button> : <></>}
+        <Button variant="contained" onClick={() => setShowToday(true)}>近期更新</Button>
+        <Button variant="contained" onClick={() => props.refresh()}>刷新</Button>
       </div>
-      <TableContainer sx={{ maxHeight: '100%' }}>
-        <Table stickyHeader size="small" aria-label="customized table">
-          <TableHead>
-            <TableRow>
-              {tableHeaders.map((header) => (
-                <StyledTableCell
-                  key={header.label}
-                  align='center'
-                >
-                  {header.label}
-                </StyledTableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {displayList.map((row, idx) =>
-              <StyledTableRow key={row.id} className='clickable' onClick={() => {
-                if (authenticated) {
-                  setActiveId(row.animeId);
-                  setEditAnimeOldValue({
-                    nameZh: row.nameZh,
-                    nameJp: row.nameJp,
-                    tvEpisodes: row.tvEpisodes,
-                    genre: row.genre,
-                    description: row.description,
-                    releaseDate: row.releaseDate,
-                    broadcastDay: row.broadcastDay,
-                    season: row.season,
-                    status: row.status
-                  });
-                  setSubmitNewAnime(false);
-                  setShowAddModal(true);
-                }
-              }}>
-                {tableHeaders.map((header) => header.toComponent(row, idx))}
-              </StyledTableRow>)}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <FilterBox
+        filterCategories={filterCategories}
+        selectOneFilterCategory={selectOneFilterCategory}
+        selectedFilterChoices={selectedFilterChoices}
+        toggleFilterChoice={toggleFilterChoice}
+      />
+      <List items={displayList} type="newAnimes" onItemClick={(item) => {
+        if (authenticated) {
+          setActiveId(item.animeId);
+          setEditAnimeOldValue({
+            nameZh: item.nameZh,
+            nameJp: item.nameJp,
+            tvEpisodes: item.tvEpisodes,
+            genre: item.genre,
+            description: item.description,
+            releaseDate: item.releaseDate,
+            broadcastDay: item.broadcastDay,
+            season: item.season,
+            status: item.status
+          });
+          setSubmitNewAnime(false);
+          setShowAddModal(true);
+        }
+      }}/>
     </div>);
   }
 }

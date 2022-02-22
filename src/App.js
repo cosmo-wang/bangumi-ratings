@@ -3,15 +3,17 @@ import { gql, useQuery, useMutation } from '@apollo/client';
 import Parse from 'parse';
 import * as Env from "./environments";
 import Navivation from './components/Navigation';
-import AnimeDataContext from './context/AnimeDataContext';
+import List from './components/List';
 import AnimeList from './components/AnimeList';
 import NewAnimeList from './components/NewAnimeList';
 import MonthlySummary from './components/MonthlySummary';
 import SeasonalSummary from './components/SeasonalSummary';
 import Login from "./components/Login";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import AnimeDataContext from './context/AnimeDataContext';
 import { AuthenticationContext } from "./context/AuthenticationContext";
-import { getUser, getToken, setUserSession, removeUserSession, parseSeasonSchedules } from "./utils/utils";
+import { WindowSizeContext } from "./context/WindowSizeContext";
+import { getUser, getToken, setUserSession, removeUserSession, parseSeasonSchedules, useWindowSize } from "./utils/utils";
 import './App.css';
 
 Parse.initialize(Env.APPLICATION_ID, Env.JAVASCRIPT_KEY);
@@ -241,6 +243,8 @@ function App() {
         return <MonthlySummary />;
       case 'SeasonalSummary':
         return <SeasonalSummary />
+      case 'GameList':
+        return <List />
       default:
         return <AnimeList
           isLoading={loading}
@@ -252,20 +256,24 @@ function App() {
     }
   }
 
+  console.log(data);
+
   return (
     <div>
       <div className="App">
-        <AuthenticationContext.Provider value={{ username, password, authenticated, setAuthenticating, handleLogin, handleSignOut, setUsername, setPassword }}>
-          <Navivation switchPage={setActivePage}/>
-          {authenticating ? <Login /> :
-            <AnimeDataContext.Provider value={{
-              animes: data === undefined ? [] : data.getAnimes,
-              newAnimes: data === undefined ? [] : parseSeasonSchedules(data.getSeasonSchedules)
-            }}>
-              {mainElement(activePage)}
-            </AnimeDataContext.Provider>
-          }
-        </AuthenticationContext.Provider>
+        <WindowSizeContext.Provider value={{windowSize: useWindowSize()}}>
+          <AuthenticationContext.Provider value={{ username, password, authenticated, setAuthenticating, handleLogin, handleSignOut, setUsername, setPassword }}>
+            <Navivation switchPage={setActivePage}/>
+            {authenticating ? <Login /> :
+              <AnimeDataContext.Provider value={{
+                animes: data === undefined ? [] : data.getAnimes,
+                newAnimes: data === undefined ? [] : parseSeasonSchedules(data.getSeasonSchedules)
+              }}>
+                {mainElement(activePage)}
+              </AnimeDataContext.Provider>
+            }
+          </AuthenticationContext.Provider>
+        </WindowSizeContext.Provider>
       </div>
     </div>
   );
