@@ -162,11 +162,9 @@ function NewAnimeList(props) {
   }
 
   const rankingsDictToArray = (rankings) => {
-    const rankingsArray = new Array(Object.entries(rankings).length);
-    for (const [anime, ranking] of Object.entries(rankings)) {
-      rankingsArray[ranking - 1] = anime;
-    }
-    return rankingsArray;
+    const rankingTuples = Object.keys(rankings).map(key => [key, rankings[key]]);
+    rankingTuples.sort((first, second) => first[1] - second[1]);
+    return rankingTuples.map(tuple => tuple[0]);
   }
 
   const onDragEnd = (result) => {
