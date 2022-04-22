@@ -1,0 +1,58 @@
+.entry-card {
+  background-color: rgb(251, 252, 252, 0.8);
+  padding: 10px;
+  margin-bottom: 10px;
+  display: grid;
+  grid-template-columns: 130px auto;
+  grid-template-areas: 
+  'main-pic title'
+  'main-pic ratings'
+  'main-pic info'
+  'main-pic description';
+  column-gap: 10px;
+  row-gap: 3px;
+  text-align: left;
+  overflow: scroll;
+}
+
+.entry-card .main-pic {
+  max-width: 100%;
+  grid-area: main-pic;
+  opacity: 1;
+}
+
+.title-zh {
+  font-size: 1.1rem;
+}
+
+.sub-info {
+  font-size: 0.8rem;
+}
+
+.title-jp {
+  color: #838181;
+}
+
+.ratings {
+  grid-area: ratings;
+  display: flex;
+  flex-direction: column;
+}
+
+.rating {
+  display: flex;
+  flex-direction: row;
+}
+
+.rating-number {
+  color: #c5650b;
+}
+
+.info {
+  grid-area: info;
+}
+
+.description {
+  color: #838181;
+  grid-area: description;
+}

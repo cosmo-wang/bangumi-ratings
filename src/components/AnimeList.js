@@ -10,7 +10,7 @@ import { useAuthenticationContext } from "../context/AuthenticationContext";
 import Description from './Description';
 import AnimeModal from './AnimeModal';
 import FilterBox from './FilterBox';
-import List from './List';
+import AnimeCard from './AnimeCard';
 import { sortList } from "../utils/utils";
 import '../App.css';
 
@@ -205,10 +205,11 @@ function AnimeList(props) {
         setSortHeader={setSortHeader}
         setSearchText={setSearchText}
       />
-      <List items={displayList} type="animes" rated={useRatedHeaders} onItemClick={(item) => {
+      {displayList.map(anime => <AnimeCard anime={anime} />)}
+      {/* <List items={displayList} type="animes" rated={useRatedHeaders} onItemClick={(item) => {
         setActiveAnime(item);
         setShowDescription(true);
-      }} />
+      }} /> */}
     </div>);
   }
 }
