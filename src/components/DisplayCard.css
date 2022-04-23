@@ -2,17 +2,17 @@
   background-color: rgb(251, 252, 252, 0.8);
   padding: 10px;
   margin-bottom: 10px;
+  border-radius: 5px;
   display: grid;
-  grid-template-columns: 130px auto;
+  grid-template-columns: 130px auto 110px;
   grid-template-areas: 
-  'main-pic title'
-  'main-pic ratings'
-  'main-pic info'
-  'main-pic description';
+  'main-pic title button-group'
+  'main-pic info-1 info-1'
+  'main-pic info-2 info-2'
+  'main-pic description description';
   column-gap: 10px;
   row-gap: 3px;
   text-align: left;
-  overflow: scroll;
 }
 
 .entry-card .main-pic {
@@ -33,8 +33,13 @@
   color: #838181;
 }
 
-.ratings {
-  grid-area: ratings;
+.display-card-btn {
+  color: black;
+  border-color: rgb(180, 180, 180);
+}
+
+.info-1 {
+  grid-area: info-1;
   display: flex;
   flex-direction: column;
 }
@@ -48,8 +53,8 @@
   color: #c5650b;
 }
 
-.info {
-  grid-area: info;
+.info-2 {
+  grid-area: info-2;
 }
 
 .description {

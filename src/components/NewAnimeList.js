@@ -11,11 +11,12 @@ import MenuItem from '@mui/material/MenuItem';
 import Alert from '@mui/material/Alert';
 import { useAuthenticationContext } from "../context/AuthenticationContext";
 import List from './List';
+import DisplayCard from './DisplayCard';
 import FilterBox from './FilterBox';
 import AnimeModal from './AnimeModal';
 import Rankings from './Rankings';
 import DailyNewAnimes from './DailyNewAnimes';
-import { getCurrentSeason, sortSeasons, getLatestRankings, reorder } from "../utils/utils";
+import { getCurrentSeason, sortSeasons, getLatestRankings, reorder, formatEpisodes } from "../utils/utils";
 import '../App.css';
 
 function NewAnimeModal(props) {
@@ -229,6 +230,16 @@ function NewAnimeList(props) {
     setLocalRankings(rankings);
   }, [props.isLoading, newAnimes, selectedFilterChoices])
 
+  const info1Component = (entry) => {
+    return <>
+      {entry.genre} ｜ {entry.status} ｜ {entry.releaseDate} 开播 ｜ {entry.broadcastDay}更新
+    </>;
+  }
+
+  const info2Component = (entry) => {
+    return "近期排名：";
+  }
+
   if (props.isLoading) {
     return <div className="loading">
       <div>正在加载......</div>
@@ -332,7 +343,20 @@ function NewAnimeList(props) {
         selectedFilterChoices={selectedFilterChoices}
         toggleFilterChoice={toggleFilterChoice}
       />
-      <List items={displayList} type="newAnimes" onItemClick={(item) => {
+      {displayList.map((anime, idx) => 
+        <DisplayCard
+          key={anime.animeId + anime.season}
+          idx={idx}
+          authenticated={authenticated}
+          entry={anime} 
+          entryId={anime.animeId}
+          info1Component={info1Component}
+          info2Component={info2Component}
+          onAnimeSubmit={props.onAnimeSubmit}
+          deleteAnime={props.deleteAnime}
+        />
+      )}
+      {/* <List items={displayList} type="newAnimes" onItemClick={(item) => {
         if (authenticated) {
           setActiveId(item.animeId);
           setEditAnimeOldValue({
@@ -349,7 +373,7 @@ function NewAnimeList(props) {
           setSubmitNewAnime(false);
           setShowAddModal(true);
         }
-      }}/>
+      }}/> */}
     </div>);
   }
 }

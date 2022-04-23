@@ -3,15 +3,13 @@ import AnimeDataContext from '../context/AnimeDataContext';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
 import { useAuthenticationContext } from "../context/AuthenticationContext";
-import Description from './Description';
 import AnimeModal from './AnimeModal';
 import FilterBox from './FilterBox';
-import AnimeCard from './AnimeCard';
-import { sortList } from "../utils/utils";
+import DisplayCard from './DisplayCard';
+import { sortList, formatEpisodes, getRating, formatDate, formatTime, calculateDailyTime } from "../utils/utils";
 import '../App.css';
 
 function AnimeList(props) {
@@ -20,12 +18,7 @@ function AnimeList(props) {
 
   const { animes } = React.useContext(AnimeDataContext);
 
-  const [activeAnime, setActiveAnime] = useState({});
-  const [showDescription, setShowDescription] = useState(false);
   const [showAnimeModal, setShowAnimeModal] = useState(false);
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const [submitNewAnime, setSubmitNewAnime] = useState(false);
-  const [animeToDelete, setAnimeToDelete] = useState({});
   const [displayList, setDisplayList] = useState(animes);
 
   const [expandFilterBox, setExpandFilterBox] = useState(false);
@@ -121,6 +114,28 @@ function AnimeList(props) {
     setSelectedFilterChoices(newSelectedFilterChoices);
   }
 
+  const info1Component = (entry) => {
+    return <>
+      <div className='rating'>
+        <div className='rating-label'>我的评分：</div>
+        <div className='rating-number'>{getRating(entry).toFixed(1)}</div>
+        <div className='my-rating-breakdown'>（作画：<span className='rating-number'>{entry.illustration}</span> 剧情：<span className='rating-number'>{entry.story}</span> 音乐：<span className='rating-number'>{entry.music}</span> 情怀：<span className='rating-number'>{entry.passion}</span>）</div>
+      </div>
+      <div className='rating sub-info'>
+        <div className='rating-label'>豆瓣评分：</div>
+        <div className='rating-number'>{entry.doubanRating}</div>
+      </div>
+    </>;
+  }
+
+  const info2Component = (entry) => {
+    return <>
+      {entry.genre} ｜ {formatEpisodes(entry.tvEpisodes, entry.movies)} ｜ 
+      单集 {entry.episodeLength} 分钟 ｜ {formatDate(entry.startDate, entry.endDate)} ｜ 
+      日均 {formatTime(calculateDailyTime(entry))}
+    </>;
+  }
+
   if (props.isLoading) {
     return <div className="loading">
       <div>正在加载......</div>
@@ -131,64 +146,23 @@ function AnimeList(props) {
     </Alert>;
   } else {
     return (<div className="main-element">
-      <Dialog onClose={() => setShowDescription(false)} open={showDescription} fullWidth={true} maxWidth='md'>
-        <DialogContent dividers>
-          <Description
-            anime={activeAnime}
-            authenticated={authenticated}
-            editAnime={() => {
-              setShowDescription(false);
-              setSubmitNewAnime(false);
-              setShowAnimeModal(true);
-            }}
-            deleteAnime={() => {
-              setShowDescription(false);
-              setAnimeToDelete({
-                nameZh: activeAnime.nameZh,
-                animeId: activeAnime.animeId,
-              });
-              setShowDeleteConfirmation(true);
-            }}
-          />
-        </DialogContent>
-      </Dialog>
       <Dialog onClose={() => {
         setShowAnimeModal(false);
-        setActiveAnime({});
       }} open={showAnimeModal} fullWidth={true} maxWidth='md'>
-        <DialogTitle>{submitNewAnime ? "添加新番剧" : "编辑番剧"}</DialogTitle>
+        <DialogTitle>添加新番剧</DialogTitle>
         <DialogContent dividers>
           <AnimeModal
             onSubmitOrEdit={(newAnimeData) => {
               props.onAnimeSubmit(newAnimeData);
               setShowAnimeModal(false);
-              setActiveAnime({});
             }}
-            oldValue={activeAnime}
+            oldValue={{}}
           />
         </DialogContent>
-      </Dialog>
-      <Dialog onClose={() => setShowDeleteConfirmation(false)} open={showDeleteConfirmation} maxWidth='sm'>
-        <DialogTitle>删除番剧</DialogTitle>
-        <DialogContent dividers>
-          <p>{`确定要删除番剧“${animeToDelete.nameZh}”吗`}</p>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="contained" onClick={() => {
-            setAnimeToDelete({});
-            setShowDeleteConfirmation(false);
-          }}>取消</Button>
-          <Button variant="contained" color="error" onClick={() => {
-            props.deleteAnime({ variables: { animeId: animeToDelete.animeId } });
-            setAnimeToDelete({});
-            setShowDeleteConfirmation(false);
-          }}>确定</Button>
-        </DialogActions>
       </Dialog>
       <div className="list-button-group">
         {authenticated ? <Button variant='contained' onClick={() => {
           setShowAnimeModal(true);
-          setSubmitNewAnime(true);
         }}>添加</Button> : <></>}
         <Button variant='contained' onClick={() => props.refresh()}>刷新</Button>
         <Button variant='contained' onClick={() => setExpandFilterBox(!expandFilterBox)}>{expandFilterBox ? "收起" : "展开"}</Button>
@@ -205,11 +179,19 @@ function AnimeList(props) {
         setSortHeader={setSortHeader}
         setSearchText={setSearchText}
       />
-      {displayList.map(anime => <AnimeCard anime={anime} />)}
-      {/* <List items={displayList} type="animes" rated={useRatedHeaders} onItemClick={(item) => {
-        setActiveAnime(item);
-        setShowDescription(true);
-      }} /> */}
+      {displayList.map((anime, idx) => 
+        <DisplayCard
+          key={anime.animeId}
+          idx={idx}
+          authenticated={authenticated}
+          entry={anime} 
+          entryId={anime.animeId}
+          info1Component={info1Component}
+          info2Component={info2Component}
+          onAnimeSubmit={props.onAnimeSubmit}
+          deleteAnime={props.deleteAnime}
+        />
+      )}
     </div>);
   }
 }
