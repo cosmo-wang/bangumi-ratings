@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { gql, useLazyQuery } from '@apollo/client';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import RadioGroup from '@mui/material/RadioGroup';
@@ -10,90 +11,42 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Button from '@mui/material/Button';
 import './AddNewEntryForm.css';
 
-const bangumi_tv_search_result = [
-  {
-    "name": "偶像大师",
-    "type": "[动漫]",
-    "url": "http://bangumi.tv/subject/11577"
+const SEARCH_LINKS = gql`
+query SearchLinks($searchTerm: String!) {
+  searchBangumiTv(searchTerm: $searchTerm) {
+    name
+    type
+    url
   },
-  {
-    "name": "偶像大师 灰姑娘女孩",
-    "type": "[游戏]",
-    "url": "http://bangumi.tv/subject/35615"
-  },
-  {
-    "name": "偶像大师灰姑娘女孩 星光舞台",
-    "type": "[游戏]",
-    "url": "http://bangumi.tv/subject/138886"
-  },
-  {
-    "name": "偶像大师 MILLION LIVE!",
-    "type": "[书籍]",
-    "url": "http://bangumi.tv/subject/120795"
-  },
-  {
-    "name": "偶像大师 MILLION LIVE! Backstage",
-    "type": "[书籍]",
-    "url": "http://bangumi.tv/subject/120796"
+  searchDouban(searchTerm: $searchTerm) {
+    name
+    type
+    url
   }
-];
-
-const douban_search_result = [
-  {
-    "name": "偶像大师 ",
-    "type": "[电视剧]",
-    "url": "https://movie.douban.com/subject/5915753/"
-  },
-  {
-    "name": "偶像大师 星耀季节 アイドルマスター スターリット シーズン",
-    "type": "[游戏]",
-    "url": "https://www.douban.com/game/35625634/"
-  },
-  {
-    "name": "偶像大师特别篇：765事务所的故事 ",
-    "type": "[电影]",
-    "url": "https://movie.douban.com/subject/10727053/"
-  },
-  {
-    "name": "VOY@GER ",
-    "type": "[电影]",
-    "url": "https://movie.douban.com/subject/35577411/"
-  },
-  {
-    "name": "偶像大师剧场版：前往光辉的彼端 ",
-    "type": "[电影]",
-    "url": "https://movie.douban.com/subject/21351041/"
-  }
-];
-
-const res_info = {
-  "nameZh": "偶像大师",
-  "nameJp": "THE iDOLM@STER",
-  "coverUrl": "https://lain.bgm.tv/pic/cover/l/a8/6a/11577_hKH0y.jpg",
-  "tvEpisodes": 26,
-  "episodeLength": 23,
-  "doubanRating": 8.2,
-  "bangumiTvRating": 8.1,
-  "genre": "偶像大师,A-1Pictures,偶像,2011年7月,TV,励志,骗钱大师,游戏改,神前暁,2011,釘宮理恵,锦织敦史,GAINAX,不坑爹,NAMCO,美希,錦織敦史,音乐,A-1,百合,治愈,IM@S,今井麻美,原创,爱马仕,半年番,待田堂子,2011年,钉宫理惠,アニメ",
-  "year": "2011",
-  "doubanLink": "https://movie.douban.com/subject/5915753/",
-  "bangumiTvLink": "http://bangumi.tv/subject/11577",
-  "description": "　　偶像，是女孩子们一直以来的憧憬。但能站在顶点的，只有仅仅数人。13位少女，就此经她们所属的事务所“765 Prodution”，跨进了那个充满竞争的世界……出道约半年，事务所来了一位全新的制作人。他跟少女们都下定决心，向顶级偶像之路进发…… 本作是由『A-1 Pictures』改编同名游戏于2011年7月制作的最新版动画，讲述了『765production』所属的偶像们活跃与成长的物语。\n\r\n　　2011年1月10日，在“The Idolm@ster 2 765pro H@ppiness New Ye@r P@rty!! 2011”的现场活动中，隆重地隆动地宣布了一个使所有fans非常雀跃的消息——「THE IDOLM@STER(偶像大师)」的动画化计划正式启动了! 那时虽然已经宣布了动画化，但是以什么媒传播放则还没有公布，再次TV动画，还是直接剧场版，还是只推出OVA? 这些疑问都在最新一号的「Megami杂志 3月号」上得以解答了，「THE IDOLM@STER」TV动画化正式决定!! ",
-  "season": "2011年7月",
-  "releaseDate": "2011-07-07",
-  "broadcastDay": "星期四"
-};
-
-const personal_info = {
-  "status": "已看",
-  "startDate": "2020-10-01",
-  "endDate": "2020-10-10",
-  "timesWatched": 3,
-  "illustration": 2.5,
-  "story": 2.5,
-  "music": 2.5,
-  "passion": 2.5
 }
+`;
+
+const GET_ANIME_INFO = gql`
+query GetAnimeInfo($bangumiTvUrl: String!, $doubanUrl: String!) {
+  getAnimeInfo(bangumiTvUrl: $bangumiTvUrl, doubanUrl: $doubanUrl) {
+    nameZh,
+    nameJp,
+    coverUrl,
+    tvEpisodes,
+    episodeLength,
+    doubanRating,
+    bangumiTvRating,
+    genre,
+    year,
+    doubanLink,
+    bangumiTvLink,
+    description,
+    season,
+    releaseDate,
+    broadcastDay
+  }
+}
+`;
 
 const statuses = ['想看', '在看', '已看'];
 
@@ -304,7 +257,7 @@ const personalInfoInputFields = (props) => <>
 
 // Step 1: Enter name to search
 function EnterEntryName(props) {
-  return props.step === 1 ? <div>
+  return <div>
     <TextField
       variant="outlined"
       id="search-term-input"
@@ -314,11 +267,12 @@ function EnterEntryName(props) {
       value={props.value}
       onChange={(e) => props.updateValue(e.target.value)}
     />
-  </div> : <></>;
+  </div>;
 }
 
+// Step 2: Select page links
 function SelectLinks(props) {
-  return props.step === 2 ? <div id='link-selector'>
+  return <div id='link-selector'>
     <div id='bangumi-tv-selector-label'>选择番组计划页面：</div>
     <div id='douban-selector-label'>选择豆瓣页面：</div>
     <RadioGroup
@@ -328,7 +282,7 @@ function SelectLinks(props) {
       onChange={(e) => props.onLinkChange('bangumiTvLink', e.target.value)}
     >
       {props.candidateBangumiTvLinks.map((link) =>
-        <FormControlLabel value={link.url} control={<Radio />} label={
+        <FormControlLabel key={link.url} value={link.url} control={<Radio />} label={
           <a href={link.url} target="_blank" rel="noreferrer">
             {link.type} {link.name}
           </a>
@@ -342,18 +296,19 @@ function SelectLinks(props) {
       onChange={(e) => props.onLinkChange('doubanLink', e.target.value)}
     >
       {props.candidateDoubanLinks.map((link) =>
-        <FormControlLabel value={link.url} control={<Radio />} label={
+        <FormControlLabel key={link.url} value={link.url} control={<Radio />} label={
           <a href={link.url} target="_blank" rel="noreferrer">
             {link.type} {link.name}
           </a>
         } />
       )}
     </RadioGroup>
-  </div> : <></>
+  </div>;
 }
 
+// Step 3: Confirm fetched data
 function ConfirmBasicInfo(props) {
-  return props.step === 3 ? <Box
+  return <Box
       component="form"
       sx={{
         '& .MuiTextField-root': { m: 1.3 },
@@ -362,14 +317,17 @@ function ConfirmBasicInfo(props) {
       autoComplete="off"
     >
     {basicInfoInputFields(props)}
-  </Box> : <></>;
+  </Box>;
 }
 
+// Step 4: Select genres
 function SelectGenres(props) {
-  return props.step === 4 ? <FormGroup
+  console.log(props.candidateGenres);
+  return <FormGroup
     id='genre-selector'>
     {props.candidateGenres.map(genre => 
       <FormControlLabel
+        key={genre}
         control={
           <Checkbox
             checked={props.selectedGenres.includes(genre)}
@@ -385,11 +343,12 @@ function SelectGenres(props) {
         }
         label={genre}
       />)}
-    </FormGroup> : <></>;
+    </FormGroup>;
 }
 
+// Step 5: Edit personal information
 function EditPersonalInfo(props) {
-  return props.step === 5 ? <Box
+  return <Box
     component="form"
     sx={{
       '& .MuiTextField-root': { m: 1.3 },
@@ -398,11 +357,12 @@ function EditPersonalInfo(props) {
     autoComplete="off"
   >
     {personalInfoInputFields(props)}
-  </Box> : <></>;
+  </Box>;
 }
 
+// Step 6: Final confirmation
 function FinalConfirmation(props) {
-  return props.step === 6 ? <Box
+  return <Box
     // onSubmit={(event) => {
     //   event.preventDefault();
     //   props.onSubmitOrEdit(formValue);
@@ -426,15 +386,38 @@ function FinalConfirmation(props) {
       />
     </div>
     {personalInfoInputFields(props)}
-  </Box> : <></>;
+  </Box>;
 }
 
 export default function AddNewEntryForm(props) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [basicInfo, setBasicInfo] = useState(res_info);
+  const [candidateBangumiTvLinks, setCandidateBangumiTvLinks] = useState([]);
+  const [candidateDoubanLinks, setCandidateDoubanLinks] = useState([]);
+  const [basicInfo, setBasicInfo] = useState({});
+  const [candidateGenres, setCandidateGenres] = useState([]);
   const [selectedGenres, setSelectedGenres] = useState([]);
-  const [personalInfo, setPersonalInfo] = useState(personal_info);
+  const [personalInfo, setPersonalInfo] = useState({});
   const [step, setStep] = useState(1);
+
+  console.log(basicInfo);
+
+  const [searchLinks] = useLazyQuery(SEARCH_LINKS, {
+    fetchPolicy: "network-only",
+    onCompleted: data => {
+      setCandidateBangumiTvLinks(data.searchBangumiTv);
+      setCandidateDoubanLinks(data.searchDouban);
+      setStep(step + 1);
+    }
+  });
+
+  const [getAnimeInfo] = useLazyQuery(GET_ANIME_INFO, {
+    fetchPolicy: "network-only",
+    onCompleted: data => {
+      setBasicInfo({...data.getAnimeInfo});
+      setCandidateGenres(data.getAnimeInfo.genre.split(','));
+      setStep(step + 1);
+    }
+  });
 
   const stepTitle = {
     1: '输入搜索关键字',
@@ -443,6 +426,25 @@ export default function AddNewEntryForm(props) {
     4: '选择分类',
     5: '编辑个人信息',
     6: '最终确认',
+  }
+
+  const nextStepFunction = {
+    1: () => {
+      if (!searchTerm) {
+        alert('请输入搜索关键字！');
+      } else {
+        searchLinks({ variables: {searchTerm: searchTerm} });
+      }
+    },
+    2: () => {
+      getAnimeInfo({ variables: {bangumiTvUrl: basicInfo.bangumiTvLink, doubanUrl: basicInfo.doubanLink} });
+    },
+    3: () => {setStep(step + 1)},
+    4: () => {setStep(step + 1)},
+    5: () => {setStep(step + 1)},
+    6: () => {
+
+    }
   }
 
   const updateBasicInfo = (e) => {
@@ -458,84 +460,91 @@ export default function AddNewEntryForm(props) {
     setPersonalInfo(newPersonalInfo);
   }
 
+  const currentForm = () => {
+    switch (step) {
+      case 1:
+        return <EnterEntryName
+          step={step}
+          value={searchTerm}
+          updateValue={(newValue) => setSearchTerm(newValue)}
+        />;
+      case 2:
+        return <SelectLinks
+          step={step}
+          selectedBangumiTvLink={basicInfo['bangumiTvLink']}
+          candidateBangumiTvLinks={candidateBangumiTvLinks}
+          selectedDoubanLink={basicInfo['doubanLink']}
+          candidateDoubanLinks={candidateDoubanLinks}
+          onLinkChange={(linkService, newLink) => {
+            const newBasicInfo = {...basicInfo};
+            newBasicInfo[linkService] = newLink;
+            setBasicInfo(newBasicInfo);
+          }}
+        />;
+      case 3:
+        return <ConfirmBasicInfo
+          step={step}
+          basicInfo={basicInfo}
+          updateBasicInfo={updateBasicInfo}
+        />;
+      case 4:
+        return <SelectGenres
+          step={step}
+          candidateGenres={candidateGenres}
+          selectedGenres={selectedGenres}
+          addGenre={genre => {
+            const newGenres = [];
+            selectedGenres.forEach(selectedGenre => {
+              newGenres.push(selectedGenre);
+            });
+            newGenres.push(genre);
+            setSelectedGenres(newGenres);
+          }}
+          removeGenre={(genre) => {
+            const newGenres = [];
+            selectedGenres.forEach(selectedGenre => {
+              if (selectedGenre !== genre) {
+                newGenres.push(selectedGenre);
+              }
+            });
+            setSelectedGenres(newGenres);
+          }}
+        />
+      case 5:
+        return <EditPersonalInfo
+          step={step}
+          personalInfo={personalInfo}
+          updatePersonalInfo={updatePersonalInfo}
+        />;
+      case 6:
+        return <FinalConfirmation
+          step={step}
+          basicInfo={basicInfo}
+          updateBasicInfo={updateBasicInfo}
+          genre={selectedGenres.join('/')}
+          updateGenre={(e) => {
+            setSelectedGenres(e.target.value.split('/'));
+          }}
+          personalInfo={personalInfo}
+          updatePersonalInfo={updatePersonalInfo}
+        />;
+      default:
+    }
+  }
+
   return <div id='add-new-entry-form'>
     <h3 id='step-title'>{stepTitle[step]}</h3>
-    <EnterEntryName
-      step={step}
-      value={searchTerm}
-      updateValue={(newValue) => setSearchTerm(newValue)}
-    />
-    <SelectLinks
-      step={step}
-      selectedBangumiTvLink={basicInfo['bangumiTvLink']}
-      candidateBangumiTvLinks={bangumi_tv_search_result}
-      selectedDoubanLink={basicInfo['doubanLink']}
-      candidateDoubanLinks={douban_search_result}
-      onLinkChange={(linkService, newLink) => {
-        const newBasicInfo = {...basicInfo};
-        newBasicInfo[linkService] = newLink;
-        setBasicInfo(newBasicInfo);
-      }}
-    />
-    <ConfirmBasicInfo
-      step={step}
-      basicInfo={basicInfo}
-      updateBasicInfo={updateBasicInfo}
-    />
-    <SelectGenres
-      step={step}
-      candidateGenres={basicInfo.genre.split(',')}
-      selectedGenres={selectedGenres}
-      addGenre={genre => {
-        const newGenres = [];
-        selectedGenres.forEach(selectedGenre => {
-          newGenres.push(selectedGenre);
-        });
-        newGenres.push(genre);
-        setSelectedGenres(newGenres);
-      }}
-      removeGenre={(genre) => {
-        const newGenres = [];
-        selectedGenres.forEach(selectedGenre => {
-          if (selectedGenre !== genre) {
-            newGenres.push(selectedGenre);
-          }
-        });
-        setSelectedGenres(newGenres);
-      }}
-    />
-    <EditPersonalInfo
-      step={step}
-      personalInfo={personalInfo}
-      updatePersonalInfo={updatePersonalInfo}
-    />
-    <FinalConfirmation
-      step={step}
-      basicInfo={basicInfo}
-      updateBasicInfo={updateBasicInfo}
-      genre={selectedGenres.join('/')}
-      updateGenre={(e) => {
-        setSelectedGenres(e.target.value.split('/'));
-      }}
-      personalInfo={personalInfo}
-      updatePersonalInfo={updatePersonalInfo}
-    />
+    {currentForm()}
     <div id='nav-buttons'>
-      <Button variant='contained'
-        onClick={() => setStep(step - 1)}
-        disabled = {step === 1}
-      >
-        上一步
-      </Button>
       {step === 6 ?
         <Button variant='contained' 
           onClick={() => {}}
         >
           提交
         </Button> :
-        <Button variant='contained' 
-          onClick={() => setStep(step + 1)}
-          disabled = {step === 6}
+        <Button
+          variant='contained' 
+          onClick={nextStepFunction[step]}
         >
           下一步
         </Button>}
