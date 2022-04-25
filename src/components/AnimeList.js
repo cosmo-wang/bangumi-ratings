@@ -9,6 +9,7 @@ import { useAuthenticationContext } from "../context/AuthenticationContext";
 import AnimeModal from './AnimeModal';
 import FilterBox from './FilterBox';
 import DisplayCard from './DisplayCard';
+import AddNewEntryForm from './AddNewEntryForm';
 import { sortList, formatEpisodes, getRating, formatDate, formatTime, calculateDailyTime } from "../utils/utils";
 import '../App.css';
 
@@ -20,6 +21,8 @@ function AnimeList(props) {
 
   const [showAnimeModal, setShowAnimeModal] = useState(false);
   const [displayList, setDisplayList] = useState(animes);
+
+  const [showNewEntryForm, setShowNewEntryForm] = useState(false);
 
   const [expandFilterBox, setExpandFilterBox] = useState(false);
   const showWhenCollapsed = new Set(["status"]);
@@ -160,9 +163,17 @@ function AnimeList(props) {
           />
         </DialogContent>
       </Dialog>
+      <Dialog onClose={() => {
+        setShowNewEntryForm(false);
+      }} open={showNewEntryForm} fullWidth={true} maxWidth='md'>
+        <DialogTitle>添加</DialogTitle>
+        <DialogContent dividers>
+          <AddNewEntryForm />
+        </DialogContent>
+      </Dialog>
       <div className="list-button-group">
         {authenticated ? <Button variant='contained' onClick={() => {
-          setShowAnimeModal(true);
+          setShowNewEntryForm(true);
         }}>添加</Button> : <></>}
         <Button variant='contained' onClick={() => props.refresh()}>刷新</Button>
         <Button variant='contained' onClick={() => setExpandFilterBox(!expandFilterBox)}>{expandFilterBox ? "收起" : "展开"}</Button>

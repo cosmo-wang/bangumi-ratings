@@ -22,18 +22,24 @@ Parse.serverURL = Env.SERVER_URL;
 const GET_ALL_DATA = gql`
   query GetAllData {
     getAnimes {
-      animeId,
+      id,
       nameZh,
       nameJp,
+      coverUrl,
       tvEpisodes,
       movies,
       episodeLength,
-      status,
       genre,
       year,
       doubanRating,
+      bangumiTvRating,
       doubanLink,
+      bangumiTvLink,
       description,
+      season,
+      releaseDate,
+      broadcastDay,
+      status,
       startDate,
       endDate,
       timesWatched,
@@ -41,19 +47,6 @@ const GET_ALL_DATA = gql`
       illustration,
       music,
       passion
-    },
-    getSeasonSchedules {
-      animeId,
-      nameZh,
-      nameJp,
-      status,
-      genre,
-      tvEpisodes,
-      description,
-      season,
-      releaseDate,
-      broadcastDay,
-      rankings
     }
   }
 `;
@@ -256,6 +249,8 @@ function App() {
     }
   }
 
+  console.log(data === undefined ? [] : data.getAnimes);
+
   return (
     <div>
       <div className="App">
@@ -265,7 +260,8 @@ function App() {
             {authenticating ? <Login /> :
               <AnimeDataContext.Provider value={{
                 animes: data === undefined ? [] : data.getAnimes,
-                newAnimes: data === undefined ? [] : parseSeasonSchedules(data.getSeasonSchedules)
+                // newAnimes: data === undefined ? [] : parseSeasonSchedules(data.getSeasonSchedules)
+                newAnimes: []
               }}>
                 {mainElement(activePage)}
               </AnimeDataContext.Provider>
