@@ -168,7 +168,12 @@ function AnimeList(props) {
       }} open={showNewEntryForm} fullWidth={true} maxWidth='md'>
         <DialogTitle>添加</DialogTitle>
         <DialogContent dividers>
-          <AddNewEntryForm />
+          <AddNewEntryForm 
+            onSubmit={(newAnimeData) => {
+              props.onAnimeSubmit(newAnimeData);
+              setShowNewEntryForm(false);
+            }}
+          />
         </DialogContent>
       </Dialog>
       <div className="list-button-group">
@@ -192,11 +197,11 @@ function AnimeList(props) {
       />
       {displayList.map((anime, idx) => 
         <DisplayCard
-          key={anime.animeId}
+          key={anime.id}
           idx={idx}
           authenticated={authenticated}
           entry={anime} 
-          entryId={anime.animeId}
+          entryId={anime.id}
           info1Component={info1Component}
           info2Component={info2Component}
           onAnimeSubmit={props.onAnimeSubmit}

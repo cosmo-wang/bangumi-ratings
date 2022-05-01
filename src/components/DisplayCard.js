@@ -39,7 +39,7 @@ function DisplayCard(props) {
             setShowDeleteConfirmation(false);
           }}>取消</Button>
           <Button variant="contained" color="error" onClick={() => {
-            props.deleteAnime({ variables: { animeId: props.entryId } });
+            props.deleteAnime({ variables: { id: props.entryId } });
             setShowDeleteConfirmation(false);
           }}>确定</Button>
         </DialogActions>

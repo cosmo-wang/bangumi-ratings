@@ -13,7 +13,9 @@
   grid-template-rows: 30px auto;
   grid-template-areas: 
   'bangumi-tv-selector-label douban-selector-label'
-  'bangumi-tv-selector douban-selector';
+  'bangumi-tv-selector douban-selector'
+  '. link-selector-nav-buttons';
+  
 }
 
 #bangumi-tv-selector-label {
@@ -32,15 +34,21 @@
   grid-area: douban-selector;
 }
 
+#link-selector #nav-buttons {
+  grid-area: link-selector-nav-buttons;
+  justify-self: end;
+}
+
 #genre-selector {
   display: flex;
   flex-direction: row;
 }
 
-#nav-buttons {
-  align-self: flex-end;
+.new-entry-step {
+  display: flex;
+  flex-direction: column;
 }
 
-#nav-buttons button {
-  margin-right: 10px;
+#nav-buttons {
+  align-self: flex-end;
 }

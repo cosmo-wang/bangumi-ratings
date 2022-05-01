@@ -9,6 +9,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import './AddNewEntryForm.css';
 
 const SEARCH_LINKS = gql`
@@ -257,7 +258,18 @@ const personalInfoInputFields = (props) => <>
 
 // Step 1: Enter name to search
 function EnterEntryName(props) {
-  return <div>
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const [searchLinks, { loading }] = useLazyQuery(SEARCH_LINKS, {
+    fetchPolicy: "network-only",
+    onCompleted: data => {
+      props.setCandidateBangumiTvLinks(data.searchBangumiTv);
+      props.setCandidateDoubanLinks(data.searchDouban);
+      props.advanceStep();
+    }
+  });
+
+  return <div className='new-entry-step'>
     <TextField
       variant="outlined"
       id="search-term-input"
@@ -265,21 +277,47 @@ function EnterEntryName(props) {
       label="搜索关键字"
       helperText='请输入关键字以用于搜索相关页面。'
       value={props.value}
-      onChange={(e) => props.updateValue(e.target.value)}
+      onChange={(e) => setSearchTerm(e.target.value)}
     />
+    <div id='nav-buttons'>
+      <LoadingButton
+        loading={loading}
+        variant='contained' 
+        onClick={() => {
+          if (!searchTerm) {
+            alert('请输入搜索关键字！');
+          } else {
+            searchLinks({ variables: {searchTerm: searchTerm} });
+          }
+        }}
+      >
+        下一步
+      </LoadingButton>
+    </div>
   </div>;
 }
 
 // Step 2: Select page links
 function SelectLinks(props) {
+  const [selectedBangumiTvLink, setSelectedBangumiTvLink] = useState();
+  const [selectedDoubanLink, setSelectedDoubanLink] = useState();
+  const [getAnimeInfo, { loading }] = useLazyQuery(GET_ANIME_INFO, {
+    fetchPolicy: "network-only",
+    onCompleted: data => {
+      props.setBasicInfo({...data.getAnimeInfo});
+      props.setCandidateGenres(data.getAnimeInfo.genre.split(','));
+      props.advanceStep();
+    }
+  });
+
   return <div id='link-selector'>
     <div id='bangumi-tv-selector-label'>选择番组计划页面：</div>
     <div id='douban-selector-label'>选择豆瓣页面：</div>
     <RadioGroup
       id='bangumi-tv-selector'
       name="bangumi-tv-buttons-group"
-      value={props.selectedBangumiTvLink}
-      onChange={(e) => props.onLinkChange('bangumiTvLink', e.target.value)}
+      value={selectedBangumiTvLink}
+      onChange={(e) => setSelectedBangumiTvLink(e.target.value)}
     >
       {props.candidateBangumiTvLinks.map((link) =>
         <FormControlLabel key={link.url} value={link.url} control={<Radio />} label={
@@ -292,8 +330,8 @@ function SelectLinks(props) {
     <RadioGroup
       id='douban-selector'
       name="douban-buttons-group"
-      value={props.selectedDoubanLink}
-      onChange={(e) => props.onLinkChange('doubanLink', e.target.value)}
+      value={selectedDoubanLink}
+      onChange={(e) => setSelectedDoubanLink(e.target.value)}
     >
       {props.candidateDoubanLinks.map((link) =>
         <FormControlLabel key={link.url} value={link.url} control={<Radio />} label={
@@ -303,6 +341,17 @@ function SelectLinks(props) {
         } />
       )}
     </RadioGroup>
+    <div id='nav-buttons'>
+      <LoadingButton
+        loading={loading}
+        variant='contained' 
+        onClick={() => {
+          getAnimeInfo({ variables: {bangumiTvUrl: selectedBangumiTvLink, doubanUrl: selectedDoubanLink} });
+        }}
+      >
+        下一步
+      </LoadingButton>
+    </div>
   </div>;
 }
 
@@ -315,15 +364,24 @@ function ConfirmBasicInfo(props) {
       }}
       noValidate
       autoComplete="off"
+      className='new-entry-step'
     >
     {basicInfoInputFields(props)}
+    <div id='nav-buttons'>
+      <Button
+        variant='contained' 
+        onClick={props.advanceStep}
+      >
+        下一步
+      </Button>
+    </div>
   </Box>;
 }
 
 // Step 4: Select genres
 function SelectGenres(props) {
-  console.log(props.candidateGenres);
-  return <FormGroup
+  return <div className="new-entry-step">
+    <FormGroup
     id='genre-selector'>
     {props.candidateGenres.map(genre => 
       <FormControlLabel
@@ -343,7 +401,16 @@ function SelectGenres(props) {
         }
         label={genre}
       />)}
-    </FormGroup>;
+    </FormGroup>
+    <div id='nav-buttons'>
+      <Button
+        variant='contained' 
+        onClick={props.advanceStep}
+      >
+        下一步
+      </Button>
+    </div>
+  </div>;
 }
 
 // Step 5: Edit personal information
@@ -355,24 +422,34 @@ function EditPersonalInfo(props) {
     }}
     noValidate
     autoComplete="off"
+    className='new-entry-step'
   >
     {personalInfoInputFields(props)}
+    <div id='nav-buttons'>
+      <Button
+        variant='contained' 
+        onClick={props.advanceStep}
+      >
+        下一步
+      </Button>
+    </div>
   </Box>;
 }
 
 // Step 6: Final confirmation
 function FinalConfirmation(props) {
   return <Box
-    // onSubmit={(event) => {
-    //   event.preventDefault();
-    //   props.onSubmitOrEdit(formValue);
-    // }}
+    onSubmit={(event) => {
+      event.preventDefault();
+      props.submitNewAnime();
+    }}
     component="form"
     sx={{
       '& .MuiTextField-root': { m: 1.3 },
     }}
     noValidate
     autoComplete="off"
+    className='new-entry-step'
   >
     {basicInfoInputFields(props)}
     <div className="input-row">
@@ -386,11 +463,19 @@ function FinalConfirmation(props) {
       />
     </div>
     {personalInfoInputFields(props)}
+    <div id='nav-buttons'>
+      <Button
+        variant='contained' 
+        onClick={props.advanceStep}
+        type="submit"
+      >
+        提交
+      </Button>
+    </div>
   </Box>;
 }
 
 export default function AddNewEntryForm(props) {
-  const [searchTerm, setSearchTerm] = useState('');
   const [candidateBangumiTvLinks, setCandidateBangumiTvLinks] = useState([]);
   const [candidateDoubanLinks, setCandidateDoubanLinks] = useState([]);
   const [basicInfo, setBasicInfo] = useState({});
@@ -399,25 +484,11 @@ export default function AddNewEntryForm(props) {
   const [personalInfo, setPersonalInfo] = useState({});
   const [step, setStep] = useState(1);
 
-  console.log(basicInfo);
-
-  const [searchLinks] = useLazyQuery(SEARCH_LINKS, {
-    fetchPolicy: "network-only",
-    onCompleted: data => {
-      setCandidateBangumiTvLinks(data.searchBangumiTv);
-      setCandidateDoubanLinks(data.searchDouban);
+  const advanceStep = () => {
+    if (step < 6) {
       setStep(step + 1);
     }
-  });
-
-  const [getAnimeInfo] = useLazyQuery(GET_ANIME_INFO, {
-    fetchPolicy: "network-only",
-    onCompleted: data => {
-      setBasicInfo({...data.getAnimeInfo});
-      setCandidateGenres(data.getAnimeInfo.genre.split(','));
-      setStep(step + 1);
-    }
-  });
+  }
 
   const stepTitle = {
     1: '输入搜索关键字',
@@ -426,25 +497,6 @@ export default function AddNewEntryForm(props) {
     4: '选择分类',
     5: '编辑个人信息',
     6: '最终确认',
-  }
-
-  const nextStepFunction = {
-    1: () => {
-      if (!searchTerm) {
-        alert('请输入搜索关键字！');
-      } else {
-        searchLinks({ variables: {searchTerm: searchTerm} });
-      }
-    },
-    2: () => {
-      getAnimeInfo({ variables: {bangumiTvUrl: basicInfo.bangumiTvLink, doubanUrl: basicInfo.doubanLink} });
-    },
-    3: () => {setStep(step + 1)},
-    4: () => {setStep(step + 1)},
-    5: () => {setStep(step + 1)},
-    6: () => {
-
-    }
   }
 
   const updateBasicInfo = (e) => {
@@ -465,27 +517,25 @@ export default function AddNewEntryForm(props) {
       case 1:
         return <EnterEntryName
           step={step}
-          value={searchTerm}
-          updateValue={(newValue) => setSearchTerm(newValue)}
+          setCandidateBangumiTvLinks={setCandidateBangumiTvLinks}
+          setCandidateDoubanLinks={setCandidateDoubanLinks}
+          advanceStep={advanceStep}
         />;
       case 2:
         return <SelectLinks
           step={step}
-          selectedBangumiTvLink={basicInfo['bangumiTvLink']}
           candidateBangumiTvLinks={candidateBangumiTvLinks}
-          selectedDoubanLink={basicInfo['doubanLink']}
           candidateDoubanLinks={candidateDoubanLinks}
-          onLinkChange={(linkService, newLink) => {
-            const newBasicInfo = {...basicInfo};
-            newBasicInfo[linkService] = newLink;
-            setBasicInfo(newBasicInfo);
-          }}
+          setBasicInfo={setBasicInfo}
+          setCandidateGenres={setCandidateGenres}
+          advanceStep={advanceStep}
         />;
       case 3:
         return <ConfirmBasicInfo
           step={step}
           basicInfo={basicInfo}
           updateBasicInfo={updateBasicInfo}
+          advanceStep={advanceStep}
         />;
       case 4:
         return <SelectGenres
@@ -509,12 +559,14 @@ export default function AddNewEntryForm(props) {
             });
             setSelectedGenres(newGenres);
           }}
+          advanceStep={advanceStep}
         />
       case 5:
         return <EditPersonalInfo
           step={step}
           personalInfo={personalInfo}
           updatePersonalInfo={updatePersonalInfo}
+          advanceStep={advanceStep}
         />;
       case 6:
         return <FinalConfirmation
@@ -527,6 +579,11 @@ export default function AddNewEntryForm(props) {
           }}
           personalInfo={personalInfo}
           updatePersonalInfo={updatePersonalInfo}
+          submitNewAnime={() => {
+            const newAnimeData = {...basicInfo, ...personalInfo};
+            newAnimeData.genre = selectedGenres.join('/');
+            props.onSubmit(newAnimeData);
+          }}
         />;
       default:
     }
@@ -535,19 +592,5 @@ export default function AddNewEntryForm(props) {
   return <div id='add-new-entry-form'>
     <h3 id='step-title'>{stepTitle[step]}</h3>
     {currentForm()}
-    <div id='nav-buttons'>
-      {step === 6 ?
-        <Button variant='contained' 
-          onClick={() => {}}
-        >
-          提交
-        </Button> :
-        <Button
-          variant='contained' 
-          onClick={nextStepFunction[step]}
-        >
-          下一步
-        </Button>}
-    </div>
   </div>
 }

@@ -5,7 +5,6 @@ import * as Env from "./environments";
 import Navivation from './components/Navigation';
 import List from './components/List';
 import AnimeList from './components/AnimeList';
-import NewAnimeList from './components/NewAnimeList';
 import MonthlySummary from './components/MonthlySummary';
 import SeasonalSummary from './components/SeasonalSummary';
 import Login from "./components/Login";
@@ -57,7 +56,7 @@ const UPDATE_OR_ADD_ANIME = gql`
   ) {
     updateOrAddAnime(newData: $newData) {
       anime {
-        animeId,
+        id,
         nameZh
       }
     }
@@ -65,8 +64,8 @@ const UPDATE_OR_ADD_ANIME = gql`
 `;
 
 const DELETE_ANIME = gql`
-  mutation DeleteAnime($animeId: Int!) {
-    deleteAnime(animeId: $animeId) {
+  mutation DeleteAnime($id: Int!) {
+    deleteAnime(id: $id) {
       deletedAnimeNameZh
     }
   }
@@ -173,7 +172,7 @@ function App() {
     updateOrAddAnime({ variables: {newData: newAnimeData}})
   };
 
-  const handleNewAnimeSubmit = (event, animeId) => {
+  const handleNewAnimeSubmit = (event, id) => {
     event.preventDefault();
     const formElements = event.target.elements;
     const newData = {
@@ -187,8 +186,8 @@ function App() {
       "season": formElements.season.value,
       "status": formElements[10].value,
     };
-    if (animeId !== null) {
-      newData['animeId'] = animeId;
+    if (id !== null) {
+      newData['id'] = id;
     }
     updateOrAddSeasonAnime({ variables: {newData: newData}})
   };
@@ -222,16 +221,16 @@ function App() {
           deleteAnime={deleteAnime}
           refresh={refetch}
         />;
-      case 'NewAnimeList':
-        return <NewAnimeList
-          isLoading={loading}
-          loadError={error !== undefined}
-          onAnimeSubmit={handleAnimeSubmit}
-          onNewAnimeSubmit={handleNewAnimeSubmit}
-          deleteAnime={deleteAnime}
-          updateRankings={updateRankings}
-          refresh={refetch}
-        />
+      // case 'NewAnimeList':
+      //   return <NewAnimeList
+      //     isLoading={loading}
+      //     loadError={error !== undefined}
+      //     onAnimeSubmit={handleAnimeSubmit}
+      //     onNewAnimeSubmit={handleNewAnimeSubmit}
+      //     deleteAnime={deleteAnime}
+      //     updateRankings={updateRankings}
+      //     refresh={refetch}
+      //   />
       case 'MonthlySummary':
         return <MonthlySummary />;
       case 'SeasonalSummary':
