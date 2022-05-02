@@ -1,25 +1,84 @@
 import React, { useState, useEffect } from 'react';
-import AnimeDataContext from '../context/AnimeDataContext';
+import { useQuery, useMutation } from '@apollo/client';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
 import { useAuthenticationContext } from "../context/AuthenticationContext";
-import AnimeModal from './AnimeModal';
+import { GET_ANIMES, ADD_ANIME, UPDATE_ANIME, DELETE_ANIME, UPDATE_RANKINGS } from '../gql/AnimeQueries';
 import FilterBox from './FilterBox';
 import DisplayCard from './DisplayCard';
 import AddNewEntryForm from './AddNewEntryForm';
 import { sortList, formatEpisodes, getRating, formatDate, formatTime, calculateDailyTime } from "../utils/utils";
 import '../App.css';
 
-function AnimeList(props) {
+function AnimeList() {
 
   const { authenticated } = useAuthenticationContext();
 
-  const { animes } = React.useContext(AnimeDataContext);
+  const [animes, setAnimes] = useState([]);
 
-  const [showAnimeModal, setShowAnimeModal] = useState(false);
+  const { loading, error, data, refetch } = useQuery(GET_ANIMES, {
+    onCompleted: data => {
+      setAnimes(data.getAnimes);
+    }
+  });
+
+  const [addAnime] = useMutation(ADD_ANIME, {
+    refetchQueries: [
+      GET_ANIMES
+    ],
+    onCompleted(resData) {
+      alert(`已提交：${resData.addAnime.anime.nameZh}`);
+    },
+    onError(updateError) {
+      console.log(updateError);
+      alert("更新失败，请稍后重试。");
+    }
+  });
+
+  const [updateAnime] = useMutation(UPDATE_ANIME, {
+    refetchQueries: [
+      GET_ANIMES
+    ],
+    onCompleted(resData) {
+      alert(`已提交：${resData.updateAnime.anime.nameZh}`);
+    },
+    onError(updateError) {
+      console.log(updateError);
+      alert("更新失败，请稍后重试。");
+    }
+  });
+
+  const [deleteAnime] = useMutation(DELETE_ANIME, {
+    refetchQueries: [
+      GET_ANIMES
+    ],
+    onCompleted(resData) {
+      alert(`已删除：${resData.deleteAnime.deletedAnimeNameZh}`);
+    },
+    onError(updateError) {
+      console.log(updateError);
+      alert("删除失败，请稍后重试。");
+    }
+  });
+
+  const [updateRankings] = useMutation(UPDATE_RANKINGS, {
+    refetchQueries: [
+      GET_ANIMES
+    ],
+    onCompleted(resData) {
+      alert("排名已更新！");
+    },
+    onError(updateError) {
+      console.log(updateError);
+      alert("更新失败，请稍后重试。");
+    }
+  })
+
+  console.log(animes);
+
   const [displayList, setDisplayList] = useState(animes);
 
   const [showNewEntryForm, setShowNewEntryForm] = useState(false);
@@ -36,6 +95,16 @@ function AnimeList(props) {
   const sortHeaders = useRatedHeaders ? ['tvEpisodes', 'story', 'illustration', 'music', 'passion', 'rating', 'watchedDate', 'dailyTime'] : ['tvEpisodes', 'doubanRating'];
 
   const [searchText, setSearchText] = useState('');
+
+  const handleAddAnime = (newAnimeData) => {
+    delete newAnimeData['__typename'];
+    addAnime({ variables: {newData: newAnimeData}})
+  };
+
+  const handleUpdateAnime = (newAnimeData) => {
+    delete newAnimeData['__typename'];
+    updateAnime({ variables: {newData: newAnimeData}})
+  }
 
   // creates the filter categories
   useEffect(() => {
@@ -64,7 +133,7 @@ function AnimeList(props) {
     newFilterCategories.set("genre", Array.from(allGenres).sort());
     newFilterCategories.set("status", Array.from(allStatuses));
     setFilterCategories(newFilterCategories);
-  }, [props.isLoading, animes]);
+  }, [loading, animes]);
 
   // handles filtering
   useEffect(() => {
@@ -139,30 +208,16 @@ function AnimeList(props) {
     </>;
   }
 
-  if (props.isLoading) {
+  if (loading) {
     return <div className="loading">
       <div>正在加载......</div>
     </div>;
-  } else if (props.loadError) {
+  } else if (error !== undefined) {
     return <Alert severity="error">
       番剧评分加载失败！
     </Alert>;
   } else {
     return (<div className="main-element">
-      <Dialog onClose={() => {
-        setShowAnimeModal(false);
-      }} open={showAnimeModal} fullWidth={true} maxWidth='md'>
-        <DialogTitle>添加新番剧</DialogTitle>
-        <DialogContent dividers>
-          <AnimeModal
-            onSubmitOrEdit={(newAnimeData) => {
-              props.onAnimeSubmit(newAnimeData);
-              setShowAnimeModal(false);
-            }}
-            oldValue={{}}
-          />
-        </DialogContent>
-      </Dialog>
       <Dialog onClose={() => {
         setShowNewEntryForm(false);
       }} open={showNewEntryForm} fullWidth={true} maxWidth='md'>
@@ -170,9 +225,10 @@ function AnimeList(props) {
         <DialogContent dividers>
           <AddNewEntryForm 
             onSubmit={(newAnimeData) => {
-              props.onAnimeSubmit(newAnimeData);
+              handleAddAnime(newAnimeData);
               setShowNewEntryForm(false);
             }}
+            entryInfo={{}}
           />
         </DialogContent>
       </Dialog>
@@ -180,7 +236,7 @@ function AnimeList(props) {
         {authenticated ? <Button variant='contained' onClick={() => {
           setShowNewEntryForm(true);
         }}>添加</Button> : <></>}
-        <Button variant='contained' onClick={() => props.refresh()}>刷新</Button>
+        <Button variant='contained' onClick={refetch}>刷新</Button>
         <Button variant='contained' onClick={() => setExpandFilterBox(!expandFilterBox)}>{expandFilterBox ? "收起" : "展开"}</Button>
       </div>
       <FilterBox
@@ -204,8 +260,8 @@ function AnimeList(props) {
           entryId={anime.id}
           info1Component={info1Component}
           info2Component={info2Component}
-          onAnimeSubmit={props.onAnimeSubmit}
-          deleteAnime={props.deleteAnime}
+          onAnimeSubmit={handleUpdateAnime}
+          deleteAnime={deleteAnime}
         />
       )}
     </div>);

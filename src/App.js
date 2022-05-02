@@ -18,58 +18,8 @@ import './App.css';
 Parse.initialize(Env.APPLICATION_ID, Env.JAVASCRIPT_KEY);
 Parse.serverURL = Env.SERVER_URL;
 
-const GET_ALL_DATA = gql`
-  query GetAllData {
-    getAnimes {
-      id,
-      nameZh,
-      nameJp,
-      coverUrl,
-      tvEpisodes,
-      movies,
-      episodeLength,
-      genre,
-      year,
-      doubanRating,
-      bangumiTvRating,
-      doubanLink,
-      bangumiTvLink,
-      description,
-      season,
-      releaseDate,
-      broadcastDay,
-      status,
-      startDate,
-      endDate,
-      timesWatched,
-      story,
-      illustration,
-      music,
-      passion
-    }
-  }
-`;
 
-const UPDATE_OR_ADD_ANIME = gql`
-  mutation UpdateOrAddAnime(
-    $newData: UpdateOrAddAnimeInput!
-  ) {
-    updateOrAddAnime(newData: $newData) {
-      anime {
-        id,
-        nameZh
-      }
-    }
-  }
-`;
 
-const DELETE_ANIME = gql`
-  mutation DeleteAnime($id: Int!) {
-    deleteAnime(id: $id) {
-      deletedAnimeNameZh
-    }
-  }
-`;
 
 const UPDATE_OR_ADD_SEASON_ANIME = gql`
   mutation UpdateOrAddSeasonAnime(
@@ -84,19 +34,6 @@ const UPDATE_OR_ADD_SEASON_ANIME = gql`
   }
 `;
 
-const UPDATE_RANKINGS = gql`
-  mutation UpdateRankings(
-    $newRankings: UpdateRankingsInput!
-  ) {
-    updateRankings(newRankings: $newRankings) {
-      seasonRankings {
-        anime {
-          nameZh
-        }
-      }
-    }
-  }
-`;
 
 function App() {
   // authentication related states
@@ -111,55 +48,7 @@ function App() {
   const [activePage, setActivePage] = useState("AnimeList")
 
   // data related states
-  const { loading, error, data, refetch } = useQuery(GET_ALL_DATA);
-  const [updateOrAddAnime] = useMutation(UPDATE_OR_ADD_ANIME, {
-    refetchQueries: [
-      GET_ALL_DATA
-    ],
-    onCompleted(resData) {
-      alert(`已提交：${resData.updateOrAddAnime.anime.nameZh}`);
-    },
-    onError(updateError) {
-      console.log(updateError);
-      alert("更新失败，请稍后重试。");
-    }
-  });
-  const [deleteAnime] = useMutation(DELETE_ANIME, {
-    refetchQueries: [
-      GET_ALL_DATA
-    ],
-    onCompleted(resData) {
-      alert(`已删除：${resData.deleteAnime.deletedAnimeNameZh}`);
-    },
-    onError(updateError) {
-      console.log(updateError);
-      alert("删除失败，请稍后重试。");
-    }
-  });
-  const [updateOrAddSeasonAnime] = useMutation(UPDATE_OR_ADD_SEASON_ANIME, {
-    refetchQueries: [
-      GET_ALL_DATA
-    ],
-    onCompleted(resData) {
-      alert(`已提交：${resData.updateOrAddSeasonAnime.anime.nameZh}`);
-    },
-    onError(updateError) {
-      console.log(updateError);
-      alert("更新失败，请稍后重试。");
-    }
-  })
-  const [updateRankings] = useMutation(UPDATE_RANKINGS, {
-    refetchQueries: [
-      GET_ALL_DATA
-    ],
-    onCompleted(resData) {
-      alert("排名已更新！");
-    },
-    onError(updateError) {
-      console.log(updateError);
-      alert("更新失败，请稍后重试。");
-    }
-  })
+  
 
   useEffect(() => {
     if (user != null && token != null) {
@@ -167,30 +56,27 @@ function App() {
     }
   }, [user, token])
 
-  const handleAnimeSubmit = (newAnimeData) => {
-    delete newAnimeData['__typename'];
-    updateOrAddAnime({ variables: {newData: newAnimeData}})
-  };
+  
 
-  const handleNewAnimeSubmit = (event, id) => {
-    event.preventDefault();
-    const formElements = event.target.elements;
-    const newData = {
-      "nameZh": formElements.nameZh.value,
-      "nameJp": formElements.nameJp.value,
-      "tvEpisodes": Number(formElements.tvEpisodes.value),
-      "genre": formElements.genre.value,
-      "description": formElements.description.value,
-      "releaseDate": formElements.releaseDate.value === "" ? null : formElements.releaseDate.value,
-      "broadcastDay": formElements.broadcastDay.value,
-      "season": formElements.season.value,
-      "status": formElements[10].value,
-    };
-    if (id !== null) {
-      newData['id'] = id;
-    }
-    updateOrAddSeasonAnime({ variables: {newData: newData}})
-  };
+  // const handleNewAnimeSubmit = (event, id) => {
+  //   event.preventDefault();
+  //   const formElements = event.target.elements;
+  //   const newData = {
+  //     "nameZh": formElements.nameZh.value,
+  //     "nameJp": formElements.nameJp.value,
+  //     "tvEpisodes": Number(formElements.tvEpisodes.value),
+  //     "genre": formElements.genre.value,
+  //     "description": formElements.description.value,
+  //     "releaseDate": formElements.releaseDate.value === "" ? null : formElements.releaseDate.value,
+  //     "broadcastDay": formElements.broadcastDay.value,
+  //     "season": formElements.season.value,
+  //     "status": formElements[10].value,
+  //   };
+  //   if (id !== null) {
+  //     newData['id'] = id;
+  //   }
+  //   updateOrAddSeasonAnime({ variables: {newData: newData}})
+  // };
 
   const handleLogin = (event) => {
     event.preventDefault();
@@ -214,13 +100,7 @@ function App() {
   const mainElement = (activePage) => {
     switch (activePage) {
       case 'AnimeList':
-        return <AnimeList
-          isLoading={loading}
-          loadError={error !== undefined}
-          onAnimeSubmit={handleAnimeSubmit}
-          deleteAnime={deleteAnime}
-          refresh={refetch}
-        />;
+        return <AnimeList />;
       // case 'NewAnimeList':
       //   return <NewAnimeList
       //     isLoading={loading}
@@ -238,17 +118,9 @@ function App() {
       case 'GameList':
         return <List />
       default:
-        return <AnimeList
-          isLoading={loading}
-          loadError={error !== undefined}
-          onAnimeSubmit={handleAnimeSubmit}
-          deleteAnime={deleteAnime}
-          refresh={refetch}
-        />;
+        return <AnimeList />;
     }
   }
-
-  console.log(data === undefined ? [] : data.getAnimes);
 
   return (
     <div>
@@ -258,7 +130,7 @@ function App() {
             <Navivation switchPage={setActivePage}/>
             {authenticating ? <Login /> :
               <AnimeDataContext.Provider value={{
-                animes: data === undefined ? [] : data.getAnimes,
+                // animes: data === undefined ? [] : data.getAnimes,
                 // newAnimes: data === undefined ? [] : parseSeasonSchedules(data.getSeasonSchedules)
                 newAnimes: []
               }}>

@@ -5,6 +5,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import { Button, ButtonGroup } from '@mui/material';
 import AnimeModal from './AnimeModal';
+import AddNewEntryForm from './AddNewEntryForm';
 import './DisplayCard.css';
 
 const coverUrl = 'https://lain.bgm.tv/pic/cover/l/d9/f5/326895_S66Uq.jpg';
@@ -12,6 +13,7 @@ const coverUrl = 'https://lain.bgm.tv/pic/cover/l/d9/f5/326895_S66Uq.jpg';
 function DisplayCard(props) {
 
   const [showAnimeModal, setShowAnimeModal] = useState(false);
+  const [showNewEntryForm, setShowNewEntryForm] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const entry = props.entry;
   return <>
@@ -22,13 +24,31 @@ function DisplayCard(props) {
       <DialogContent dividers>
         <AnimeModal
           onSubmitOrEdit={(newAnimeData) => {
+            delete newAnimeData['rankings'];
             props.onAnimeSubmit(newAnimeData);
             setShowAnimeModal(false);
           }}
           oldValue={entry}
+          setShowNewEntryForm={setShowNewEntryForm}
+          setShowAnimeModal={setShowAnimeModal}
         />
       </DialogContent>
     </Dialog>
+    <Dialog onClose={() => {
+        setShowNewEntryForm(false);
+      }} open={showNewEntryForm} fullWidth={true} maxWidth='md'>
+        <DialogTitle>重新获取信息</DialogTitle>
+        <DialogContent dividers>
+          <AddNewEntryForm 
+            onSubmit={(newAnimeData) => {
+              delete newAnimeData['rankings'];
+              props.onAnimeSubmit(newAnimeData);
+              setShowNewEntryForm(false);
+            }}
+            entryInfo={entry}
+          />
+        </DialogContent>
+      </Dialog>
     <Dialog onClose={() => setShowDeleteConfirmation(false)} open={showDeleteConfirmation} maxWidth='sm'>
         <DialogTitle>删除</DialogTitle>
         <DialogContent dividers>
