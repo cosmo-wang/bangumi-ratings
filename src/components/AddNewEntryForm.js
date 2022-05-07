@@ -69,7 +69,7 @@ function EnterEntryName(props) {
       size="small"
       label="搜索关键字"
       helperText='请输入关键字以用于搜索相关页面。'
-      value={props.searchTerm}
+      value={searchTerm}
       onChange={(e) => setSearchTerm(e.target.value)}
     />
     <div id='nav-buttons'>

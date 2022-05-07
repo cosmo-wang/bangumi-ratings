@@ -8,8 +8,6 @@ import AnimeModal from './AnimeModal';
 import AddNewEntryForm from './AddNewEntryForm';
 import './DisplayCard.css';
 
-const coverUrl = 'https://lain.bgm.tv/pic/cover/l/d9/f5/326895_S66Uq.jpg';
-
 function DisplayCard(props) {
 
   const [showAnimeModal, setShowAnimeModal] = useState(false);
@@ -65,7 +63,7 @@ function DisplayCard(props) {
         </DialogActions>
       </Dialog>
     <div className='entry-card'>
-      <img className='main-pic' src={coverUrl} alt={entry.nameZh}/>
+      <img className='main-pic' src={entry.coverUrl} alt={entry.nameZh}/>
       <div className='title'>
         <div className='title-zh'>{props.idx + 1}. {entry.nameZh} ({entry.year})</div>
         <div className='title-jp sub-info'>{entry.nameJp}</div>

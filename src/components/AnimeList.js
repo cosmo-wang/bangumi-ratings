@@ -10,7 +10,7 @@ import { GET_ANIMES, ADD_ANIME, UPDATE_ANIME, DELETE_ANIME, UPDATE_RANKINGS } fr
 import FilterBox from './FilterBox';
 import DisplayCard from './DisplayCard';
 import AddNewEntryForm from './AddNewEntryForm';
-import { sortList, formatEpisodes, getRating, formatDate, formatTime, calculateDailyTime } from "../utils/utils";
+import { sortList, formatEpisodes, getRating, formatDate, formatTime, calculateDailyTime, getCurrentSeason, getLatestRankings } from "../utils/utils";
 import '../App.css';
 
 function AnimeList() {
@@ -77,22 +77,20 @@ function AnimeList() {
     }
   })
 
-  console.log(animes);
-
   const [displayList, setDisplayList] = useState(animes);
 
   const [showNewEntryForm, setShowNewEntryForm] = useState(false);
 
   const [expandFilterBox, setExpandFilterBox] = useState(false);
-  const showWhenCollapsed = new Set(["status"]);
+  const showWhenCollapsed = new Set(["status", "season"]);
   const [filterCategories, setFilterCategories] = useState(new Map());
 
-  const selectOneFilterCategory = new Set(["status"]);
-  const [selectedFilterChoices, setSelectedFilterChoices] = useState({ 'year': new Set(), 'genre': new Set(), 'status': '已看' })
+  const selectOneFilterCategory = new Set(["status", "season"]);
+  const [selectedFilterChoices, setSelectedFilterChoices] = useState({ 'year': new Set(), 'season': getCurrentSeason(), 'broadcastDay': new Set(), 'genre': new Set(), 'status': '在看' })
 
   const [useRatedHeaders, setUseRatedHeaders] = useState(true);
-  const [sortHeader, setSortHeader] = useState("watchedDate");
-  const sortHeaders = useRatedHeaders ? ['tvEpisodes', 'story', 'illustration', 'music', 'passion', 'rating', 'watchedDate', 'dailyTime'] : ['tvEpisodes', 'doubanRating'];
+  const [sortHeader, setSortHeader] = useState("rankings");
+  const sortHeaders = useRatedHeaders ? ['tvEpisodes', 'story', 'illustration', 'music', 'passion', 'rating', 'rankings', 'watchedDate', 'dailyTime'] : ['rankings', 'doubanRating'];
 
   const [searchText, setSearchText] = useState('');
 
@@ -109,6 +107,8 @@ function AnimeList() {
   // creates the filter categories
   useEffect(() => {
     const allYears = new Set();
+    const allSeasons = new Set();
+    const allDays = new Set();
     const allGenres = new Set();
     const allStatuses = new Set();
     const newFilterCategories = new Map();
@@ -120,6 +120,12 @@ function AnimeList() {
           }
         });
       }
+      if (anime.season) {
+        allSeasons.add(anime.season);
+      }
+      if (anime.broadcastDay) {
+        allDays.add(anime.broadcastDay);
+      }
       if (anime.genre !== undefined) {
         anime.genre.split('/').forEach(genre => {
           if (genre !== '') {
@@ -130,6 +136,8 @@ function AnimeList() {
       allStatuses.add(anime.status);
     })
     newFilterCategories.set("year", Array.from(allYears).sort());
+    newFilterCategories.set("season", Array.from(allSeasons).sort());
+    newFilterCategories.set("broadcastDay", Array.from(allDays));
     newFilterCategories.set("genre", Array.from(allGenres).sort());
     newFilterCategories.set("status", Array.from(allStatuses));
     setFilterCategories(newFilterCategories);
@@ -149,6 +157,8 @@ function AnimeList() {
           }
         });
       }
+      let seasonMatch = selectedFilterChoices['season'] === anime.season;
+      let broadcastDayMatch = selectedFilterChoices['broadcastDay'].size === 0 || selectedFilterChoices['broadcastDay'].has(anime.broadcastDay);
       let genreMatch = selectedFilterChoices['genre'].size === 0;
       if (anime.genre !== undefined) {
         anime.genre.split('/').forEach(genre => {
@@ -157,14 +167,24 @@ function AnimeList() {
           }
         });
       }
-      if (nameMatch && statusMatch && yearMatch && genreMatch) {
+      if (nameMatch && statusMatch && yearMatch && seasonMatch && broadcastDayMatch && genreMatch) {
         newDisplayList.push(anime);
       }
     });
     if (selectedFilterChoices['status'] === '已看' && sortHeader === '豆瓣评分') {
       setSortHeader('watchedDate');
     }
-    setDisplayList(sortList(newDisplayList, sortHeader));
+    if (sortHeader === 'rankings') {
+      const rankings = getLatestRankings(newDisplayList, selectedFilterChoices['season']);
+      newDisplayList.sort((a, b) => {
+        if (rankings[a.nameZh] > rankings[b.nameZh]) return 1;
+        if (rankings[a.nameZh] < rankings[b.nameZh]) return -1;
+        return 0;
+      });
+      setDisplayList(newDisplayList);
+    } else {
+      setDisplayList(sortList(newDisplayList, sortHeader));
+    }
   }, [animes, selectedFilterChoices, sortHeader, useRatedHeaders, searchText])
 
   const toggleFilterChoice = (label, choice) => {

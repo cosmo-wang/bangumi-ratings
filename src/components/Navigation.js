@@ -17,7 +17,7 @@ function UserManagement() {
   const { authenticated, setAuthenticating, handleSignOut } = useAuthenticationContext();
   if (authenticated) {
     return <div id="user-management">
-      <Button variant='contained' onClick={handleSignOut}>注销</Button>
+      <Button variant='contained' onClick={handleSignOut}>登出</Button>
     </div>
   } else {
     return <Button variant='contained' onClick={() => setAuthenticating(true)}>登录</Button>
