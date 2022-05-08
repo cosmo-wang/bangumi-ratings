@@ -70,17 +70,17 @@
   color: rgb(142, 138, 137);
 }
 
-.episodes, .episode-length, .douban-rating {
+.episodes, .episode-length, .bangumi-tv-rating {
   display: flex;
 }
 
-.douban-rating-value {
+.bangumi-tv-rating-value {
   margin-right: 10px;
   color: rgb(213, 141, 46);
   font-weight: bold;
 }
 
-.to-douban-arrow {
+.to-bangumi-tv-arrow {
   margin-left: 10px;
 }
 

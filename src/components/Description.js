@@ -1,5 +1,4 @@
 import React from 'react';
-import Button from '@mui/material/Button';
 import Rating from '@mui/material/Rating';
 import TextField from '@mui/material/TextField';
 import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
@@ -11,7 +10,7 @@ import '../App.css';
 function Titles(props) {
   return <div className="titles">
     <div className='name-zh'>
-      <a href={"https://www.douban.com/search?q=" + props.anime.nameZh} target="_blank" rel="noopener noreferrer">
+      <a href={`https://bangumi.tv/subject_search/${props.anime.nameZh}?cat=all`} target="_blank" rel="noopener noreferrer">
         {props.anime.nameZh}
       </a>
     </div>
@@ -29,15 +28,15 @@ function Info(props) {
       <div className='label'>单集片长：</div>
       <div className='value'>{props.anime.episodeLength}&nbsp;分钟</div>
     </div>
-    <div className='douban-rating'>
-      <div className='label'>豆瓣评分：</div>
-      <div className='douban-rating-value'>
-        {props.anime.doubanRating.toFixed(1)}
+    <div className='bangumi-tv-rating'>
+      <div className='label'>番组计划评分：</div>
+      <div className='bangumi-tv-rating-value'>
+        {props.anime.bangumiTvRating.toFixed(1)}
       </div>
-      <Rating name="read-only" max={5} value={props.anime.doubanRating / 2} precision={0.1} readOnly />
-      <div className='to-douban-arrow clickable' onClick={() => {
-          if (props.anime.doubanLink !== undefined && props.anime.doubanLink !== '') {
-            window.open(props.anime.doubanLink)
+      <Rating name="read-only" max={5} value={props.anime.bangumiTvRating / 2} precision={0.1} readOnly />
+      <div className='to-bangumi-tv-arrow clickable' onClick={() => {
+          if (props.anime.bangumiTvLink !== undefined && props.anime.bangumiTvLink !== '') {
+            window.open(props.anime.bangumiTvLink)
           }
       }}>
         <ArrowForwardOutlinedIcon color='#474849'/>
@@ -106,13 +105,5 @@ export default function Description(props) {
         <YearStatusGenre anime={props.anime} />
         <AnimeRatings anime={props.anime} />
         <AnimeTimes anime={props.anime} />
-        {props.authenticated ? <div className="input-button-row">
-          <Button variant='contained' onClick={props.editAnime}>
-            编辑
-          </Button>
-          <Button variant='contained' color='error' onClick={props.deleteAnime}>
-            删除
-          </Button>
-        </div> : <></>}
     </div>;
 }

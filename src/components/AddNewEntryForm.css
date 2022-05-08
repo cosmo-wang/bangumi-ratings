@@ -7,35 +7,16 @@
   margin-bottom: 15px;
 }
 
+#search-type-input {
+  margin-left: 15px;
+}
+
 #link-selector {
-  display: grid;
-  grid-template-columns: 50% 50%;
-  grid-template-rows: 30px auto;
-  grid-template-areas: 
-  'bangumi-tv-selector-label douban-selector-label'
-  'bangumi-tv-selector douban-selector'
-  '. link-selector-nav-buttons';
-  
-}
-
-#bangumi-tv-selector-label {
-  grid-area: bangumi-tv-selector-label;
-}
-
-#douban-selector-label {
-  grid-area: douban-selector-label;
-}
-
-#bangumi-tv-selector {
-  grid-area: bangumi-tv-selector;
-}
-
-#douban-selector {
-  grid-area: douban-selector;
+  display: flex;
+  flex-direction: column;
 }
 
 #link-selector #nav-buttons {
-  grid-area: link-selector-nav-buttons;
   justify-self: end;
 }
 

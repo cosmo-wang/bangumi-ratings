@@ -12,6 +12,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { basicInfoInputFields, personalInfoInputFields } from './AnimeModal';
 import { SEARCH_LINKS, GET_ANIME_INFO } from '../gql/AnimeQueries';
 import './AddNewEntryForm.css';
+import '../App.css';
 
 // Step 1: Enter name to search
 function EnterEntryName(props) {
@@ -21,7 +22,6 @@ function EnterEntryName(props) {
     fetchPolicy: "network-only",
     onCompleted: data => {
       props.setCandidateBangumiTvLinks(data.searchBangumiTv);
-      props.setCandidateDoubanLinks(data.searchDouban);
       props.advanceStep();
     }
   });
@@ -48,7 +48,7 @@ function EnterEntryName(props) {
           }
         }}
       >
-        下一步
+        搜索
       </LoadingButton>
     </div>
   </div>;
@@ -57,12 +57,11 @@ function EnterEntryName(props) {
 // Step 2: Select page links
 function SelectLinks(props) {
   const [selectedBangumiTvLink, setSelectedBangumiTvLink] = useState();
-  const [selectedDoubanLink, setSelectedDoubanLink] = useState();
+  const [customBangumiTvLink, setCustomBangumiTvLink] = useState();
+
   const [getAnimeInfo, { loading }] = useLazyQuery(GET_ANIME_INFO, {
     fetchPolicy: "network-only",
     onCompleted: data => {
-      console.log(props.entryInfo);
-      console.log(data.getAnimeInfo);
       props.setEntryInfo({...props.entryInfo, ...data.getAnimeInfo});
       props.setCandidateGenres(data.getAnimeInfo.genre.split(','));
       props.advanceStep();
@@ -71,7 +70,6 @@ function SelectLinks(props) {
 
   return <div id='link-selector'>
     <div id='bangumi-tv-selector-label'>选择番组计划页面：</div>
-    <div id='douban-selector-label'>选择豆瓣页面：</div>
     <RadioGroup
       id='bangumi-tv-selector'
       name="bangumi-tv-buttons-group"
@@ -86,29 +84,32 @@ function SelectLinks(props) {
         } />
       )}
     </RadioGroup>
-    <RadioGroup
-      id='douban-selector'
-      name="douban-buttons-group"
-      value={selectedDoubanLink}
-      onChange={(e) => setSelectedDoubanLink(e.target.value)}
-    >
-      {props.candidateDoubanLinks.map((link) =>
-        <FormControlLabel key={link.url} value={link.url} control={<Radio />} label={
-          <a href={link.url} target="_blank" rel="noreferrer">
-            {link.type} {link.name}
-          </a>
-        } />
-      )}
-    </RadioGroup>
+    <div className="input-row">
+      <TextField
+        fullWidth
+        id="genre"
+        label="手动输入链接"
+        size="small"
+        value={props.genre}
+        onChange={e => setCustomBangumiTvLink(e.target.value)}
+        helperText={<a href="https://bangumi.tv/" target="_blank" rel="noreferrer" >前往番组计划搜索</a>}
+      />
+    </div>
     <div id='nav-buttons'>
       <LoadingButton
         loading={loading}
         variant='contained' 
         onClick={() => {
-          getAnimeInfo({ variables: {bangumiTvUrl: selectedBangumiTvLink, doubanUrl: selectedDoubanLink} });
+          let link;
+          if (customBangumiTvLink) {
+            link = customBangumiTvLink;
+          } else {
+            link = selectedBangumiTvLink;
+          }
+          getAnimeInfo({ variables: {bangumiTvUrl: link} });
         }}
       >
-        下一步
+        获取信息
       </LoadingButton>
     </div>
   </div>;
@@ -236,7 +237,6 @@ function FinalConfirmation(props) {
 
 export default function AddNewEntryForm(props) {
   const [candidateBangumiTvLinks, setCandidateBangumiTvLinks] = useState([]);
-  const [candidateDoubanLinks, setCandidateDoubanLinks] = useState([]);
   const [entryInfo, setEntryInfo] = useState(props.entryInfo);
   const [candidateGenres, setCandidateGenres] = useState([]);
   const [selectedGenres, setSelectedGenres] = useState(props.entryInfo.genre ? props.entryInfo.genre.split('/') : []);
@@ -270,7 +270,6 @@ export default function AddNewEntryForm(props) {
         return <EnterEntryName
           step={step}
           setCandidateBangumiTvLinks={setCandidateBangumiTvLinks}
-          setCandidateDoubanLinks={setCandidateDoubanLinks}
           advanceStep={advanceStep}
           searchTerm={props.entryInfo.nameZh}
         />;
@@ -278,7 +277,6 @@ export default function AddNewEntryForm(props) {
         return <SelectLinks
           step={step}
           candidateBangumiTvLinks={candidateBangumiTvLinks}
-          candidateDoubanLinks={candidateDoubanLinks}
           entryInfo={entryInfo}
           setEntryInfo={setEntryInfo}
           setCandidateGenres={setCandidateGenres}

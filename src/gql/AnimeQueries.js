@@ -12,9 +12,7 @@ export const GET_ANIMES = gql`
       episodeLength,
       genre,
       year,
-      doubanRating,
       bangumiTvRating,
-      doubanLink,
       bangumiTvLink,
       description,
       season,
@@ -55,28 +53,21 @@ query SearchLinks($searchTerm: String!) {
     name
     type
     url
-  },
-  searchDouban(searchTerm: $searchTerm) {
-    name
-    type
-    url
   }
 }
 `;
 
 export const GET_ANIME_INFO = gql`
-query GetAnimeInfo($bangumiTvUrl: String!, $doubanUrl: String!) {
-  getAnimeInfo(bangumiTvUrl: $bangumiTvUrl, doubanUrl: $doubanUrl) {
+query GetAnimeInfo($bangumiTvUrl: String!) {
+  getAnimeInfo(bangumiTvUrl: $bangumiTvUrl) {
     nameZh,
     nameJp,
     coverUrl,
     tvEpisodes,
     episodeLength,
-    doubanRating,
     bangumiTvRating,
     genre,
     year,
-    doubanLink,
     bangumiTvLink,
     description,
     season,

@@ -151,8 +151,6 @@ export function translate(word, rated) {
       return 'timesWatched';
     case '年份':
       return 'year';
-    case '豆瓣评分':
-      return 'doubanRating';
     case '日均时长':
       return 'dailyTime';
     case '排名':
@@ -289,8 +287,6 @@ export const getTodayDate = () => { return moment(new Date()).format("YYYY-MM-DD
 
 export const colSizes = {
     'description': 4,
-    'doubanLink': 1,
-    'doubanRating': 1,
     'endDate': 2,
     'episodeLength': 1,
     'genre': 2,
@@ -315,10 +311,6 @@ export function translateEnToZh(word) {
   switch (word) {
     case 'description':
       return "简介";
-    case 'doubanLink':
-      return "豆瓣链接";
-    case 'doubanRating':
-      return "豆瓣评分";
     case 'bangumiTvRating':
       return "番组计划评分";
     case 'endDate':
