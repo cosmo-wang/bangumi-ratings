@@ -339,7 +339,7 @@ function AnimeList(props) {
           control={
             <Switch checked={expandFilterBox} onChange={() => setExpandFilterBox(!expandFilterBox)}/>
           }
-          label="展开过滤"
+          label="更多筛选"
         />
         <FormControlLabel
           className='row-control'
