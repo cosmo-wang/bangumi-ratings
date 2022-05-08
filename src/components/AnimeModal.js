@@ -58,21 +58,6 @@ export const basicInfoInputFields = (oldValue, onValueChange) => <>
     </div>
     <div className="input-row">
       <TextField
-        fullWidth
-        id="doubanLink"
-        label="豆瓣链接"
-        size="small"
-        value={oldValue.doubanLink}
-        onChange={onValueChange}
-        helperText={
-          <a href={oldValue.doubanLink}
-             target="_blank" rel="noreferrer"
-          >前往连接</a>
-        }
-      />
-    </div>
-    <div className="input-row">
-      <TextField
         id="tvEpisodes"
         label="集数"
         size="small"
@@ -84,13 +69,6 @@ export const basicInfoInputFields = (oldValue, onValueChange) => <>
         label="单集片长"
         size="small"
         value={oldValue.episodeLength}
-        onChange={onValueChange}
-      />
-      <TextField
-        id="doubanRating"
-        label="豆瓣评分"
-        size="small"
-        value={oldValue.doubanRating}
         onChange={onValueChange}
       />
       <TextField

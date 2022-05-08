@@ -16,12 +16,11 @@ import DisplayCard from './DisplayCard';
 import SimpleDisplayCard from './SimpleDisplayCard';
 import Rankings from './Rankings';
 import AddNewEntryForm from './AddNewEntryForm';
-import { sortList, sortSeasons, sortByDay, reorder, formatEpisodes, getRating, formatDate, formatTime, calculateDailyTime, getCurrentSeason, getLatestRankings } from "../utils/utils";
+import { sortList, sortSeasons, compareSeason, sortByDay, reorder, formatEpisodes, getRating, formatDate, formatTime, calculateDailyTime, getCurrentSeason, getLatestRankings } from "../utils/utils";
 import '../App.css';
 
 function AnimeList(props) {
   const { authenticated } = useAuthenticationContext();
-
   const { animes } = React.useContext(AnimeDataContext);
 
   const [addAnime] = useMutation(ADD_ANIME, {
@@ -84,7 +83,6 @@ function AnimeList(props) {
   const [expandFilterBox, setExpandFilterBox] = useState(false);
   const [singleSelect, setSingleSelect] = useState(true);
   const [expandDisplayCard, setExpandDisplayCard] = useState(true);
-  const showWhenCollapsed = new Set(["status", "broadcastDay"]);
   const [filterCategories, setFilterCategories] = useState(new Map());
 
   const [selectedFilterChoices, setSelectedFilterChoices] = useState(
@@ -98,8 +96,59 @@ function AnimeList(props) {
   );
 
   const [sortHeader, setSortHeader] = useState("rankings");
-  const sortHeaders = ['tvEpisodes', 'story', 'illustration', 'music', 'passion', 'rating', 'doubanRating', 'bangumiTvRating', 'rankings', 'watchedDate', 'dailyTime'];
+  const sortHeaders = ['tvEpisodes', 'story', 'illustration', 'music', 'passion', 'rating', 'bangumiTvRating', 'rankings', 'watchedDate', 'dailyTime'];
   const [searchText, setSearchText] = useState('');
+  
+  const filterShortCuts = {
+    '当季动漫' : () => {
+      setSelectedFilterChoices({
+        'year': new Set(),
+        'season': new Set([getCurrentSeason()]),
+        'broadcastDay': new Set(),
+        'genre': new Set(),
+        'status': new Set() 
+      });
+      setSortHeader('rankings');
+    },
+    '已看动漫' : () => {
+      setSelectedFilterChoices({
+        'year': new Set(),
+        'season': new Set(),
+        'broadcastDay': new Set(),
+        'genre': new Set(),
+        'status': new Set(['已看']) 
+      });
+      setSortHeader('watchedDate');
+    },
+    '在补动漫' : () => {
+      const allPastSeasons = new Set();
+      const currentSeason = getCurrentSeason();
+      animes.forEach(anime => {
+        if (anime.season && compareSeason(currentSeason, anime.season) > 0) {
+          allPastSeasons.add(anime.season);
+        }
+      });
+      setSelectedFilterChoices({
+        'year': new Set(),
+        'season': allPastSeasons,
+        'broadcastDay': new Set(),
+        'genre': new Set(),
+        'status': new Set(['在看']) 
+      });
+      setSortHeader('watchedDate');
+    },
+    '想看动漫' : () => {
+      setSelectedFilterChoices({
+        'year': new Set(),
+        'season': new Set(),
+        'broadcastDay': new Set(),
+        'genre': new Set(),
+        'status': new Set(['想看']) 
+      });
+      setSortHeader('bangumiTvRating');
+    }
+  };
+  const [selectedShortcut, setSelectedShortcut] = useState('当季动漫');
 
   const handleAddAnime = (newAnimeData) => {
     delete newAnimeData['__typename'];
@@ -238,8 +287,6 @@ function AnimeList(props) {
       </div>
       <div className='my-rating-breakdown'>作画：<span className='rating-number'>{entry.illustration}</span> 剧情：<span className='rating-number'>{entry.story}</span> 音乐：<span className='rating-number'>{entry.music}</span> 情怀：<span className='rating-number'>{entry.passion}</span></div>
       <div className='rating sub-info'>
-        <div className='rating-label'>豆瓣评分：</div>
-        <div className='rating-number'>{entry.doubanRating}</div>
         <div className='rating-label'>番组计划评分：</div>
         <div className='rating-number'>{entry.bangumiTvRating}</div>
       </div>
@@ -351,10 +398,15 @@ function AnimeList(props) {
       </div>
       <FilterBox
         expandFilterBox={expandFilterBox}
-        showWhenCollapsed={showWhenCollapsed}
         filterCategories={filterCategories}
         selectedFilterChoices={selectedFilterChoices}
         toggleFilterChoice={toggleFilterChoice}
+        shortcuts={Object.keys(filterShortCuts)}
+        selectedShortcut={selectedShortcut}
+        selectShortcut={shortcut => {
+          setSelectedShortcut(shortcut);
+          filterShortCuts[shortcut]();
+        }}
         sortHeader={sortHeader}
         sortHeaders={sortHeaders}
         setSortHeader={setSortHeader}

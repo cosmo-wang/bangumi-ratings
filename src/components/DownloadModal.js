@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import LoadingButton from '@mui/lab/LoadingButton';
+import DownloadIcon from '@mui/icons-material/Download';
 import { useAuthenticationContext } from "../context/AuthenticationContext";
 import { GET_DOWNLOAD_LINK, UPDATE_ANIME, GET_ANIMES } from '../gql/AnimeQueries';
 import '../App.css';
@@ -97,7 +98,7 @@ export default function DownloadModal(props) {
       <ul id='download-link-result'>
         {searchResult.resList.map(res => <li key={res.name} className='download-link'>
           <a href={res.pageUrl} target="_blank" rel="noreferrer">{res.name}</a>
-          <a href={res.magnetUrl}>磁力下载</a>
+          <a href={res.magnetUrl}><DownloadIcon />磁力下载</a>
         </li>)}
       </ul></> : <></>
     }
