@@ -6,7 +6,7 @@
   width: 90%;
   height: 90%;
   overflow: scroll;
-  opacity: 0.8;
+  /* opacity: 0.8; */
   text-align: center;
   margin-bottom: 1rem;
   padding: 10px;
@@ -74,15 +74,22 @@
   gap: 10px;
 }
 
-.list-button-group {
+.row-control-group {
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 10px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
-.list-button-group button {
+.row-control-group .row-control {
   margin-left: 10px;
+  margin-bottom: 7px;
   opacity: 1;
-  max-width: 90px;
+  max-width: 150px;
   min-width: 10px;
+  max-height: 50px;
+}
+
+.row-control-group label {
+  margin: 0;
+  color: white;
 }

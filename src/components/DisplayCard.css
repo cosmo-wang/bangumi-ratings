@@ -1,0 +1,69 @@
+.entry-card {
+  background-color: rgb(251, 252, 252, 0.8);
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  display: grid;
+  grid-template-columns: 130px auto 150px;
+  grid-template-areas: 
+  'main-pic title display-card-button-group'
+  'main-pic info-1 info-1'
+  'main-pic info-2 info-2'
+  'main-pic description description';
+  column-gap: 10px;
+  row-gap: 3px;
+  text-align: left;
+}
+
+.entry-card .main-pic {
+  max-width: 100%;
+  grid-area: main-pic;
+  opacity: 1;
+}
+
+.title-zh {
+  font-size: 1.1rem;
+}
+
+.sub-info {
+  font-size: 0.8rem;
+}
+
+.title-jp {
+  color: #838181;
+}
+
+.display-card-button-group {
+  grid-area: display-card-button-group;
+  justify-self: end;
+}
+
+.display-card-btn {
+  color: black;
+  border-color: rgb(180, 180, 180);
+}
+
+.info-1 {
+  grid-area: info-1;
+  display: flex;
+  flex-direction: column;
+}
+
+.rating {
+  display: flex;
+  flex-direction: row;
+}
+
+.rating-number {
+  color: #c5650b;
+  margin-right: 10px;
+}
+
+.info-2 {
+  grid-area: info-2;
+}
+
+.description {
+  color: #838181;
+  grid-area: description;
+}

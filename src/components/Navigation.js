@@ -17,7 +17,7 @@ function UserManagement() {
   const { authenticated, setAuthenticating, handleSignOut } = useAuthenticationContext();
   if (authenticated) {
     return <div id="user-management">
-      <Button variant='contained' onClick={handleSignOut}>注销</Button>
+      <Button variant='contained' onClick={handleSignOut}>登出</Button>
     </div>
   } else {
     return <Button variant='contained' onClick={() => setAuthenticating(true)}>登录</Button>
@@ -25,8 +25,7 @@ function UserManagement() {
 }
 
 const pages = [
-  { id: 'AnimeList', label: '补番列表' },
-  { id: 'NewAnimeList', label: '追番列表' },
+  { id: 'AnimeList', label: '动漫列表' },
   { id: 'GameList', label: '游戏列表'},
   { id: 'MonthlySummary', label: '每月总结' },
   { id: 'SeasonalSummary', label: '季度总结' },

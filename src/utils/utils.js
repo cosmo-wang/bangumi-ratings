@@ -233,13 +233,15 @@ export function getCurrentSeason() {
   return year + "年" + month + "月";
 }
 
-export function getLatestRankings(newAnimes, currentSeason) {
+export function getLatestRankings(animes, currentSeason) {
   let rankings = {};
-  newAnimes.forEach(newAnime => {
-    const currentSeasonRankings = newAnime.rankings[currentSeason];
-    const dates = Object.keys(currentSeasonRankings);
-    const latestRank = currentSeasonRankings[dates.sort()[dates.length - 1]];
-    rankings[newAnime.nameZh] = latestRank;
+  animes.forEach(anime => {
+    const currentSeasonRankings = JSON.parse(JSON.parse(anime.rankings))[currentSeason];
+    if (currentSeasonRankings) {
+      const dates = Object.keys(currentSeasonRankings);
+      const latestRank = currentSeasonRankings[dates.sort()[dates.length - 1]];
+      rankings[anime.nameZh] = latestRank;
+    }
   });
   return rankings;
 }
@@ -317,6 +319,8 @@ export function translateEnToZh(word) {
       return "豆瓣链接";
     case 'doubanRating':
       return "豆瓣评分";
+    case 'bangumiTvRating':
+      return "番组计划评分";
     case 'endDate':
       return "结束日期";
     case 'episodeLength':
@@ -358,7 +362,9 @@ export function translateEnToZh(word) {
     case 'releaseDate':
       return '开播日期';
     case 'season':
-      return '季度'
+      return '季度';
+    case 'rankings':
+      return '当季排名';
     default:
       return `未知：${word}`
   }

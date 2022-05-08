@@ -1,0 +1,8 @@
+.simple-entry-card {
+  background-color: rgb(251, 252, 252, 0.8);
+  padding: 10px;
+  padding-left: 20px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  text-align: left;
+}
