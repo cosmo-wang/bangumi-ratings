@@ -7,7 +7,7 @@ import '../App.css';
 import './SeasonalSummary.css';
 
 export default function SeasonalSummary() {
-  const { newAnimes } = useContext(AnimeDataContext);
+  const { animes } = useContext(AnimeDataContext);
   const [summaryData, setSummaryData] = useState([]);
 
   const formatRankingData = (data) => {
@@ -20,10 +20,11 @@ export default function SeasonalSummary() {
   
   useEffect(() => {
     const tempData = {};
-    newAnimes.forEach(newAnime => {
-      const rankings = newAnime["rankings"];
+    animes.forEach(anime => {
+      const rankings = JSON.parse(JSON.parse(anime["rankings"]));
       for (const [season, seasonRankings] of Object.entries(rankings)) {
-        if (tempData[season] === undefined) {
+        if (!season || !seasonRankings) break;
+        if (season && tempData[season] === undefined) {
           tempData[season] = {
             chart: {
               height: 600,
@@ -53,7 +54,7 @@ export default function SeasonalSummary() {
           };
         }
         tempData[season].series.push({
-          name: newAnime.nameZh,
+          name: anime.nameZh,
           data: formatRankingData(seasonRankings)
         })
       }
@@ -61,7 +62,7 @@ export default function SeasonalSummary() {
     const newSummaryData = Array.from(Object.values(tempData));
     newSummaryData.sort((e1, e2) => { return -compareSeason(e1.title.text, e2.title.text)});
     setSummaryData(newSummaryData);
-  }, [newAnimes]);
+  }, [animes]);
 
   return <div className="summaries seasonal-summaries">
     {summaryData.map((data, index) =>

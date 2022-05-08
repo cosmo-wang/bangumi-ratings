@@ -4,9 +4,9 @@
   margin-bottom: 10px;
   border-radius: 5px;
   display: grid;
-  grid-template-columns: 130px auto 110px;
+  grid-template-columns: 130px auto 150px;
   grid-template-areas: 
-  'main-pic title button-group'
+  'main-pic title display-card-button-group'
   'main-pic info-1 info-1'
   'main-pic info-2 info-2'
   'main-pic description description';
@@ -33,6 +33,11 @@
   color: #838181;
 }
 
+.display-card-button-group {
+  grid-area: display-card-button-group;
+  justify-self: end;
+}
+
 .display-card-btn {
   color: black;
   border-color: rgb(180, 180, 180);
@@ -51,6 +56,7 @@
 
 .rating-number {
   color: #c5650b;
+  margin-right: 10px;
 }
 
 .info-2 {

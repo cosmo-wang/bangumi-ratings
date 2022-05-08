@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { gql, useLazyQuery } from '@apollo/client';
-import LoadingButton from '@mui/lab/LoadingButton';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -213,14 +211,6 @@ export const personalInfoInputFields = (oldValue, onValueChange) => <>
       />
     </div>
 </>;
-
-const getValidValue = (oldValue, oldDefaultValue, newValue) => {
-  if (oldValue === oldDefaultValue || oldValue === undefined) {
-    return newValue;
-  } else {
-    return oldValue;
-  }
-}
 
 export default function AnimeModal(props) {
   const [formValue, setFormValue] = useState(props.oldValue);

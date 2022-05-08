@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { gql, useLazyQuery } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import RadioGroup from '@mui/material/RadioGroup';
@@ -10,44 +10,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Button from '@mui/material/Button';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { basicInfoInputFields, personalInfoInputFields } from './AnimeModal';
+import { SEARCH_LINKS, GET_ANIME_INFO } from '../gql/AnimeQueries';
 import './AddNewEntryForm.css';
-
-const SEARCH_LINKS = gql`
-query SearchLinks($searchTerm: String!) {
-  searchBangumiTv(searchTerm: $searchTerm) {
-    name
-    type
-    url
-  },
-  searchDouban(searchTerm: $searchTerm) {
-    name
-    type
-    url
-  }
-}
-`;
-
-const GET_ANIME_INFO = gql`
-query GetAnimeInfo($bangumiTvUrl: String!, $doubanUrl: String!) {
-  getAnimeInfo(bangumiTvUrl: $bangumiTvUrl, doubanUrl: $doubanUrl) {
-    nameZh,
-    nameJp,
-    coverUrl,
-    tvEpisodes,
-    episodeLength,
-    doubanRating,
-    bangumiTvRating,
-    genre,
-    year,
-    doubanLink,
-    bangumiTvLink,
-    description,
-    season,
-    releaseDate,
-    broadcastDay
-  }
-}
-`;
 
 // Step 1: Enter name to search
 function EnterEntryName(props) {

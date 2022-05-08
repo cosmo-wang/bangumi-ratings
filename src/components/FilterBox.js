@@ -8,16 +8,11 @@ import './FilterBox.css';
 function FilterBox(props) {
   return <div id='filter-box'>
     {Array.from(props.filterCategories).map(([label, choices]) => {
-      const filterCategory = <Grid alignItems='center' container className='filter-category'>
+      const filterCategory = <Grid key={label} alignItems='center' container className='filter-category'>
         <Grid item xs={1} className='filter-box-label'>{translateEnToZh(label)}</Grid>
         <Grid item xs={11} className='filter-box-choices'>
           {choices.map((choice) => {
-            let buttonVariant;
-            if (props.selectOneFilterCategory.has(label)) {
-              buttonVariant = choice === props.selectedFilterChoices[label] ? 'contained' : 'outlined';
-            } else {
-              buttonVariant = props.selectedFilterChoices[label].has(choice) ? 'contained' : 'outlined'
-            }
+            const buttonVariant = props.selectedFilterChoices[label].has(choice) ? 'contained' : 'outlined'
             return <Button size='small' variant={buttonVariant} key={choice}
               onClick={() => {
                 props.toggleFilterChoice(label, choice)

@@ -319,6 +319,8 @@ export function translateEnToZh(word) {
       return "豆瓣链接";
     case 'doubanRating':
       return "豆瓣评分";
+    case 'bangumiTvRating':
+      return "番组计划评分";
     case 'endDate':
       return "结束日期";
     case 'episodeLength':
