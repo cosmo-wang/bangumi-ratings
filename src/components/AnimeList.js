@@ -346,7 +346,7 @@ function AnimeList(props) {
           control={
             <Switch checked={expandDisplayCard} onChange={() => setExpandDisplayCard(!expandDisplayCard)}/>
           }
-          label="展开卡片"
+          label="详细信息"
         />
       </div>
       <FilterBox
