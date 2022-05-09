@@ -152,6 +152,7 @@ function AnimeList(props) {
 
   const handleAddAnime = (newAnimeData) => {
     delete newAnimeData['__typename'];
+    console.log(newAnimeData);
     addAnime({ variables: {newData: newAnimeData}})
   };
 
@@ -295,7 +296,7 @@ function AnimeList(props) {
 
   const info2Component = (entry) => {
     return <>
-      {entry.genre} ｜ {formatEpisodes(entry.tvEpisodes, entry.movies)} ｜ 
+      {entry.genre} ｜ {formatEpisodes(entry.tvEpisodes)} ｜ 
       单集 {entry.episodeLength} 分钟 ｜ {formatDate(entry.startDate, entry.endDate)} ｜ 
       日均 {formatTime(calculateDailyTime(entry))}
     </>;

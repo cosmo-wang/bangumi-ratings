@@ -332,6 +332,15 @@ export default function AddNewEntryForm(props) {
           submitNewAnime={() => {
             const newAnimeData = {...entryInfo};
             newAnimeData.genre = selectedGenres.join('/');
+            if (!newAnimeData.startDate) {
+              newAnimeData.startDate = null;
+            }
+            if (!newAnimeData.endDate) {
+              newAnimeData.endDate = null;
+            }
+            if (!newAnimeData.releaseDate) {
+              newAnimeData.releaseDate = null;
+            }
             props.onSubmit(newAnimeData);
           }}
         />;

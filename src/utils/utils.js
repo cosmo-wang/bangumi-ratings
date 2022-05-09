@@ -76,15 +76,11 @@ export const setUserSession = (user, token) => {
   sessionStorage.setItem('user', JSON.stringify(user));
 }
 
-export function formatEpisodes(tv_episodes, movies) {
+export function formatEpisodes(tv_episodes) {
   if (tv_episodes === undefined) {
     return "";
-  } else if (tv_episodes === 0) {
-    return `剧场版 × ${movies}`;
-  } else if (movies === 0 || movies === undefined) {
-    return `${tv_episodes} 集`;
   } else {
-    return `${tv_episodes} 集 + 剧场版×${movies}`;
+    return `${tv_episodes} 集`;
   }
 }
 
@@ -120,7 +116,7 @@ const formatDescription = (description) => {
 export function calculateDailyTime(item) {
   const days = moment(item.endDate).diff(moment(item.startDate), 'days') + 1;
   const episodeLength = item.episodeLength === undefined || item.episodeLength === 0 ? 24 : item.episodeLength;
-  const totalTime = item.tvEpisodes * episodeLength + item.movies * 90;
+  const totalTime = item.tvEpisodes * episodeLength;
   return totalTime / days;
 }
 
@@ -291,7 +287,6 @@ export const colSizes = {
     'episodeLength': 1,
     'genre': 2,
     'illusration': 1,
-    'movies': 1,
     'music': 1,
     'nameJp': 3,
     'nameZh': 3,
@@ -321,8 +316,6 @@ export function translateEnToZh(word) {
       return "分类";
     case 'illustration':
       return "作画";
-    case 'movies':
-      return "剧场版";
     case 'music':
       return "音乐";
     case 'nameJp':
@@ -371,7 +364,7 @@ export const getItemValue = (item, key) => {
     case 'dailyTime':
       return formatTime(calculateDailyTime(item).toFixed(1));
     case 'tvEpisodes':
-      return formatEpisodes(item.tvEpisodes, item.movies);
+      return formatEpisodes(item.tvEpisodes);
     case 'description':
       return formatDescription(item.description);
     default:

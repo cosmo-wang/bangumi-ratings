@@ -22,7 +22,7 @@ function Info(props) {
   return <div className="anime-info">
     <div className='episodes'>
       <div className='label'>集&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;数：</div>
-      <div className='value'>{formatEpisodes(props.anime.tvEpisodes, props.anime.movies)}</div>
+      <div className='value'>{formatEpisodes(props.anime.tvEpisodes)}</div>
     </div>
     <div className='episode-length'>
       <div className='label'>单集片长：</div>
