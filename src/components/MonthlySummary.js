@@ -48,7 +48,6 @@ function MonthlySummary() {
         newSummaries[endMonth] = {
           anime_num: 0,
           tvEpisode_num: 0,
-          movie_num: 0,
           total_time: 0,
           animes: [],
           best_animes: [],
@@ -64,8 +63,7 @@ function MonthlySummary() {
       newSummaries[endMonth].anime_num += 1;
       newSummaries[endMonth].animes.push(watchedAnime.nameZh);
       newSummaries[endMonth].tvEpisode_num += watchedAnime.tvEpisodes;
-      newSummaries[endMonth].movie_num += watchedAnime.movies;
-      newSummaries[endMonth].total_time += watchedAnime.tvEpisodes * watchedAnime.episodeLength + watchedAnime.movies * 90;
+      newSummaries[endMonth].total_time += watchedAnime.tvEpisodes * watchedAnime.episodeLength;
     });
     setSummaries(newSummaries);
   }, [animes]);

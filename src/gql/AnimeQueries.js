@@ -8,7 +8,6 @@ export const GET_ANIMES = gql`
       nameJp,
       coverUrl,
       tvEpisodes,
-      movies,
       episodeLength,
       genre,
       year,

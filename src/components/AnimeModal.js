@@ -203,6 +203,15 @@ export default function AnimeModal(props) {
   return <Box
     onSubmit={(event) => {
       event.preventDefault();
+      if (!formValue.startDate) {
+        formValue.startDate = null;
+      }
+      if (!formValue.endDate) {
+        formValue.endDate = null;
+      }
+      if (!formValue.releaseDate) {
+        formValue.releaseDate = null;
+      }
       props.onSubmitOrEdit(formValue);
     }}
     component="form"
