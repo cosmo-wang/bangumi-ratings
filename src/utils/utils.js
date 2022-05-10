@@ -192,6 +192,16 @@ function compare(a, b) {
   }
 }
 
+export const weekdayMap = {
+  1: '星期一',
+  2: '星期二',
+  3: '星期三',
+  4: '星期四',
+  5: '星期五',
+  6: '星期六',
+  7: '星期日'
+}
+
 const daySorter = {
   // "sunday": 0, // << if sunday is first day of week
   "星期一": 1,

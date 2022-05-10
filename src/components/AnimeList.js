@@ -16,8 +16,9 @@ import DisplayCard from './DisplayCard';
 import SimpleDisplayCard from './SimpleDisplayCard';
 import Rankings from './Rankings';
 import AddNewEntryForm from './AddNewEntryForm';
-import { sortList, sortSeasons, compareSeason, sortByDay, reorder, formatEpisodes, getRating, formatDate, formatTime, calculateDailyTime, getCurrentSeason, getLatestRankings } from "../utils/utils";
+import { weekdayMap, sortList, sortSeasons, compareSeason, sortByDay, reorder, formatEpisodes, getRating, formatDate, formatTime, calculateDailyTime, getCurrentSeason, getLatestRankings } from "../utils/utils";
 import '../App.css';
+import moment from 'moment';
 
 function AnimeList(props) {
   const { authenticated } = useAuthenticationContext();
@@ -98,13 +99,23 @@ function AnimeList(props) {
   const [sortHeader, setSortHeader] = useState("rankings");
   const sortHeaders = ['tvEpisodes', 'story', 'illustration', 'music', 'passion', 'rating', 'bangumiTvRating', 'rankings', 'watchedDate', 'dailyTime'];
   const [searchText, setSearchText] = useState('');
-  
+
   const filterShortCuts = {
     '当季动漫' : () => {
       setSelectedFilterChoices({
         'year': new Set(),
         'season': new Set([getCurrentSeason()]),
         'broadcastDay': new Set(),
+        'genre': new Set(),
+        'status': new Set() 
+      });
+      setSortHeader('rankings');
+    },
+    '当日动漫' : () => {
+      setSelectedFilterChoices({
+        'year': new Set(),
+        'season': new Set([getCurrentSeason()]),
+        'broadcastDay': new Set([weekdayMap[moment().weekday()]]),
         'genre': new Set(),
         'status': new Set() 
       });
