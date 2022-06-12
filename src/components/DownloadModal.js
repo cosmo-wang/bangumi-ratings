@@ -4,11 +4,10 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import LoadingButton from '@mui/lab/LoadingButton';
-import DownloadIcon from '@mui/icons-material/Download';
+import { SearchDmhyResult } from './SearchDmhyModal';
 import { useAuthenticationContext } from "../context/AuthenticationContext";
 import { GET_DOWNLOAD_LINK, UPDATE_ANIME, GET_ANIMES } from '../gql/AnimeQueries';
 import '../App.css';
-import './DownloadModal.css';
 
 export default function DownloadModal(props) {
   const { authenticated } = useAuthenticationContext();
@@ -93,15 +92,6 @@ export default function DownloadModal(props) {
         onChange={e => setDelayedWeeks(e.target.value)}
       />
     </div>
-    {searchResult ? <>
-      <h5>搜索结果</h5>
-      <ul id='download-link-result'>
-        {searchResult.resList.map(res => <li key={res.name} className='download-link'>
-          <a href={res.pageUrl} target="_blank" rel="noreferrer">{res.name}</a>
-          <a href={res.magnetUrl}><DownloadIcon />磁力下载</a>
-        </li>)}
-      </ul></> : <></>
-    }
     <div className="input-button-row">
       <LoadingButton
         loading={loading}
@@ -124,5 +114,14 @@ export default function DownloadModal(props) {
         提交
       </Button> : <></>}
     </div>
+    {searchResult ? <>
+        <h5>{searchResult.title}</h5>
+        {searchResult.msg !== '' ? <div>{searchResult.msg}</div> : 
+        <div class='dmhy-link-result'>
+          {searchResult.resList.map(res => <SearchDmhyResult res={res} />)}
+          <div>共{searchResult.resList.length}个结果</div>
+        </div>}
+      </> : <></>
+    }
   </Box>;
 }

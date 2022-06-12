@@ -36,10 +36,31 @@ export const GET_ANIMES = gql`
 export const GET_DOWNLOAD_LINK = gql`
   query GetDownloadLink($id: Int!) {
     getDownloadLink(id: $id){
+      title,
       resList {
+        time
+        type
         name
         pageUrl
         magnetUrl
+        size
+      },
+      msg
+    }
+  }
+`;
+
+export const SEARCH_DMHY = gql`
+  query SearchDmhy($searchTerm: String!, $maxSearchResults: Int!) {
+    searchDmhy(searchTerm: $searchTerm, maxSearchResults: $maxSearchResults){
+      title,
+      resList {
+        time
+        type
+        name
+        pageUrl
+        magnetUrl
+        size
       },
       msg
     }

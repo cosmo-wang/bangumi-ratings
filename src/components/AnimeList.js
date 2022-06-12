@@ -16,6 +16,7 @@ import DisplayCard from './DisplayCard';
 import SimpleDisplayCard from './SimpleDisplayCard';
 import Rankings from './Rankings';
 import AddNewEntryForm from './AddNewEntryForm';
+import SearchDmhyModal from './SearchDmhyModal';
 import { weekdayMap, sortList, sortSeasons, compareSeason, sortByDay, reorder, formatEpisodes, getRating, formatDate, formatTime, calculateDailyTime, getCurrentSeason, getLatestRankings } from "../utils/utils";
 import '../App.css';
 import moment from 'moment';
@@ -80,6 +81,7 @@ function AnimeList(props) {
   const [showRankings, setShowRankings] = useState(false);
   const [localRankings, setLocalRankings] = useState({});
   const [showNewEntryForm, setShowNewEntryForm] = useState(false);
+  const [showSearchDmhy, setShowSearchDmhy] = useState(false);
 
   const [expandFilterBox, setExpandFilterBox] = useState(false);
   const [singleSelect, setSingleSelect] = useState(true);
@@ -337,6 +339,14 @@ function AnimeList(props) {
           />
         </DialogContent>
       </Dialog>
+      <Dialog onClose={() => {
+        setShowSearchDmhy(false);
+      }} open={showSearchDmhy} fullWidth={true} maxWidth='md'>
+        <DialogTitle>搜索动漫花园</DialogTitle>
+        <DialogContent dividers>
+          <SearchDmhyModal />
+        </DialogContent>
+      </Dialog>
       <Dialog onClose={() => setShowRankings(false)} open={showRankings} fullWidth={true} maxWidth='md'>
         <DialogTitle>番剧排名</DialogTitle>
         <DialogContent dividers>
@@ -372,6 +382,7 @@ function AnimeList(props) {
            : <></>
         }
         <Button className='row-control' variant='contained' onClick={props.refetchAnimes}>刷新</Button>
+        <Button className='row-control' variant='contained' onClick={() => setShowSearchDmhy(true)}>搜索动漫花园</Button>
         <FormControlLabel
           className='row-control'
           control={
