@@ -88,8 +88,9 @@ export default function DownloadModal(props) {
         id="delayedWeeks"
         label="延期周数"
         size="small"
+        type="number"
         value={delayedWeeks}
-        onChange={e => setDelayedWeeks(e.target.value)}
+        onChange={e => setDelayedWeeks(parseInt(e.target.value))}
       />
     </div>
     <div className="input-button-row">

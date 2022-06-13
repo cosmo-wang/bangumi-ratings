@@ -3,6 +3,7 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
+import { floatFields, intFields } from '../utils/utils';
 import '../App.css';
 
 export const statuses = ['想看', '在看', '已看'];
@@ -61,6 +62,7 @@ export const basicInfoInputFields = (oldValue, onValueChange) => <>
         id="tvEpisodes"
         label="集数"
         size="small"
+        type="number"
         value={oldValue.tvEpisodes}
         onChange={onValueChange}
       />
@@ -68,6 +70,7 @@ export const basicInfoInputFields = (oldValue, onValueChange) => <>
         id="episodeLength"
         label="单集片长"
         size="small"
+        type="number"
         value={oldValue.episodeLength}
         onChange={onValueChange}
       />
@@ -75,6 +78,7 @@ export const basicInfoInputFields = (oldValue, onValueChange) => <>
         id="bangumiTvRating"
         label="番组计划评分"
         size="small"
+        type="number"
         value={oldValue.bangumiTvRating}
         onChange={onValueChange}
       />
@@ -154,6 +158,7 @@ export const personalInfoInputFields = (oldValue, onValueChange) => <>
         id="timesWatched"
         label="观看次数"
         size="small"
+        type="number"
         value={oldValue.timesWatched}
         onChange={onValueChange}
       />
@@ -163,6 +168,7 @@ export const personalInfoInputFields = (oldValue, onValueChange) => <>
         id="story"
         label="剧情评分"
         size="small"
+        type="number"
         value={oldValue.story}
         onChange={onValueChange}
       />
@@ -170,6 +176,7 @@ export const personalInfoInputFields = (oldValue, onValueChange) => <>
         id="illustration"
         label="作画评分"
         size="small"
+        type="number"
         value={oldValue.illustration}
         onChange={onValueChange}
       />
@@ -177,6 +184,7 @@ export const personalInfoInputFields = (oldValue, onValueChange) => <>
         id="music"
         label="音乐评分"
         size="small"
+        type="number"
         value={oldValue.music}
         onChange={onValueChange}
       />
@@ -184,6 +192,7 @@ export const personalInfoInputFields = (oldValue, onValueChange) => <>
         id="passion"
         label="情怀评分"
         size="small"
+        type="number"
         value={oldValue.passion}
         onChange={onValueChange}
       />
@@ -196,7 +205,13 @@ export default function AnimeModal(props) {
   const updateValue = (e) => {
     const newFormValue = {...formValue};
     const fieldId = e.target.id === undefined ? 'status' : e.target.id;
-    newFormValue[fieldId] = e.target.value;
+    if (intFields.includes(fieldId)) {
+      newFormValue[fieldId] = parseInt(e.target.value);
+    } else if (floatFields.includes(fieldId)) {
+      newFormValue[fieldId] = parseFloat(e.target.value);
+    } else {
+      newFormValue[fieldId] = e.target.value;
+    }
     setFormValue(newFormValue);
   }
 
