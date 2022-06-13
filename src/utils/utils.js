@@ -162,6 +162,10 @@ export function translate(word, rated) {
   }
 }
 
+export const intFields = ['timesWatched', 'tvEpisodes', 'episodeLength', 'delayedWeeks'];
+
+export const floatFields = ['bangumiTvRating', 'story', 'illustration', 'music', 'passion']
+
 export function sortList(rawList, sortedCol) {
   return rawList.slice().sort((a, b) => {
     const aQuantity = sortedCol === "dailyTime" ? calculateDailyTime(a) : a[sortedCol];
