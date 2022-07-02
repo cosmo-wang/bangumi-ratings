@@ -104,6 +104,7 @@ function AnimeList(props) {
 
   const filterShortCuts = {
     '当季动漫' : () => {
+      setSingleSelect(false);
       setSelectedFilterChoices({
         'year': new Set(),
         'season': new Set([getCurrentSeason()]),
@@ -309,7 +310,7 @@ function AnimeList(props) {
 
   const info2Component = (entry) => {
     return <>
-      {entry.genre} ｜ {formatEpisodes(entry.tvEpisodes)} ｜ 
+      {entry.releaseDate} 开播 ｜ {entry.genre} ｜ {formatEpisodes(entry.tvEpisodes)} ｜ 
       单集 {entry.episodeLength} 分钟 ｜ {formatDate(entry.startDate, entry.endDate)} ｜ 
       日均 {formatTime(calculateDailyTime(entry))}
     </>;
