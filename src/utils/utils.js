@@ -162,9 +162,23 @@ export function translate(word, rated) {
   }
 }
 
-export const intFields = ['timesWatched', 'tvEpisodes', 'episodeLength', 'delayedWeeks'];
+const intFields = ['timesWatched', 'tvEpisodes', 'episodeLength', 'delayedWeeks'];
 
-export const floatFields = ['bangumiTvRating', 'story', 'illustration', 'music', 'passion']
+const floatFields = ['bangumiTvRating', 'story', 'illustration', 'music', 'passion'];
+
+const dateFields = ['releaseDate', 'startDate', 'endDate'];
+
+export function cleanAnimeDate(animeDate) {
+  for (const [key, value] of Object.entries(animeDate)) {
+    if (intFields.includes(key)) {
+      animeDate[key] = parseInt(value);
+    } else if (floatFields.includes(key)) {
+      animeDate[key] = parseFloat(value);
+    } else if (dateFields.includes(key) && !animeDate[key]) {
+      animeDate[key] = null;
+    }
+  }
+}
 
 export function sortList(rawList, sortedCol) {
   return rawList.slice().sort((a, b) => {
