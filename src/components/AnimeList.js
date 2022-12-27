@@ -17,7 +17,9 @@ import SimpleDisplayCard from './SimpleDisplayCard';
 import Rankings from './Rankings';
 import AddNewEntryForm from './AddNewEntryForm';
 import SearchDmhyModal from './SearchDmhyModal';
-import { weekdayMap, sortList, sortSeasons, compareSeason, sortByDay, reorder, formatEpisodes, getRating, formatDate, formatTime, calculateDailyTime, getCurrentSeason, getLatestRankings } from "../utils/utils";
+import { weekdayMap, sortList, sortSeasons, compareSeason, sortByDay, reorder,
+         formatEpisodes, getRating, formatDate, formatTime, calculateDailyTime,
+         getCurrentSeason, getLatestRankings, cleanAnimeDate } from "../utils/utils";
 import '../App.css';
 import moment from 'moment';
 
@@ -166,12 +168,13 @@ function AnimeList(props) {
 
   const handleAddAnime = (newAnimeData) => {
     delete newAnimeData['__typename'];
-    console.log(newAnimeData);
+    cleanAnimeDate(newAnimeData);
     addAnime({ variables: {newData: newAnimeData}})
   };
 
   const handleUpdateAnime = (newAnimeData) => {
     delete newAnimeData['__typename'];
+    cleanAnimeDate(newAnimeData);
     updateAnime({ variables: {newData: newAnimeData}})
   }
 
