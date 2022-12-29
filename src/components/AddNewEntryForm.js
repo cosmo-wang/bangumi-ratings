@@ -78,7 +78,7 @@ function SelectLinks(props) {
     >
       {props.candidateBangumiTvLinks.map((link) =>
         <FormControlLabel key={link.url} value={link.url} control={<Radio />} label={
-          <a href={link.url} target="_blank" rel="noreferrer">
+          <a href={link.url} target="_blank" rel="noopener noreferrer">
             {link.type} {link.name}
           </a>
         } />
@@ -92,7 +92,7 @@ function SelectLinks(props) {
         size="small"
         value={props.genre}
         onChange={e => setCustomBangumiTvLink(e.target.value)}
-        helperText={<a href="https://bangumi.tv/" target="_blank" rel="noreferrer" >前往番组计划搜索</a>}
+        helperText={<a href="https://bangumi.tv/" target="_blank" rel="noopener noreferrer" >前往番组计划搜索</a>}
       />
     </div>
     <div id='nav-buttons'>
