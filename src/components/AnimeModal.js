@@ -37,7 +37,7 @@ export const basicInfoInputFields = (oldValue, onValueChange) => <>
         onChange={onValueChange}
         helperText={
           <a href={oldValue.coverUrl}
-             target="_blank" rel="noreferrer"
+             target="_blank" rel="noopener noreferrer"
           >前往连接</a>
         }
       />
@@ -51,7 +51,7 @@ export const basicInfoInputFields = (oldValue, onValueChange) => <>
         onChange={onValueChange}
         helperText={
           <a href={oldValue.bangumiTvLink}
-             target="_blank" rel="noreferrer"
+             target="_blank" rel="noopener noreferrer"
           >前往连接</a>
         }
       />

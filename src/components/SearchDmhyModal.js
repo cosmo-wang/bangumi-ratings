@@ -9,7 +9,7 @@ import './SearchDmhyModal.css';
 
 export function SearchDmhyResult(props) {
   return <div className="search-dmhy-result">
-    <div className="search-dmhy-result-info search-dmhy-result-name"><a href={props.res.pageUrl} target="_blank" rel="noreferrer">{props.res.name}</a></div>
+    <div className="search-dmhy-result-info search-dmhy-result-name"><a href={props.res.pageUrl} target="_blank" rel="noopener noreferrer">{props.res.name}</a></div>
     <div className="search-dmhy-result-info search-dmhy-result-time">{props.res.time}</div>
     <div className="search-dmhy-result-info search-dmhy-result-type">{props.res.type}</div>
     <div className="search-dmhy-result-info search-dmhy-result-size">{props.res.size}</div>

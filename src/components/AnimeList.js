@@ -120,7 +120,7 @@ function AnimeList(props) {
       setSelectedFilterChoices({
         'year': new Set(),
         'season': new Set([getCurrentSeason()]),
-        'broadcastDay': new Set([weekdayMap[moment().weekday()]]),
+        'broadcastDay': new Set([weekdayMap[moment().add(3, 'days').weekday()]]),
         'genre': new Set(),
         'status': new Set() 
       });
