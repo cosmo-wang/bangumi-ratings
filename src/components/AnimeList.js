@@ -93,10 +93,10 @@ function AnimeList(props) {
   const [selectedFilterChoices, setSelectedFilterChoices] = useState(
     {
       'year': new Set(),
-      'season': new Set([getCurrentSeason()]),
+      'season': new Set(),  // [getCurrentSeason()]),
       'broadcastDay': new Set(),
       'genre': new Set(),
-      'status': new Set(['在看']) 
+      'status': new Set()  // ['在看']) 
     }
   );
 
@@ -426,7 +426,7 @@ function AnimeList(props) {
       <FilterBox
         expandFilterBox={expandFilterBox}
         filterCategories={filterCategories}
-        // selectedFilterChoices={selectedFilterChoices}
+        selectedFilterChoices={selectedFilterChoices}
         toggleFilterChoice={toggleFilterChoice}
         shortcuts={Object.keys(filterShortCuts)}
         selectedShortcut={selectedShortcut}
