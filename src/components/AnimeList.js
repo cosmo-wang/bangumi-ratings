@@ -426,7 +426,7 @@ function AnimeList(props) {
       <FilterBox
         expandFilterBox={expandFilterBox}
         filterCategories={filterCategories}
-        selectedFilterChoices={selectedFilterChoices}
+        // selectedFilterChoices={selectedFilterChoices}
         toggleFilterChoice={toggleFilterChoice}
         shortcuts={Object.keys(filterShortCuts)}
         selectedShortcut={selectedShortcut}
