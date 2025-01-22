@@ -93,7 +93,7 @@ function AnimeList(props) {
   const [selectedFilterChoices, setSelectedFilterChoices] = useState(
     {
       'year': new Set(),
-      'season': new Set(),  // [getCurrentSeason()]),
+      'season': new Set([getCurrentSeason()]),
       'broadcastDay': new Set(),
       'genre': new Set(),
       'status': new Set()  // ['在看']) 
