@@ -27,7 +27,7 @@ function FilterBox(props) {
             }}>
             {shortcut}
           </Button>
-      })}
+        })}
       </Grid>
     </Grid>
     <Grid alignItems='center' container className='filter-category'>
@@ -41,7 +41,7 @@ function FilterBox(props) {
         />
       </div></Grid>
     </Grid>
-    {props.expandFilterBox ? <>{Array.from(props.filterCategories).map(([label, choices]) => 
+    {props.expandFilterBox ? <>{Array.from(props.filterCategories).map(([label, choices]) =>
       <Grid key={label} alignItems='center' container className='filter-category'>
         <Grid item xs={1} className='filter-box-label'>{translateEnToZh(label)}</Grid>
         <Grid item xs={11} className='filter-box-choices'>
@@ -57,18 +57,18 @@ function FilterBox(props) {
         </Grid>
       </Grid>
     )}
-    <Grid alignItems='center' container className='filter-category'>
-      <Grid item xs={1} className='filter-box-label'>排序</Grid>
-      <Grid item xs={11} className='filter-box-choices'>
-        {props.sortHeaders.map((sortHeader) =>
-          <Button size='small' variant={props.sortHeader === sortHeader ? 'contained' : 'outlined'} key={sortHeader}
-            onClick={() => {
-              props.setSortHeader(sortHeader)
-            }}>
-            {translateEnToZh(sortHeader)}
-          </Button>)}
-      </Grid>
-    </Grid></> : <></>}
+      <Grid alignItems='center' container className='filter-category'>
+        <Grid item xs={1} className='filter-box-label'>排序</Grid>
+        <Grid item xs={11} className='filter-box-choices'>
+          {props.sortHeaders.map((sortHeader) =>
+            <Button size='small' variant={props.sortHeader === sortHeader ? 'contained' : 'outlined'} key={sortHeader}
+              onClick={() => {
+                props.setSortHeader(sortHeader)
+              }}>
+              {translateEnToZh(sortHeader)}
+            </Button>)}
+        </Grid>
+      </Grid></> : <></>}
   </div>
 }
 

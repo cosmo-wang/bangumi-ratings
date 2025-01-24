@@ -310,24 +310,24 @@ export const getRating = (anime) => {
 export const getTodayDate = () => { return moment(new Date()).format("YYYY-MM-DD"); }
 
 export const colSizes = {
-    'description': 4,
-    'endDate': 2,
-    'episodeLength': 1,
-    'genre': 2,
-    'illusration': 1,
-    'music': 1,
-    'nameJp': 3,
-    'nameZh': 3,
-    'passion': 1,
-    'startDate': 2,
-    'status': 1,
-    'story': 1,
-    'timesWatch': 1,
-    'tvEpisodes': 1,
-    'year': 1,
-    'rating': 1,
-    "watchedDate": 2,
-    "dailyTime": 1
+  'description': 4,
+  'endDate': 2,
+  'episodeLength': 1,
+  'genre': 2,
+  'illusration': 1,
+  'music': 1,
+  'nameJp': 3,
+  'nameZh': 3,
+  'passion': 1,
+  'startDate': 2,
+  'status': 1,
+  'story': 1,
+  'timesWatch': 1,
+  'tvEpisodes': 1,
+  'year': 1,
+  'rating': 1,
+  "watchedDate": 2,
+  "dailyTime": 1
 }
 
 export function translateEnToZh(word) {

@@ -26,7 +26,7 @@ function App() {
   const [activePage, setActivePage] = useState("AnimeList")
 
   const { loading, error, data, refetch } = useQuery(GET_ANIMES);
-  
+
   useEffect(() => {
     if (user != null && token != null) {
       setAuthenticated(true);
@@ -45,7 +45,7 @@ function App() {
           alert("登录失败，请重试。");
         }
       })
-      .catch (err => alert(err));
+      .catch(err => alert(err));
   }
 
   const handleSignOut = () => {
@@ -58,7 +58,7 @@ function App() {
   const mainElement = (activePage) => {
     switch (activePage) {
       case 'AnimeList':
-        return <AnimeList animesLoading={loading} loadError={error} refetchAnimes={refetch}/>;
+        return <AnimeList animesLoading={loading} loadError={error} refetchAnimes={refetch} />;
       case 'MonthlySummary':
         return <MonthlySummary />;
       case 'SeasonalSummary':
@@ -73,9 +73,9 @@ function App() {
   return (
     <div>
       <div className="App">
-        <WindowSizeContext.Provider value={{windowSize: useWindowSize()}}>
+        <WindowSizeContext.Provider value={{ windowSize: useWindowSize() }}>
           <AuthenticationContext.Provider value={{ username, password, authenticated, setAuthenticating, handleLogin, handleSignOut, setUsername, setPassword }}>
-            <Navivation switchPage={setActivePage}/>
+            <Navivation switchPage={setActivePage} />
             {authenticating ? <Login /> :
               <AnimeDataContext.Provider value={{
                 animes: data === undefined ? [] : data.getAnimes

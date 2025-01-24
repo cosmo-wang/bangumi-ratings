@@ -14,7 +14,7 @@ export default function DownloadModal(props) {
   const [dmhySearchTerms, setDmhySearchTerms] = useState(props.anime.dmhySearchTerms);
   const [dmhyTags, setDmhyTags] = useState(props.anime.dmhyTags);
   const [delayedWeeks, setDelayedWeeks] = useState(props.anime.delayedWeeks);
-  
+
   const [searchResult, setSearchResult] = useState();
 
   const [getDownloadLink, { loading }] = useLazyQuery(GET_DOWNLOAD_LINK, {
@@ -45,14 +45,16 @@ export default function DownloadModal(props) {
   return <Box
     onSubmit={(event) => {
       event.preventDefault();
-      updateAnime({ variables: {
-        newData: {
-          id: props.anime.id,
-          dmhySearchTerms: dmhySearchTerms,
-          dmhyTags: dmhyTags,
-          delayedWeeks: parseInt(delayedWeeks)
+      updateAnime({
+        variables: {
+          newData: {
+            id: props.anime.id,
+            dmhySearchTerms: dmhySearchTerms,
+            dmhyTags: dmhyTags,
+            delayedWeeks: parseInt(delayedWeeks)
+          }
         }
-      }});
+      });
       props.setShowDownloadModal(false);
     }}
     component="form"
@@ -96,16 +98,16 @@ export default function DownloadModal(props) {
     <div className="input-button-row">
       <LoadingButton
         loading={loading}
-        variant='contained' 
+        variant='contained'
         onClick={() => {
           if (!dmhySearchTerms || !dmhyTags) {
             alert('请输入所有所需信息！');
           } else if (dmhySearchTerms !== props.anime.dmhySearchTerms ||
-                     dmhyTags !== props.anime.dmhyTags ||
-                     delayedWeeks !== props.anime.delayedWeeks) {
+            dmhyTags !== props.anime.dmhyTags ||
+            delayedWeeks !== props.anime.delayedWeeks) {
             alert('信息已更新，请提交后重试！');
           } else {
-            getDownloadLink({ variables: {id: props.anime.id} });
+            getDownloadLink({ variables: { id: props.anime.id } });
           }
         }}
       >
@@ -116,13 +118,13 @@ export default function DownloadModal(props) {
       </Button> : <></>}
     </div>
     {searchResult ? <>
-        <h5>{searchResult.title}</h5>
-        {searchResult.msg !== '' ? <div>{searchResult.msg}</div> : 
+      <h5>{searchResult.title}</h5>
+      {searchResult.msg !== '' ? <div>{searchResult.msg}</div> :
         <div class='dmhy-link-result'>
           {searchResult.resList.map(res => <SearchDmhyResult res={res} />)}
           <div>共{searchResult.resList.length}个结果</div>
         </div>}
-      </> : <></>
+    </> : <></>
     }
   </Box>;
 }
