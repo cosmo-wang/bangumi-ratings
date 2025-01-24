@@ -38,7 +38,7 @@ function AnimeList(props) {
     },
     onError(updateError) {
       console.log(updateError);
-      alert("更新失败，请稍后重试。");
+      alert("更新失败，请稍后重试：" + updateError.message);
     }
   });
 
@@ -51,7 +51,7 @@ function AnimeList(props) {
     },
     onError(updateError) {
       console.log(updateError);
-      alert("更新失败，请稍后重试。");
+      alert("更新失败，请稍后重试：" + updateError.message);
     }
   });
 
@@ -64,7 +64,7 @@ function AnimeList(props) {
     },
     onError(updateError) {
       console.log(updateError);
-      alert("删除失败，请稍后重试。");
+      alert("删除失败，请稍后重试：" + updateError.message);
     }
   });
 
@@ -77,7 +77,7 @@ function AnimeList(props) {
     },
     onError(updateError) {
       console.log(updateError);
-      alert("更新失败，请稍后重试。");
+      alert("更新失败，请稍后重试：" + updateError.message);
     }
   })
 

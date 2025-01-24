@@ -38,7 +38,7 @@ export default function DownloadModal(props) {
     },
     onError(updateError) {
       console.log(updateError);
-      alert("更新失败，请稍后重试。");
+      alert("更新失败，请稍后重试：" + updateError.message);
     }
   });
 
