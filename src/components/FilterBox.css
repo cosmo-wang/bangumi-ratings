@@ -10,6 +10,14 @@
   border-color: rgb(180, 180, 180);
 }
 
+#filter-box button:hover {
+  color: #c79dd7;
+}
+
+#filter-box .MuiButton-contained {
+  color: black;
+}
+
 .filter-category {
   margin: 10px 0;
 }

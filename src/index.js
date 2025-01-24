@@ -20,7 +20,7 @@ const client = new ApolloClient({
 const theam = createTheme({
   palette: {
     primary: {
-      main: '#fe8a96'
+      main: '#c79dd7'
     }
   }
 })

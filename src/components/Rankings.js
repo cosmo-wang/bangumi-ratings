@@ -30,7 +30,7 @@ function DraggableRankingEntry(props) {
             )}
             className="drag-item"
           >
-            <div className={`ranking-entry${props.index < 3 ? "-red" : ""}`}>
+            <div className={`ranking-entry${props.index < 3 ? "-top" : ""}`}>
               <div className={`ranking-entry-num`}><b>{props.index + 1}</b></div>
               <div className="ranking-entry-name">{props.anime}</div>
             </div>

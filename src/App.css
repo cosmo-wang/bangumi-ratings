@@ -17,11 +17,11 @@
   display: none;
 }
 
-.pink-button {
+/* .pink-button {
   color: #000000 !important;
   background-color: #fe8a96 !important;
   border-color: #fe8a96 !important;
-}
+} */
 
 .clickable:hover {
   cursor: pointer;

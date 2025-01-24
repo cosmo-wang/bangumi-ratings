@@ -3,7 +3,8 @@
   justify-content: center;
 }
 
-.ranking-entry, .ranking-entry-red {
+.ranking-entry, .ranking-entry-top {
+  color: #4d1b7b;
   border-bottom: 1.5px solid rgb(206, 206, 206);
   padding: 0.5em;
   display: flex;
@@ -11,8 +12,8 @@
   align-items: center;
 }
 
-.ranking-entry-red {
-  color: red;
+.ranking-entry-top {
+  color: #ef4f91;
 }
 
 .ranking-entry-num {
