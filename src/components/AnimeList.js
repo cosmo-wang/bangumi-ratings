@@ -17,9 +17,11 @@ import SimpleDisplayCard from './SimpleDisplayCard';
 import Rankings from './Rankings';
 import AddNewEntryForm from './AddNewEntryForm';
 import SearchDmhyModal from './SearchDmhyModal';
-import { weekdayMap, sortList, sortSeasons, compareSeason, sortByDay, reorder,
-         formatEpisodes, getRating, formatDate, formatTime, calculateDailyTime,
-         getCurrentSeason, getLatestRankings, cleanAnimeDate } from "../utils/utils";
+import {
+  weekdayMap, sortList, sortSeasons, compareSeason, sortByDay, reorder,
+  formatEpisodes, getRating, formatDate, formatTime, calculateDailyTime,
+  getCurrentSeason, getLatestRankings, cleanAnimeDate
+} from "../utils/utils";
 import '../App.css';
 import moment from 'moment';
 
@@ -93,10 +95,10 @@ function AnimeList(props) {
   const [selectedFilterChoices, setSelectedFilterChoices] = useState(
     {
       'year': new Set(),
-      'season': new Set([getCurrentSeason()]),
+      'season': new Set(),
       'broadcastDay': new Set(),
       'genre': new Set(),
-      'status': new Set()  // ['在看']) 
+      'status': new Set()
     }
   );
 
@@ -105,38 +107,38 @@ function AnimeList(props) {
   const [searchText, setSearchText] = useState('');
 
   const filterShortCuts = {
-    '当季动漫' : () => {
+    '当季动漫': () => {
       setSingleSelect(false);
       setSelectedFilterChoices({
         'year': new Set(),
         'season': new Set([getCurrentSeason()]),
         'broadcastDay': new Set(),
         'genre': new Set(),
-        'status': new Set() 
+        'status': new Set()
       });
       setSortHeader('rankings');
     },
-    '当日动漫' : () => {
+    '当日动漫': () => {
       setSelectedFilterChoices({
         'year': new Set(),
         'season': new Set([getCurrentSeason()]),
         'broadcastDay': new Set([weekdayMap[moment().weekday()]]),
         'genre': new Set(),
-        'status': new Set() 
+        'status': new Set()
       });
       setSortHeader('rankings');
     },
-    '已看动漫' : () => {
+    '已看动漫': () => {
       setSelectedFilterChoices({
         'year': new Set(),
         'season': new Set(),
         'broadcastDay': new Set(),
         'genre': new Set(),
-        'status': new Set(['已看']) 
+        'status': new Set(['已看'])
       });
       setSortHeader('watchedDate');
     },
-    '在补动漫' : () => {
+    '在补动漫': () => {
       const allPastSeasons = new Set();
       const currentSeason = getCurrentSeason();
       animes.forEach(anime => {
@@ -149,17 +151,17 @@ function AnimeList(props) {
         'season': allPastSeasons,
         'broadcastDay': new Set(),
         'genre': new Set(),
-        'status': new Set(['在看']) 
+        'status': new Set(['在看'])
       });
       setSortHeader('watchedDate');
     },
-    '想看动漫' : () => {
+    '想看动漫': () => {
       setSelectedFilterChoices({
         'year': new Set(),
         'season': new Set(),
         'broadcastDay': new Set(),
         'genre': new Set(),
-        'status': new Set(['想看']) 
+        'status': new Set(['想看'])
       });
       setSortHeader('bangumiTvRating');
     }
@@ -169,13 +171,13 @@ function AnimeList(props) {
   const handleAddAnime = (newAnimeData) => {
     delete newAnimeData['__typename'];
     cleanAnimeDate(newAnimeData);
-    addAnime({ variables: {newData: newAnimeData}})
+    addAnime({ variables: { newData: newAnimeData } })
   };
 
   const handleUpdateAnime = (newAnimeData) => {
     delete newAnimeData['__typename'];
     cleanAnimeDate(newAnimeData);
-    updateAnime({ variables: {newData: newAnimeData}})
+    updateAnime({ variables: { newData: newAnimeData } })
   }
 
   const rankingsDictToArray = (rankings) => {
@@ -268,7 +270,7 @@ function AnimeList(props) {
       }
     });
     if (sortHeader === 'rankings' && selectedFilterChoices['season'].size === 1) {
-      const rankings= getLatestRankings(newDisplayList, selectedFilterChoices['season'].values().next().value);
+      const rankings = getLatestRankings(newDisplayList, selectedFilterChoices['season'].values().next().value);
       newDisplayList.sort((a, b) => {
         if (rankings[a.nameZh] > rankings[b.nameZh]) return 1;
         if (rankings[a.nameZh] < rankings[b.nameZh]) return -1;
@@ -313,8 +315,8 @@ function AnimeList(props) {
 
   const info2Component = (entry) => {
     return <>
-      {entry.releaseDate} 开播 ｜ {entry.genre} ｜ {formatEpisodes(entry.tvEpisodes)} ｜ 
-      单集 {entry.episodeLength} 分钟 ｜ {formatDate(entry.startDate, entry.endDate)} ｜ 
+      {entry.releaseDate} 开播 ｜ {entry.genre} ｜ {formatEpisodes(entry.tvEpisodes)} ｜
+      单集 {entry.episodeLength} 分钟 ｜ {formatDate(entry.startDate, entry.endDate)} ｜
       日均 {formatTime(calculateDailyTime(entry))}
     </>;
   }
@@ -334,7 +336,7 @@ function AnimeList(props) {
       }} open={showNewEntryForm} fullWidth={true} maxWidth='md'>
         <DialogTitle>添加</DialogTitle>
         <DialogContent dividers>
-          <AddNewEntryForm 
+          <AddNewEntryForm
             onSubmit={(newAnimeData) => {
               handleAddAnime(newAnimeData);
               setShowNewEntryForm(false);
@@ -372,18 +374,18 @@ function AnimeList(props) {
           setShowNewEntryForm(true);
         }}>添加</Button> : <></>}
         {
-          authenticated && selectedFilterChoices['season'].size === 1? 
-          <Button
-            className='row-control'
-            variant="contained"
-            onClick={() => {
-              setLocalRankings(getLatestRankings(displayList, selectedFilterChoices['season'].values().next().value));
-              setShowRankings(true);
-            }}
-          >
-            本季排名
-          </Button>
-           : <></>
+          authenticated && selectedFilterChoices['season'].size === 1 ?
+            <Button
+              className='row-control'
+              variant="contained"
+              onClick={() => {
+                setLocalRankings(getLatestRankings(displayList, selectedFilterChoices['season'].values().next().value));
+                setShowRankings(true);
+              }}
+            >
+              本季排名
+            </Button>
+            : <></>
         }
         <Button className='row-control' variant='contained' onClick={props.refetchAnimes}>刷新</Button>
         <Button className='row-control' variant='contained' onClick={() => setShowSearchDmhy(true)}>搜索动漫花园</Button>
@@ -391,34 +393,34 @@ function AnimeList(props) {
           className='row-control'
           control={
             <Switch checked={singleSelect}
-            onChange={() => {
-              if (!singleSelect) {
-                const newSelectedFilterChoices = {};
-                for (const [label, choices] of Object.entries(selectedFilterChoices)) {
-                  if (choices.size > 0) {
-                    newSelectedFilterChoices[label] = new Set([choices.values().next().value]);
-                  } else {
-                    newSelectedFilterChoices[label] = new Set();
+              onChange={() => {
+                if (!singleSelect) {
+                  const newSelectedFilterChoices = {};
+                  for (const [label, choices] of Object.entries(selectedFilterChoices)) {
+                    if (choices.size > 0) {
+                      newSelectedFilterChoices[label] = new Set([choices.values().next().value]);
+                    } else {
+                      newSelectedFilterChoices[label] = new Set();
+                    }
                   }
+                  setSelectedFilterChoices(newSelectedFilterChoices);
                 }
-                setSelectedFilterChoices(newSelectedFilterChoices);
-              }
-              setSingleSelect(!singleSelect)
-            }}/>
+                setSingleSelect(!singleSelect)
+              }} />
           }
           label="单选"
         />
         <FormControlLabel
           className='row-control'
           control={
-            <Switch checked={expandFilterBox} onChange={() => setExpandFilterBox(!expandFilterBox)}/>
+            <Switch checked={expandFilterBox} onChange={() => setExpandFilterBox(!expandFilterBox)} />
           }
           label="更多筛选"
         />
         <FormControlLabel
           className='row-control'
           control={
-            <Switch checked={expandDisplayCard} onChange={() => setExpandDisplayCard(!expandDisplayCard)}/>
+            <Switch checked={expandDisplayCard} onChange={() => setExpandDisplayCard(!expandDisplayCard)} />
           }
           label="详细信息"
         />
@@ -439,20 +441,20 @@ function AnimeList(props) {
         setSortHeader={setSortHeader}
         setSearchText={setSearchText}
       />
-      {displayList.map((anime, idx) => 
-        expandDisplayCard ? 
-        <DisplayCard
-          key={anime.id}
-          idx={idx}
-          authenticated={authenticated}
-          entry={anime} 
-          entryId={anime.id}
-          info1Component={info1Component}
-          info2Component={info2Component}
-          onAnimeSubmit={handleUpdateAnime}
-          deleteAnime={deleteAnime}
-        /> :
-        <SimpleDisplayCard key={anime.id} idx={idx} entry={anime}/>
+      {displayList.map((anime, idx) =>
+        expandDisplayCard ?
+          <DisplayCard
+            key={anime.id}
+            idx={idx}
+            authenticated={authenticated}
+            entry={anime}
+            entryId={anime.id}
+            info1Component={info1Component}
+            info2Component={info2Component}
+            onAnimeSubmit={handleUpdateAnime}
+            deleteAnime={deleteAnime}
+          /> :
+          <SimpleDisplayCard key={anime.id} idx={idx} entry={anime} />
       )}
     </div>);
   }
