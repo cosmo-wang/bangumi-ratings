@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -6,13 +6,22 @@ import { translateEnToZh } from "../utils/utils";
 import './FilterBox.css';
 
 function FilterBox(props) {
+  // Click the button on page load
+  const filterButtonRef = useRef(null);
+  useEffect(() => {
+    if (filterButtonRef.current) {
+      filterButtonRef.current.click(); // Click the button
+    }
+  }, []);
+
   return <div id='filter-box'>
     <Grid key='shortcuts' alignItems='center' container className='filter-category'>
       <Grid item xs={1} className='filter-box-label'>快捷方式</Grid>
       <Grid item xs={11} className='filter-box-choices'>
-        {props.shortcuts.map(shortcut => {
+        {props.shortcuts.map((shortcut, index) => {
           const buttonVariant = props.selectedShortcut === shortcut ? 'contained' : 'outlined'
-          return <Button size='small' variant={buttonVariant} key={shortcut}
+          const buttonRef = 0 === index ? filterButtonRef : null;
+          return <Button size='small' variant={buttonVariant} key={shortcut} ref={buttonRef}
             onClick={() => {
               props.selectShortcut(shortcut);
             }}>
