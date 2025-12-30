@@ -10,7 +10,7 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-const serverUrl = process.env.NODE_ENV === 'production' ? 'https://bangumi-ratings-server.com/graphql' : 'http://localhost:8080/graphql';
+const serverUrl = process.env.NODE_ENV === 'production' ? '/graphql' : 'http://localhost:8080/graphql';
 // const serverUrl = 'https://bangumi-ratings-server.com/graphql';
 const client = new ApolloClient({
   uri: serverUrl,
