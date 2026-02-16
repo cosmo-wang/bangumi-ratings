@@ -5,12 +5,10 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { SearchDmhyResult } from './SearchDmhyModal';
-import { useAuthenticationContext } from "../context/AuthenticationContext";
 import { GET_DOWNLOAD_LINK, UPDATE_ANIME, GET_ANIMES } from '../gql/AnimeQueries';
 import '../App.css';
 
 export default function DownloadModal(props) {
-  const { authenticated } = useAuthenticationContext();
   const [dmhySearchTerms, setDmhySearchTerms] = useState(props.anime.dmhySearchTerms);
   const [dmhyTags, setDmhyTags] = useState(props.anime.dmhyTags);
   const [delayedWeeks, setDelayedWeeks] = useState(props.anime.delayedWeeks);
@@ -113,9 +111,9 @@ export default function DownloadModal(props) {
       >
         获取下载链接
       </LoadingButton>
-      {authenticated ? <Button variant='contained' type="submit">
+      <Button variant='contained' type="submit">
         提交
-      </Button> : <></>}
+      </Button>
     </div>
     {searchResult ? <>
       <h5>{searchResult.title}</h5>

@@ -87,8 +87,8 @@ function DisplayCard(props) {
         aria-label="outlined button group"
         className="display-card-button-group"
       >
-        {props.authenticated ? <Button className="display-card-btn" onClick={() => setShowAnimeModal(true)}>编辑</Button> : <></>}
-        {props.authenticated ? <Button className="display-card-btn" onClick={() => setShowDeleteConfirmation(true)}>删除</Button> : <></>}
+        <Button className="display-card-btn" onClick={() => setShowAnimeModal(true)}>编辑</Button>
+        <Button className="display-card-btn" onClick={() => setShowDeleteConfirmation(true)}>删除</Button>
         {getCurrentSeason() === entry.season ? 
           <Button
             className="display-card-btn get-download-button"
