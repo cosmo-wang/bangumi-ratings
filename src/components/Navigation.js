@@ -9,20 +9,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
-import { useAuthenticationContext } from "../context/AuthenticationContext";
 import './Navigation.css';
 import '../App.css';
-
-function UserManagement() {
-  const { authenticated, setAuthenticating, handleSignOut } = useAuthenticationContext();
-  if (authenticated) {
-    return <div id="user-management">
-      <Button variant='contained' onClick={handleSignOut}>登出</Button>
-    </div>
-  } else {
-    return <Button variant='contained' onClick={() => setAuthenticating(true)}>登录</Button>
-  }
-}
 
 const pages = [
   { id: 'AnimeList', label: '动漫列表' },
@@ -117,7 +105,6 @@ function Navigation(props) {
           ))}
         </Box>
       </Toolbar>
-      <UserManagement />
     </Container>
   </AppBar>
 

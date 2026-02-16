@@ -9,7 +9,6 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
-import { useAuthenticationContext } from "../context/AuthenticationContext";
 import { GET_ANIMES, ADD_ANIME, UPDATE_ANIME, DELETE_ANIME, UPDATE_RANKINGS } from '../gql/AnimeQueries';
 import FilterBox from './FilterBox';
 import DisplayCard from './DisplayCard';
@@ -26,7 +25,6 @@ import '../App.css';
 import moment from 'moment';
 
 function AnimeList(props) {
-  const { authenticated } = useAuthenticationContext();
   const { animes } = React.useContext(AnimeDataContext);
 
   const [addAnime] = useMutation(ADD_ANIME, {
@@ -370,11 +368,11 @@ function AnimeList(props) {
         </DialogActions>
       </Dialog>
       <div className="row-control-group">
-        {authenticated ? <Button className='row-control' variant='contained' onClick={() => {
+        <Button className='row-control' variant='contained' onClick={() => {
           setShowNewEntryForm(true);
-        }}>添加</Button> : <></>}
+        }}>添加</Button>
         {
-          authenticated && selectedFilterChoices['season'].size === 1 ?
+          selectedFilterChoices['season'].size === 1 ?
             <Button
               className='row-control'
               variant="contained"
@@ -386,6 +384,7 @@ function AnimeList(props) {
               本季排名
             </Button>
             : <></>
+
         }
         <Button className='row-control' variant='contained' onClick={props.refetchAnimes}>刷新</Button>
         <Button className='row-control' variant='contained' onClick={() => setShowSearchDmhy(true)}>搜索动漫花园</Button>
@@ -446,7 +445,6 @@ function AnimeList(props) {
           <DisplayCard
             key={anime.id}
             idx={idx}
-            authenticated={authenticated}
             entry={anime}
             entryId={anime.id}
             info1Component={info1Component}
